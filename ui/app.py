@@ -11,13 +11,18 @@ import json
 from datetime import datetime
 
 import config.settings as settings
-# Ensure settings module is freshly reloaded in hot-reloading Streamlit runtime
+# Ensure modules are freshly reloaded in hot-reloading Streamlit runtime
 try:
     importlib.reload(settings)
 except Exception:
     pass
 
 import core.database as db
+try:
+    importlib.reload(db)
+except Exception:
+    pass
+
 import core.data_extractor as extractor
 import core.notifier_whatsapp as notifier
 from core.occ_bot import OCCBot
