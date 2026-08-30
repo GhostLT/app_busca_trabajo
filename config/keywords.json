@@ -1,0 +1,97 @@
+{
+  "categories": {
+    "Ingeniero de RF / Optimización": {
+      "keywords": [
+        "Ingeniero de RF",
+        "Ingeniero RF",
+        "Radiofrecuencia",
+        "Drive Test",
+        "Optimización RF",
+        "Telecomunicaciones",
+        "Ericsson",
+        "Huawei",
+        "Nokia",
+        "ZTE",
+        "RAN",
+        "4G LTE",
+        "5G NR",
+        "Site Survey",
+        "Antenas",
+        "Microondas",
+        "MW",
+        "BSS",
+        "OSS",
+        "Atoll",
+        "Parámetros RF",
+        "QoS RF",
+        "NPO"
+      ],
+      "color": "#1E88E5",
+      "icon": "📡"
+    },
+    "Ingeniero Eléctrico": {
+      "keywords": [
+        "Ingeniero Eléctrico",
+        "Ingeniero Electricista",
+        "Subestaciones",
+        "Media Tensión",
+        "Alta Tensión",
+        "Baja Tensión",
+        "Instalaciones Eléctricas",
+        "Cuadros Eléctricos",
+        "Transformadores",
+        "AutoCAD Eléctrico",
+        "Sistemas de Potencia",
+        "Mantenimiento Eléctrico",
+        "Tableros de Control",
+        "NOM-001-SEDE",
+        "Protecciones Eléctricas",
+        "Plantas de Emergencia",
+        "Tierras Físicas"
+      ],
+      "color": "#F59E0B",
+      "icon": "⚡"
+    },
+    "Ingeniero de Sistemas / Software": {
+      "keywords": [
+        "Ingeniero de Sistemas",
+        "Ingeniero de Software",
+        "Desarrollador Software",
+        "Python",
+        "Full Stack",
+        "Backend",
+        "Frontend",
+        "DevOps",
+        "Cloud",
+        "AWS",
+        "Azure",
+        "SQL",
+        "PostgreSQL",
+        "Docker",
+        "Kubernetes",
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Node.js",
+        "C#",
+        ".NET",
+        "Java",
+        "Arquitectura de Software"
+      ],
+      "color": "#10B981",
+      "icon": "💻"
+    }
+  },
+  "default_locations": [
+    "Ciudad de México",
+    "CDMX",
+    "Estado de México",
+    "Guadalajara",
+    "Monterrey",
+    "Querétaro",
+    "Puebla",
+    "Tijuana",
+    "Remoto",
+    "Híbrido"
+  ]
+}

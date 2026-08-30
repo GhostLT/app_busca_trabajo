@@ -1,21 +1,25 @@
-# 🚀 AutoJob Hunter & Tracker (OCC & Redes Sociales)
+﻿# 🚀 AutoJob Hunter & Tracker (OCC & Redes Sociales)
 
-Sistema integral de automatización para la búsqueda, extracción y postulación automática a vacantes de empleo en plataformas laborales (**OCC Mundial**) y redes sociales (**Facebook**), enfocado en perfiles de ingeniería:
-- 📡 **Ingeniero de RF / Optimización**
-- ⚡ **Ingeniero Eléctrico**
-- 💻 **Ingeniero de Sistemas / Software**
+Sistema integral de automatización para la **búsqueda, extracción, seguimiento y postulación automática** a vacantes de empleo en plataformas laborales (**OCC Mundial**) y redes sociales (**Facebook / Grupos de Empleo**), enfocado en perfiles estratégicos de ingeniería:
+
+- 📡 **Ingeniero de RF / Optimización / Telecomunicaciones**
+- ⚡ **Ingeniero Eléctrico / Media y Alta Tensión / Subestaciones**
+- 💻 **Ingeniero de Sistemas / Software / DevOps / Cloud**
 
 ---
 
 ## 📋 Tabla de Contenidos
+
 - [Características Principales](#-características-principales)
 - [Arquitectura del Sistema](#-arquitectura-del-sistema)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 - [Requisitos Previos](#-requisitos-previos)
-- [Instalación y Configuración](#-instalación-y-configuración)
+- [Instalación y Puesta en Marcha](#-instalación-y-puesta-en-marcha)
 - [Variables de Entorno (.env)](#-variables-de-entorno-env)
-- [Guía de Uso](#-guía-de-uso)
+- [Guía de Uso (CLI y Dashboard)](#-guía-de-uso)
+- [Panel de Control Web (Streamlit)](#-panel-de-control-web-streamlit)
 - [Estructura de Datos Extraídos](#-estructura-de-datos-extraídos)
+- [Integración con WhatsApp](#-integración-con-whatsapp)
 - [Próximas Mejoras](#-próximas-mejoras)
 
 ---
@@ -23,23 +27,28 @@ Sistema integral de automatización para la búsqueda, extracción y postulació
 ## ✨ Características Principales
 
 ### 1. 💼 Módulo OCC Mundial (Postulación y Registro)
-- **Búsqueda Automatizada:** Filtrado por roles clave (*Ingeniero de RF*, *Optimización*, *Ingeniero Eléctrico*, *Ingeniero de Sistemas*).
-- **Subida de CV Automática:** Carga automática de tu currículum (PDF/Word) en cada postulación.
-- **Historial de Postulaciones:** Guarda de manera persistente el nombre de la posición, empresa, fecha, enlace y estado de la solicitud.
-- **Contacto por WhatsApp:** Envío de alertas y confirmaciones a tu WhatsApp personal ante postulaciones exitosas o contacto de reclutadores.
+- **Búsqueda Automatizada:** Filtrado por roles clave (*Ingeniero de RF*, *Optimización 4G/5G*, *Ingeniero Eléctrico*, *Ingeniero de Sistemas*).
+- **Extracción de Detalles:** Captura puesto, empresa, sueldo ofertado, ubicación, modalidad (Remoto, Híbrido, Presencial) y descripción completa.
+- **Subida de CV Automática:** Carga automática y gestión de tu currículum (`data/cv/mi_cv.pdf`).
+- **Historial de Postulaciones:** Guarda de manera persistente el estado de la solicitud en base de datos SQLite (`Pendiente`, `Postulado`, `En Entrevista`, `Descartado`).
 
 ### 2. 📱 Módulo de Redes Sociales (Facebook Job Scraper & Extractor)
-- **Escaneo de Grupos y Páginas de Empleo:** Rastreo inteligente de publicaciones laborales en Facebook.
-- **Extracción de Datos Clave (NLP / Regex / IA):**
+- **Escaneo de Grupos y Páginas de Empleo:** Rastreo inteligente de publicaciones laborales en Facebook y grupos de ingeniería.
+- **Extractor Inteligente de Texto (NLP / Regex):**
   - 🏷️ **Nombre de la Posición** / Vacante
-  - 📞 **Teléfono de Contacto** / WhatsApp del reclutador
-  - 📍 **Dirección** / Ubicación / Modalidad (Remoto, Híbrido, Presencial)
-  - 💰 **Salario Posible** / Rango Salarial ofertado
-- **Generación de Listados:** Exportación automática a base de datos (SQLite), Excel (`.xlsx`) y CSV.
+  - 📞 **Teléfono de Contacto** / WhatsApp del reclutador (formato mexicano `+52`)
+  - 📍 **Dirección** / Ubicación / Modalidad
+  - 💰 **Salario Ofertado** (rangos mensuales, netos/brutos)
+- **Pegado Rápido de Ofertas:** Permite pegar cualquier texto de un post de Facebook, LinkedIn o WhatsApp para extraer los datos y guardarlos con 1 clic.
 
-### 3. 📲 Notificaciones en WhatsApp
-- Alertas en tiempo real cuando se detecta una vacante de alto interés o cuando un reclutador responde.
-- Enlace directo con un solo clic para contactar al reclutador por WhatsApp.
+### 3. 📲 Contacto Directo por WhatsApp
+- **Generador de Enlaces `wa.me`:** Creación automática de enlaces directos al WhatsApp del reclutador con mensaje de presentación profesional personalizado según la especialidad de ingeniería.
+- **Alertas y Resúmenes:** Formato listo para enviar postulaciones inmediatas.
+
+### 4. 📊 Panel Visual e Interactividad (Streamlit)
+- Métricas en tiempo real: total de vacantes, postulaciones activas, promedio salarial y distribución por especialidad/fuente.
+- Filtros interactivos por tecnología, modalidad, sueldo y contacto telefónico.
+- Exportación instantánea a **Excel (`.xlsx`)** y **CSV** con un solo clic.
 
 ---
 
@@ -51,26 +60,26 @@ Sistema integral de automatización para la búsqueda, extracción y postulació
                         │    (Streamlit / CLI / Web)    │
                         └──────────────┬────────────────┘
                                        │
-                ┌──────────────────────┴──────────────────────┐
-                ▼                                             ▼
-     ┌─────────────────────┐                       ┌─────────────────────┐
-     │   Bot OCC Mundial   │                       │  Bot Redes Sociales │
-     │  (Selenium / API)   │                       │     (Facebook)      │
-     └──────────┬──────────┘                       └──────────┬──────────┘
-                │                                             │
-      [Postulación + CV]                              [Extracción Datos]
-                │                                             │
-                ▼                                             ▼
-     ┌───────────────────────────────────────────────────────────┐
-     │             Base de Datos (SQLite / PostgreSQL)           │
-     │      - Vacantes Encontradas                               │
-     │      - Historial de Postulaciones                         │
-     └─────────────────────────────┬─────────────────────────────┘
+                 ┌─────────────────────┴─────────────────────┐
+                 ▼                                           ▼
+      ┌─────────────────────┐                     ┌─────────────────────┐
+      │   Bot OCC Mundial   │                     │  Bot Redes Sociales │
+      │  (core/occ_bot.py)  │                     │(core/facebook_sc...)│
+      └──────────┬──────────┘                     └──────────┬──────────┘
+                 │                                           │
+       [Postulación + CV]                            [Extracción Datos]
+                 │                                           │
+                 ▼                                           ▼
+      ┌───────────────────────────────────────────────────────────┐
+      │             Base de Datos (SQLite / jobs.db)              │
+      │      - Vacantes Encontradas                               │
+      │      - Historial de Postulaciones y Notas                 │
+      └────────────────────────────┬──────────────────────────────┘
                                    │
                                    ▼
                    ┌───────────────────────────────┐
                    │    Notificaciones WhatsApp    │
-                   │    (Twilio / WhatsApp API)    │
+                   │  (core/notifier_whatsapp.py)  │
                    └───────────────────────────────┘
 ```
 
@@ -81,22 +90,26 @@ Sistema integral de automatización para la búsqueda, extracción y postulació
 ```plaintext
 app_busca_trabajo/
 ├── config/
-│   ├── settings.py           # Configuraciones generales y constantes
+│   ├── __init__.py
+│   ├── settings.py           # Configuraciones generales, variables .env y rutas
 │   └── keywords.json         # Palabras clave por especialidad (RF, Eléctrica, Sistemas)
 ├── core/
-│   ├── occ_bot.py            # Automatizador y postulador para OCC Mundial
-│   ├── facebook_scraper.py   # Scraper y extractor de vacantes en Facebook
+│   ├── __init__.py
+│   ├── database.py           # Gestión de SQLite (jobs.db), filtros y exportaciones
 │   ├── data_extractor.py     # Parser de información (Puesto, Teléfono, Salario, Ubicación)
-│   ├── notifier_whatsapp.py  # Integración de mensajes y alertas a WhatsApp
-│   └── database.py           # Gestión de base de datos SQLite y exportaciones
+│   ├── occ_bot.py            # Automatizador y scraper para OCC Mundial
+│   ├── facebook_scraper.py   # Scraper y extractor de vacantes en Facebook
+│   └── notifier_whatsapp.py  # Integración de mensajes y enlaces para WhatsApp
 ├── data/
-│   ├── cv/                   # Carpeta para almacenar tus CVs (PDF)
-│   ├── exports/              # Reportes generados en Excel / CSV
-│   └── jobs.db               # Base de datos local
+│   ├── cv/                   # Carpeta para almacenar tus CVs (PDF / Word)
+│   ├── exports/              # Reportes generados en Excel (.xlsx) / CSV
+│   └── jobs.db               # Base de datos local SQLite
 ├── ui/
-│   └── app.py                # Interfaz gráfica opcional (Streamlit)
+│   ├── __init__.py
+│   └── app.py                # Interfaz gráfica de usuario en Streamlit
+├── main.py                   # Lanzador unificado por línea de comandos (CLI)
 ├── .env.example              # Plantilla de variables de entorno
-├── .gitignore
+├── .gitignore                # Archivos ignorados por Git
 ├── requirements.txt          # Dependencias de Python
 └── README.md                 # Documentación del proyecto
 ```
@@ -105,18 +118,18 @@ app_busca_trabajo/
 
 ## ⚙️ Requisitos Previos
 
-- **Python 3.10+** instalado en el sistema.
-- **Google Chrome** o navegador compatible con WebDriver.
-- Cuenta activa en **OCC Mundial** y **Facebook**.
-- *(Opcional)* Cuenta o credenciales para API de WhatsApp (Twilio / WhatsApp Cloud API / pywhatkit).
+- **Python 3.10+** (probado y compatible con Python 3.14).
+- Navegador web moderno (Chrome, Edge, Firefox).
+- Cuenta activa en **OCC Mundial** y/o **Facebook** *(opcional para personalización)*.
 
 ---
 
-## 🚀 Instalación y Configuración
+## 🚀 Instalación y Puesta en Marcha
 
-1. **Clonar o descargar el repositorio:**
+1. **Clonar el repositorio:**
    ```bash
-   cd c:\proyectos\app_busca_trabajo
+   git clone https://github.com/GhostLT/app_busca_trabajo.git
+   cd app_busca_trabajo
    ```
 
 2. **Crear y activar un entorno virtual:**
@@ -124,6 +137,8 @@ app_busca_trabajo/
    python -m venv venv
    # En Windows:
    .\venv\Scripts\activate
+   # En Linux / macOS:
+   source venv/bin/activate
    ```
 
 3. **Instalar dependencias:**
@@ -131,14 +146,18 @@ app_busca_trabajo/
    pip install -r requirements.txt
    ```
 
-4. **Colocar tu Curriculum Vitae (CV):**
-   - Guarda tu archivo en `data/cv/mi_cv.pdf`.
+4. **Configurar el archivo de entorno (`.env`):**
+   ```bash
+   # Copiar plantilla base
+   cp .env.example .env
+   ```
+
+5. **Colocar tu Curriculum Vitae:**
+   - Guarda tu archivo CV en formato PDF dentro de `data/cv/mi_cv.pdf` o súbelo directamente desde la pestaña **"Mi CV & Perfil"** en la interfaz web.
 
 ---
 
 ## 🔐 Variables de Entorno (`.env`)
-
-Crea un archivo `.env` en la raíz del proyecto a partir de `.env.example`:
 
 ```ini
 # --- Credenciales OCC Mundial ---
@@ -149,11 +168,11 @@ OCC_PASSWORD=tu_contraseña_occ
 FB_EMAIL=tu_correo_facebook@ejemplo.com
 FB_PASSWORD=tu_contraseña_facebook
 
-# --- Configuración de WhatsApp ---
+# --- Configuración WhatsApp ---
 USER_WHATSAPP_PHONE=+52XXXXXXXXXX
 WHATSAPP_API_KEY=tu_api_key_opcional
 
-# --- Perfil y CV ---
+# --- Configuración de Perfil y Archivos ---
 CV_PATH=data/cv/mi_cv.pdf
 TARGET_ROLES="Ingeniero de RF, Ingeniero de Optimización, Ingeniero Eléctrico, Ingeniero de Sistemas"
 ```
@@ -162,44 +181,101 @@ TARGET_ROLES="Ingeniero de RF, Ingeniero de Optimización, Ingeniero Eléctrico,
 
 ## 🖥️ Guía de Uso
 
-### 1. Ejecutar búsqueda y postulación en OCC Mundial:
-```bash
-python -m core.occ_bot
-```
-*El bot iniciará sesión, buscará vacantes acordes a tus áreas de ingeniería, subirá tu CV y registrará la posición en la base de datos.*
+El sistema cuenta con un punto de entrada centralizado en `main.py` y soporte para ejecución de módulos independientes:
 
-### 2. Escanear ofertas de empleo en Facebook:
+### 1. Iniciar el Panel Visual (Dashboard):
 ```bash
-python -m core.facebook_scraper
-```
-*Extraerá publicaciones de grupos de empleo y generará la lista de vacantes con teléfono, sueldo y ubicación.*
-
-### 3. Iniciar el Panel Visual (Dashboard):
-```bash
+python main.py
+# O alternativamente:
 streamlit run ui/app.py
 ```
-*Permite ver en tiempo real las vacantes encontradas, filtrar por sueldo o ubicación, postular con un clic y contactar a reclutadores por WhatsApp.*
+*Abre automáticamente la aplicación en [http://localhost:8501](http://localhost:8501).*
+
+### 2. Ejecutar búsqueda y postulación en OCC Mundial (CLI):
+```bash
+python main.py --occ
+# O mediante módulo:
+python -m core.occ_bot
+```
+*Busca vacantes acordes a tus especialidades en OCC Mundial y las registra en la base de datos.*
+
+### 3. Escanear ofertas de empleo en Facebook (CLI):
+```bash
+python main.py --fb
+# O mediante módulo:
+python -m core.facebook_scraper
+```
+*Extrae publicaciones de grupos de empleo de ingeniería y parsea teléfonos, sueldos y ubicación.*
+
+### 4. Consultar estadísticas de la base de datos:
+```bash
+python main.py --stats
+```
+
+### 5. Exportar reporte de vacantes a Excel y CSV:
+```bash
+python main.py --export
+```
+
+### 6. Cargar vacantes de demostración:
+```bash
+python main.py --seed
+```
+
+---
+
+## 🌐 Panel de Control Web (Streamlit)
+
+La interfaz web organizada por pestañas incluye:
+
+| Pestaña | Funcionalidad |
+| :--- | :--- |
+| **📊 Dashboard** | KPIs de vacantes encontradas, postulaciones activas, sueldo promedio y gráficos interactivos por especialidad y modalidad. |
+| **💼 Bolsa de Vacantes** | Buscador y filtros dinámicos (Especialidad, Estado, Fuente, Sueldo, Teléfono). Tarjetas con botón directo para **Chatear por WhatsApp**, cambiar estado y agregar notas. |
+| **🔍 Scraping & Extracción** | Botón para escaneo en vivo de OCC y Facebook + caja de texto para pegar posts de redes sociales y extraer sus datos al instante. |
+| **📄 Mi CV & Perfil** | Subida y actualización de CV en PDF, vista previa de datos y personalización del mensaje de presentación para WhatsApp. |
+| **⚙️ Configuración & Exportación** | Descarga en 1 clic de reportes en **Excel (`.xlsx`)** y **CSV**, editor de variables `.env` y visor de palabras clave `keywords.json`. |
 
 ---
 
 ## 📊 Estructura de Datos Extraídos
 
-Las vacantes encontradas en Facebook y OCC se almacenan con el siguiente esquema:
+Las vacantes se registran en SQLite (`data/jobs.db`) con el siguiente esquema:
 
-| Campo | Descripción | Ejemplo |
-| :--- | :--- | :--- |
-| **Puesto / Posición** | Título de la vacante | `Ingeniero de Optimización RF Jr/Sr` |
-| **Empresa / Fuente** | Empresa contratante o grupo | `OCC / Grupo Facebook Ingenieros México` |
-| **Teléfono de Contacto** | Número o enlace directo a WhatsApp | `+52 55 1234 5678` |
-| **Dirección / Ubicación**| Ciudad, estado o modalidad | `Ciudad de México / Híbrido` |
-| **Salario Estimado** | Rango o sueldo mensual propuesto | `$25,000 - $35,000 MXN` |
-| **Fecha de Registro** | Timestamp de extracción | `2026-08-30 10:30:00` |
-| **Estado** | Estado de la postulación | `Postulado` / `Pendiente de Contacto` |
+| Campo | Tipo | Descripción | Ejemplo |
+| :--- | :--- | :--- | :--- |
+| `title` | TEXT | Nombre del puesto | `Ingeniero de Optimización RF (4G/5G)` |
+| `company` | TEXT | Empresa o grupo contratante | `Huawei Partner / OCC Mundial` |
+| `category` | TEXT | Especialidad de ingeniería | `Ingeniero de RF / Optimización` |
+| `source` | TEXT | Plataforma de origen | `OCC` / `Facebook` |
+| `location` | TEXT | Ciudad o estado | `Ciudad de México (Santa Fe)` |
+| `modality` | TEXT | Modalidad de trabajo | `Híbrido` / `Remoto` / `Presencial` |
+| `salary_raw` | TEXT | Sueldo ofertado | `$35,000 - $45,000 MXN mensuales` |
+| `phone` | TEXT | Teléfono normalizado | `+525541829301` |
+| `whatsapp_url`| TEXT | Enlace directo con mensaje | `https://wa.me/525541829301?text=...` |
+| `status` | TEXT | Estado del seguimiento | `Pendiente` / `Postulado` / `Entrevista` |
+
+---
+
+## 📲 Integración con WhatsApp
+
+Al pulsar el botón **"💬 WhatsApp"** en cualquier vacante, el sistema abre la conversación con un mensaje redactado profesionalmente para reclutadores mexicanos:
+
+> *"¡Hola! Buen día. Espero que te encuentres muy bien.*  
+> *Te contacto con respecto a la vacante de **Ingeniero de Optimización RF** para **Empresa**.*  
+> *Cuento con experiencia en ingeniería de RF, optimización RAN (4G/5G), Drive Test y herramientas como TEMS/Atoll.*  
+> *Me interesa mucho la posición y postularme formalmente. ¿Sigue disponible? Con gusto te comparto mi CV detallado.*  
+> *¡Muchas gracias!"*
 
 ---
 
 ## 🔮 Próximas Mejoras
-- [ ] Integración con modelos de lenguaje (LLMs / Gemini) para análisis semántico del CV vs. Requisitos de la vacante.
-- [ ] Auto-redacción de cartas de presentación personalizadas.
-- [ ] Soporte para LinkedIn y CompuTrabajo.
-- [ ] Bot conversacional de WhatsApp para respuesta automática a reclutadores.
+
+- [ ] Integración con modelos de lenguaje (Gemini / Claude) para análisis de compatibilidad CV vs. Requisitos.
+- [ ] Soporte para scraping directo en LinkedIn y Computrabajo.
+- [ ] Respuestas automáticas vía WhatsApp Cloud API / Webhooks.
+- [ ] Programador de tareas cron en segundo plano para escaneo periódico nocturno.
+
+---
+
+**Desarrollado con ❤️ para automatizar la búsqueda de empleo en Ingeniería.**
