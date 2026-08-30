@@ -300,7 +300,7 @@ with tab1:
         st.info("No hay vacantes registradas aún.")
 
 # -------------------------------------------------------------
-# TAB 2: BOLSA DE VACANTES (CON BOTÓN DE APLICAR FILTRO)
+# TAB 2: BOLSA DE VACANTES (CON FILTRO POR PLATAFORMA Y ACCIONES DE ESTADO)
 # -------------------------------------------------------------
 with tab2:
     st.subheader("💼 Explorador y Gestión de Vacantes")
@@ -348,7 +348,6 @@ with tab2:
         with f_col7:
             st.write("")
             st.write("")
-            # Dedicated Filter Submit Button
             apply_filter_btn = st.form_submit_button("🔍 Aplicar Filtros", type="primary", use_container_width=True)
 
     # Fetch Filtered Jobs
@@ -380,7 +379,7 @@ with tab2:
             j_wa = job["whatsapp_url"] or ""
             j_desc = job["description"] or ""
             j_url = job["url"] or ""
-            j_status = job["status"]
+            j_status = job.get("status", "Pendiente")
             j_notes = job["notes"] or ""
 
             # Category Badge styling
@@ -416,7 +415,7 @@ with tab2:
 
             wa_badge_html = f'<a href="{j_wa}" target="_blank" class="badge-whatsapp">💬 wa.me</a>' if j_wa else ''
 
-            # Status Badge
+            # Status Badge representation
             status_colors = {
                 "Pendiente": "🟡 Pendiente",
                 "Postulado": "🟢 Postulado",
@@ -449,8 +448,8 @@ with tab2:
             with st.container():
                 st.markdown(card_html, unsafe_allow_html=True)
 
-                # Action row for the job card
-                act_col1, act_col2, act_col3, act_col4, act_col5 = st.columns([2, 1.5, 1.5, 1.5, 1.5])
+                # Action row for the job card: WhatsApp, Ver Vacante, Postularme, Entrevista, Descartar
+                act_col1, act_col2, act_col3, act_col4, act_col5 = st.columns([2.2, 1.4, 1.4, 1.4, 1.2])
                 
                 with act_col1:
                     if j_phone:
@@ -468,23 +467,33 @@ with tab2:
                         st.button("🌐 Enlace N/D", disabled=True, key=f"nourl_{j_id}", use_container_width=True)
 
                 with act_col3:
-                    if j_status != "Postulado":
-                        if st.button("✅ Postulado", key=f"app_{j_id}", use_container_width=True):
-                            db.update_job_status(j_id, "Postulado")
+                    # Botón Postulado: Deseleccionado por defecto ('⬜ Postularme'). Al hacer clic se guarda en la base de datos como 'Postulado'.
+                    if j_status == "Postulado":
+                        if st.button("✅ Postulado", key=f"app_{j_id}", use_container_width=True, type="primary", help="Registrado en la base de datos como Postulado. Haz clic para desmarcar."):
+                            db.update_job_status(j_id, "Pendiente")
+                            st.toast(f"Vacante #{j_id} desmarcada (Pendiente).", icon="↩️")
                             st.rerun()
                     else:
-                        if st.button("↩️ Pendiente", key=f"pend_{j_id}", use_container_width=True):
-                            db.update_job_status(j_id, "Pendiente")
+                        if st.button("⬜ Postularme", key=f"app_{j_id}", use_container_width=True, help="Haz clic para registrar tu postulación en la base de datos."):
+                            db.update_job_status(j_id, "Postulado")
+                            st.toast(f"¡Postulación registrada en base de datos para #{j_id}!", icon="✅")
                             st.rerun()
 
                 with act_col4:
-                    if j_status != "Entrevista":
-                        if st.button("🎯 Entrevista", key=f"ent_{j_id}", use_container_width=True):
+                    # Botón Entrevista: Deseleccionado por defecto ('🎯 Entrevista'). Al hacer clic se guarda en la base de datos como 'Entrevista'.
+                    if j_status == "Entrevista":
+                        if st.button("🟣 En Entrevista", key=f"ent_{j_id}", use_container_width=True, type="primary", help="Registrado en la base de datos como Entrevista. Haz clic para desmarcar."):
+                            db.update_job_status(j_id, "Pendiente")
+                            st.toast(f"Vacante #{j_id} desmarcada (Pendiente).", icon="↩️")
+                            st.rerun()
+                    else:
+                        if st.button("🎯 Entrevista", key=f"ent_{j_id}", use_container_width=True, help="Haz clic para registrar que conseguiste entrevista en la base de datos."):
                             db.update_job_status(j_id, "Entrevista")
+                            st.toast(f"¡Entrevista registrada en base de datos para #{j_id}!", icon="🎯")
                             st.rerun()
 
                 with act_col5:
-                    if st.button("🗑️ Descartar", key=f"del_{j_id}", use_container_width=True):
+                    if st.button("🗑️ Descartar", key=f"del_{j_id}", use_container_width=True, help="Eliminar vacante"):
                         db.delete_job(j_id)
                         st.rerun()
 

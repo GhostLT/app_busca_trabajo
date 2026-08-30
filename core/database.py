@@ -191,19 +191,25 @@ def get_job_by_id(job_id: int) -> Optional[Dict[str, Any]]:
         return dict(row) if row else None
 
 def update_job_status(job_id: int, new_status: str, notes: Optional[str] = None) -> bool:
-    """Update status of a job (e.g., Postulado, En Proceso, Entrevista)."""
+    """Update status of a job (e.g., Postulado, En Proceso, Entrevista, Pendiente)."""
     init_db()
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     applied_at = now_str if new_status == "Postulado" else None
 
     with get_connection() as conn:
         cursor = conn.cursor()
-        if applied_at:
+        if new_status == "Postulado":
             cursor.execute("""
                 UPDATE jobs
                 SET status = ?, updated_at = ?, applied_at = COALESCE(applied_at, ?), notes = COALESCE(?, notes)
                 WHERE id = ?
             """, (new_status, now_str, applied_at, notes, job_id))
+        elif new_status == "Pendiente":
+            cursor.execute("""
+                UPDATE jobs
+                SET status = ?, updated_at = ?, applied_at = NULL, notes = COALESCE(?, notes)
+                WHERE id = ?
+            """, (new_status, now_str, notes, job_id))
         else:
             cursor.execute("""
                 UPDATE jobs
@@ -352,7 +358,7 @@ def export_to_csv(filepath: Optional[str] = None) -> str:
     return filepath
 
 def seed_sample_jobs():
-    """Populate database with sample job vacancies for instant testing."""
+    """Populate database with sample job vacancies for instant testing (all default to Pendiente)."""
     samples = [
         {
             "title": "Ingeniero de Optimización RF (4G/5G) - Drive Test",
@@ -419,8 +425,8 @@ def seed_sample_jobs():
             "whatsapp_url": "https://wa.me/523319028374",
             "description": "Mantenimiento preventivo y correctivo a transformadores, plantas de emergencia diésel, sistemas UPS y tableros de transferencia automática. Tarjeta profesional indispensable.",
             "url": "https://www.occ.com.mx/empleo/oferta/ingeniero-electrico-mantenimiento-gdl",
-            "status": "Postulado",
-            "notes": "Postulado el día de ayer a través de OCC."
+            "status": "Pendiente",
+            "notes": "Mantenimiento eléctrico industrial."
         },
         {
             "title": "Ingeniero de Software Backend (Python / FastAPI / Cloud)",
@@ -436,8 +442,8 @@ def seed_sample_jobs():
             "whatsapp_url": "https://wa.me/525588371920",
             "description": "Desarrollo de microservicios en Python (FastAPI/Django), APIs REST, bases de datos PostgreSQL, contenedores Docker y despliegue en AWS/GCP. Seguro de gastos médicos mayores y horario flexible.",
             "url": "https://www.occ.com.mx/empleo/oferta/ingeniero-software-python-remoto",
-            "status": "Entrevista",
-            "notes": "Primera entrevista técnica agendada para el jueves."
+            "status": "Pendiente",
+            "notes": "Vacante remota de Python."
         },
         {
             "title": "Ingeniero de Sistemas y DevOps Junior/Mid",
