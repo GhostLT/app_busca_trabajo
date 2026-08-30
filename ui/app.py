@@ -1,4 +1,5 @@
 ﻿import sys
+import textwrap
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -57,6 +58,7 @@ st.markdown("""
         border-radius: 20px;
         font-weight: 600;
         font-size: 0.82rem;
+        display: inline-block;
     }
     .badge-electric {
         background-color: #FEF3C7;
@@ -65,6 +67,7 @@ st.markdown("""
         border-radius: 20px;
         font-weight: 600;
         font-size: 0.82rem;
+        display: inline-block;
     }
     .badge-software {
         background-color: #D1FAE5;
@@ -73,6 +76,7 @@ st.markdown("""
         border-radius: 20px;
         font-weight: 600;
         font-size: 0.82rem;
+        display: inline-block;
     }
     .badge-general {
         background-color: #F1F5F9;
@@ -81,6 +85,7 @@ st.markdown("""
         border-radius: 20px;
         font-weight: 600;
         font-size: 0.82rem;
+        display: inline-block;
     }
     .badge-source-occ {
         background-color: #EEF2FF;
@@ -89,6 +94,7 @@ st.markdown("""
         border-radius: 6px;
         font-weight: 600;
         font-size: 0.75rem;
+        display: inline-block;
     }
     .badge-source-linkedin {
         background-color: #E0F2FE;
@@ -97,6 +103,7 @@ st.markdown("""
         border-radius: 6px;
         font-weight: 600;
         font-size: 0.75rem;
+        display: inline-block;
     }
     .badge-source-fb {
         background-color: #EFF6FF;
@@ -105,6 +112,7 @@ st.markdown("""
         border-radius: 6px;
         font-weight: 600;
         font-size: 0.75rem;
+        display: inline-block;
     }
     .badge-modality {
         background-color: #F8FAFC;
@@ -114,6 +122,7 @@ st.markdown("""
         border-radius: 6px;
         font-weight: 600;
         font-size: 0.82rem;
+        display: inline-block;
     }
     .badge-phone {
         background-color: #F0FDF4;
@@ -123,6 +132,7 @@ st.markdown("""
         border-radius: 6px;
         font-weight: 600;
         font-size: 0.82rem;
+        display: inline-block;
     }
     .badge-salary {
         background-color: #ECFDF5;
@@ -131,15 +141,17 @@ st.markdown("""
         border-radius: 6px;
         font-weight: 700;
         font-size: 0.88rem;
+        display: inline-block;
     }
     .badge-whatsapp {
         background-color: #25D366;
-        color: white;
+        color: white !important;
         padding: 3px 8px;
         border-radius: 6px;
         font-weight: 600;
         font-size: 0.78rem;
         text-decoration: none;
+        display: inline-block;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -300,7 +312,6 @@ with tab2:
         ])
     
     with f_col3:
-        # User-requested platform filter: LinkedIn, OCC, Redes Sociales
         source_filter = st.selectbox("🌐 Plataforma:", [
             "Todas las plataformas",
             "LinkedIn",
@@ -390,27 +401,30 @@ with tab2:
             }
             status_label = status_colors.get(j_status, j_status)
 
+            # Properly dedented HTML card to prevent CommonMark treating it as preformatted code block
+            card_html = textwrap.dedent(f"""
+<div class="job-card">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+<div>
+<h3 style="margin: 0; color: #0F172A; font-size: 1.25rem;">{j_title}</h3>
+<p style="margin: 3px 0 0 0; color: #475569; font-weight: 500;">🏢 {j_comp} &nbsp;•&nbsp; 📍 {j_loc}</p>
+</div>
+<div style="text-align: right;">
+{cat_badge} &nbsp; {src_badge}
+</div>
+</div>
+<div style="margin-top: 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+<span class="badge-salary">💰 {j_sal}</span>
+{mod_badge}
+{phone_badge}
+{wa_badge_html}
+<span style="font-size: 0.88rem; color: #64748B; margin-left: auto;"><b>Estado:</b> {status_label}</span>
+</div>
+</div>
+""").strip()
+
             with st.container():
-                st.markdown(f"""
-                <div class="job-card">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                        <div>
-                            <h3 style="margin: 0; color: #0F172A; font-size: 1.25rem;">{j_title}</h3>
-                            <p style="margin: 3px 0 0 0; color: #475569; font-weight: 500;">🏢 {j_comp} &nbsp;•&nbsp; 📍 {j_loc}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            {cat_badge} &nbsp; {src_badge}
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                        <span class="badge-salary">💰 {j_sal}</span>
-                        {mod_badge}
-                        {phone_badge}
-                        {wa_badge_html}
-                        <span style="font-size: 0.88rem; color: #64748B; margin-left: auto;"><b>Estado:</b> {status_label}</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(card_html, unsafe_allow_html=True)
 
                 # Action row for the job card
                 act_col1, act_col2, act_col3, act_col4, act_col5 = st.columns([2, 1.5, 1.5, 1.5, 1.5])
