@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 import argparse
 import subprocess
 from pathlib import Path
@@ -18,27 +18,30 @@ import core.database as db
 from core.occ_bot import OCCBot
 from core.facebook_scraper import FacebookScraper
 from core.linkedin_scraper import LinkedInScraper
+from core.computrabajo_scraper import CompuTrabajoScraper
 
 BANNER = """
 ===============================================================
-  AUTOJOB HUNTER & TRACKER (OCC, LINKEDIN & REDES SOCIALES)
+  AUTOJOB HUNTER & TRACKER (OCC, LINKEDIN, COMPUTRABAJO & FB)
   Especialidades: RF / Telecom, Eléctrica, Sistemas / Software
 ===============================================================
 """
 
 def print_stats():
     stats = db.get_stats()
+    app_stats = db.get_application_stats()
     print("\n[+] ESTADÍSTICAS ACTUALES DE VACANTES:")
     print(f"  • Total Vacantes:         {stats['total_jobs']}")
-    print(f"  • Postuladas:             {stats['applied_count']}")
+    print(f"  • Postuladas:             {app_stats['applied_count']}")
+    print(f"  • Postuladas Hoy:         {app_stats['today_count']}")
+    print(f"  • En Entrevista:          {app_stats['interview_count']} (Éxito: {app_stats['conversion_rate']}%)")
     print(f"  • Pendientes de Contacto: {stats['pending_count']}")
-    print(f"  • En Entrevista:          {stats['interview_count']}")
     print(f"  • Con Teléfono/WhatsApp:  {stats['with_phone_count']}")
     print(f"  • Salario Promedio:       ${stats['avg_salary']:,.2f} MXN")
     print("\n[+] Por Especialidad:")
     for cat, count in stats["by_category"].items():
         print(f"    - {cat}: {count}")
-    print("\n[+] Por Fuente:")
+    print("\n[+] Por Fuente / Plataforma:")
     for src, count in stats["by_source"].items():
         print(f"    - {src}: {count}")
     print("=" * 63 + "\n")
@@ -55,6 +58,13 @@ def run_linkedin():
     lk = LinkedInScraper()
     res = lk.run_search_and_save()
     print(f"[OK] Búsqueda LinkedIn terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
+    print_stats()
+
+def run_computrabajo():
+    print("\n[+] Iniciando búsqueda automática en CompuTrabajo México...")
+    ct = CompuTrabajoScraper()
+    res = ct.run_search_and_save()
+    print(f"[OK] Búsqueda CompuTrabajo terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
     print_stats()
 
 def run_fb():
@@ -84,6 +94,7 @@ def main():
     parser.add_argument("--ui", action="store_true", help="Iniciar el Dashboard visual de Streamlit (por defecto)")
     parser.add_argument("--occ", action="store_true", help="Ejecutar búsqueda y extracción en OCC Mundial")
     parser.add_argument("--linkedin", action="store_true", help="Ejecutar búsqueda y extracción en LinkedIn")
+    parser.add_argument("--computrabajo", "--ct", action="store_true", help="Ejecutar búsqueda y extracción en CompuTrabajo")
     parser.add_argument("--fb", action="store_true", help="Ejecutar escaneo de grupos de Facebook")
     parser.add_argument("--stats", action="store_true", help="Ver estadísticas de la base de datos")
     parser.add_argument("--export", action="store_true", help="Exportar vacantes a Excel y CSV")
@@ -95,6 +106,8 @@ def main():
         run_occ()
     elif args.linkedin:
         run_linkedin()
+    elif args.computrabajo:
+        run_computrabajo()
     elif args.fb:
         run_fb()
     elif args.stats:

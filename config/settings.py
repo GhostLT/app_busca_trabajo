@@ -1,4 +1,4 @@
-﻿import os
+import os
 import json
 from pathlib import Path
 from dotenv import load_dotenv
@@ -31,6 +31,10 @@ FB_PASSWORD = os.getenv("FB_PASSWORD", "")
 # LinkedIn Credentials
 LINKEDIN_EMAIL = os.getenv("LINKEDIN_EMAIL", "")
 LINKEDIN_PASSWORD = os.getenv("LINKEDIN_PASSWORD", "")
+
+# CompuTrabajo Credentials
+COMPUTRABAJO_EMAIL = os.getenv("COMPUTRABAJO_EMAIL", "")
+COMPUTRABAJO_PASSWORD = os.getenv("COMPUTRABAJO_PASSWORD", "")
 
 # WhatsApp Notification Settings
 USER_WHATSAPP_PHONE = os.getenv("USER_WHATSAPP_PHONE", "")

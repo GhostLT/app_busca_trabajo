@@ -28,10 +28,11 @@ import core.notifier_whatsapp as notifier
 from core.occ_bot import OCCBot
 from core.facebook_scraper import FacebookScraper
 from core.linkedin_scraper import LinkedInScraper
+from core.computrabajo_scraper import CompuTrabajoScraper
 
 # Page Configuration
 st.set_page_config(
-    page_title="AutoJob Hunter & Tracker | OCC, LinkedIn & Redes Sociales",
+    page_title="AutoJob Hunter & Tracker | OCC, LinkedIn, CompuTrabajo & Facebook",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -118,6 +119,16 @@ st.markdown("""
         font-size: 0.75rem;
         display: inline-block;
     }
+    .badge-source-computrabajo {
+        background-color: #FFF7ED;
+        color: #C2410C;
+        border: 1px solid #FFEDD5;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        display: inline-block;
+    }
     .badge-source-fb {
         background-color: #EFF6FF;
         color: #1D4ED8;
@@ -176,7 +187,7 @@ db.init_db()
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3850/3850285.png", width=64)
     st.title("AutoJob Hunter")
-    st.caption("OCC Mundial, LinkedIn & Facebook")
+    st.caption("OCC, LinkedIn, CompuTrabajo & FB")
     st.divider()
 
     st.subheader("⚡ Acciones Rápidas")
@@ -193,6 +204,13 @@ with st.sidebar:
             lk = LinkedInScraper()
             res = lk.run_search_and_save()
             st.success(f"¡Listo! {res['total_found']} vacantes en LinkedIn ({res['total_new']} nuevas)")
+            st.rerun()
+
+    if st.button("🟧 Escanear CompuTrabajo", use_container_width=True):
+        with st.spinner("Buscando vacantes en CompuTrabajo México..."):
+            ct = CompuTrabajoScraper()
+            res = ct.run_search_and_save()
+            st.success(f"¡Listo! {res['total_found']} vacantes en CompuTrabajo ({res['total_new']} nuevas)")
             st.rerun()
 
     if st.button("📱 Escanear Redes (Facebook)", use_container_width=True):
@@ -217,7 +235,7 @@ with st.sidebar:
 
 # Main Header
 st.markdown('<div class="main-header">🚀 AutoJob Hunter & Tracker</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Plataforma integral de búsqueda, extracción y postulación automática para Ingenieros de <b>RF / Telecomunicaciones</b>, <b>Eléctricos</b> y <b>Sistemas / Software</b> en <b>LinkedIn</b>, <b>OCC Mundial</b> y <b>Redes Sociales</b></div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Plataforma integral de búsqueda, extracción y postulación automática para Ingenieros de <b>RF / Telecomunicaciones</b>, <b>Eléctricos</b> y <b>Sistemas / Software</b> en <b>LinkedIn</b>, <b>OCC Mundial</b>, <b>CompuTrabajo</b> y <b>Redes Sociales</b></div>', unsafe_allow_html=True)
 
 # Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -380,7 +398,7 @@ with tab1:
 with tab2:
     st.subheader("💼 Explorador y Gestión de Vacantes")
 
-    # Interactive Filter Form with Submit Button (including Ciudad / Ubicación)
+    # Interactive Filter Form with Submit Button (including Ciudad / Ubicación y CompuTrabajo)
     with st.form(key="job_filter_form"):
         st.markdown("#### 🎯 Filtros de Búsqueda")
         f_col1, f_col2, f_col3, f_col4 = st.columns([2.2, 1.6, 1.6, 1.4])
@@ -410,6 +428,7 @@ with tab2:
                 "Todas las plataformas",
                 "LinkedIn",
                 "OCC Mundial",
+                "CompuTrabajo",
                 "Redes Sociales (Facebook)"
             ])
 
@@ -431,7 +450,7 @@ with tab2:
             st.write("")
             apply_filter_btn = st.form_submit_button("🔍 Aplicar Filtros", type="primary", use_container_width=True)
 
-    # Fetch Filtered Jobs with city support
+    # Fetch Filtered Jobs with city and platform support
     jobs = db.get_jobs(
         category=cat_filter if cat_filter != "Todas las especialidades" else None,
         source=source_filter,
@@ -479,11 +498,13 @@ with tab2:
             else:
                 cat_badge = f'<span class="badge-general">⚙️ {j_cat}</span>'
 
-            # Platform Source Badge
+            # Platform Source Badge (OCC, LinkedIn, CompuTrabajo, Facebook)
             if j_src == "OCC":
                 src_badge = '<span class="badge-source-occ">🌐 OCC Mundial</span>'
             elif j_src == "LinkedIn":
                 src_badge = '<span class="badge-source-linkedin">💼 LinkedIn</span>'
+            elif j_src == "CompuTrabajo":
+                src_badge = '<span class="badge-source-computrabajo">🟧 CompuTrabajo</span>'
             else:
                 src_badge = '<span class="badge-source-fb">📱 Red Social (Facebook)</span>'
             
@@ -619,7 +640,7 @@ with tab2:
 with tab3:
     st.subheader("🔍 Centro de Scraping y Extracción Inteligente")
 
-    sc_col1, sc_col2, sc_col3 = st.columns(3)
+    sc_col1, sc_col2, sc_col3, sc_col4 = st.columns(4)
 
     # OCC Scraper Box
     with sc_col1:
@@ -661,12 +682,32 @@ with tab3:
                 st.success(f"✅ ¡LinkedIn Listo! {res['total_found']} ofertas ({res['total_new']} nuevas).")
                 st.rerun()
 
-    # Facebook & Social Media Box
+    # CompuTrabajo Scraper Box
     with sc_col3:
-        st.markdown("### 📱 Redes Sociales / Facebook")
+        st.markdown("### 🟧 CompuTrabajo")
+        st.info("Búsqueda automatizada de empleos de ingeniería en CompuTrabajo México.")
+        
+        ct_target = st.selectbox("Especialidad CompuTrabajo:", [
+            "Todos",
+            "Ingeniero de RF / Optimización",
+            "Ingeniero Eléctrico",
+            "Ingeniero de Sistemas / Software"
+        ], key="ct_target_select")
+
+        if st.button("🟧 Escanear CompuTrabajo", type="primary", use_container_width=True):
+            with st.spinner("Consultando vacantes en CompuTrabajo México..."):
+                ct = CompuTrabajoScraper()
+                categories = None if ct_target == "Todos" else [ct_target]
+                res = ct.run_search_and_save(categories=categories)
+                st.success(f"✅ ¡CompuTrabajo Listo! {res['total_found']} ofertas ({res['total_new']} nuevas).")
+                st.rerun()
+
+    # Facebook & Social Media Box
+    with sc_col4:
+        st.markdown("### 📱 Redes Sociales")
         st.info("Escáner de publicaciones y grupos de empleo de ingeniería.")
         
-        if st.button("🔄 Escanear Grupos Facebook", use_container_width=True):
+        if st.button("🔄 Escanear Facebook", use_container_width=True):
             with st.spinner("Escaneando feeds de Facebook..."):
                 fb = FacebookScraper()
                 res = fb.run_scan_and_save()
@@ -771,7 +812,7 @@ with tab5:
 
     with exp_col1:
         st.markdown("### 📥 Exportar Base de Datos")
-        st.write("Descarga el listado completo de vacantes de **OCC, LinkedIn y Redes Sociales** (incluyendo **Modalidad**, **Teléfono** y **WhatsApp URL**).")
+        st.write("Descarga el listado completo de vacantes de **OCC, LinkedIn, CompuTrabajo y Redes Sociales** (incluyendo **Modalidad**, **Teléfono**, **WhatsApp URL** y **Fecha de Postulación**).")
 
         excel_path = db.export_to_excel()
         with open(excel_path, "rb") as f:
@@ -801,12 +842,14 @@ with tab5:
         with st.expander("Ver / Editar Variables"):
             occ_mail = st.text_input("OCC Email:", value=getattr(settings, "OCC_EMAIL", os.getenv("OCC_EMAIL", "")))
             lk_mail = st.text_input("LinkedIn Email:", value=getattr(settings, "LINKEDIN_EMAIL", os.getenv("LINKEDIN_EMAIL", "")))
+            ct_mail = st.text_input("CompuTrabajo Email:", value=getattr(settings, "COMPUTRABAJO_EMAIL", os.getenv("COMPUTRABAJO_EMAIL", "")))
             fb_mail = st.text_input("Facebook Email:", value=getattr(settings, "FB_EMAIL", os.getenv("FB_EMAIL", "")))
             wa_ph = st.text_input("WhatsApp Personal:", value=getattr(settings, "USER_WHATSAPP_PHONE", os.getenv("USER_WHATSAPP_PHONE", "")))
             
             if st.button("Guardar Cambios en .env"):
                 settings.update_env_variable("OCC_EMAIL", occ_mail)
                 settings.update_env_variable("LINKEDIN_EMAIL", lk_mail)
+                settings.update_env_variable("COMPUTRABAJO_EMAIL", ct_mail)
                 settings.update_env_variable("FB_EMAIL", fb_mail)
                 settings.update_env_variable("USER_WHATSAPP_PHONE", wa_ph)
                 st.success("Variables de entorno actualizadas.")
