@@ -1,5 +1,7 @@
 ﻿import sys
+import os
 import textwrap
+import importlib
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -9,6 +11,12 @@ import json
 from datetime import datetime
 
 import config.settings as settings
+# Ensure settings module is freshly reloaded in hot-reloading Streamlit runtime
+try:
+    importlib.reload(settings)
+except Exception:
+    pass
+
 import core.database as db
 import core.data_extractor as extractor
 import core.notifier_whatsapp as notifier
@@ -401,7 +409,6 @@ with tab2:
             }
             status_label = status_colors.get(j_status, j_status)
 
-            # Properly dedented HTML card to prevent CommonMark treating it as preformatted code block
             card_html = textwrap.dedent(f"""
 <div class="job-card">
 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
@@ -605,11 +612,12 @@ with tab4:
     with cv_col1:
         st.markdown("#### 👤 Perfil Profesional del Postulante")
         cand_name = st.text_input("Nombre Completo:", value="Ingeniero Candidato")
-        cand_phone = st.text_input("Teléfono de Contacto (WhatsApp):", value=settings.USER_WHATSAPP_PHONE or "+5255XXXXXXXX")
-        cand_email = st.text_input("Correo Electrónico:", value=settings.OCC_EMAIL or "correo@ejemplo.com")
+        cand_phone = st.text_input("Teléfono de Contacto (WhatsApp):", value=getattr(settings, "USER_WHATSAPP_PHONE", os.getenv("USER_WHATSAPP_PHONE", "+5255XXXXXXXX")))
+        cand_email = st.text_input("Correo Electrónico:", value=getattr(settings, "OCC_EMAIL", os.getenv("OCC_EMAIL", "correo@ejemplo.com")))
         
         st.markdown("#### 📌 Especialidades Objetivo")
-        for r in settings.TARGET_ROLES:
+        target_roles = getattr(settings, "TARGET_ROLES", ["Ingeniero de RF", "Ingeniero Eléctrico", "Ingeniero de Sistemas"])
+        for r in target_roles:
             st.write(f"- 🔹 **{r}**")
 
         st.markdown("#### 💬 Mensaje de Presentación Predeterminado para WhatsApp")
@@ -623,7 +631,8 @@ with tab4:
 
     with cv_col2:
         st.markdown("#### 📎 Archivo de Currículum (PDF)")
-        cv_target_path = Path(settings.CV_PATH)
+        cv_path_val = getattr(settings, "CV_PATH", str(settings.CV_DIR / "mi_cv.pdf"))
+        cv_target_path = Path(cv_path_val)
         
         if cv_target_path.exists():
             size_kb = cv_target_path.stat().st_size / 1024
@@ -678,10 +687,10 @@ with tab5:
         st.write(f"Archivo de configuración: `{settings.ENV_PATH}`")
         
         with st.expander("Ver / Editar Variables"):
-            occ_mail = st.text_input("OCC Email:", value=settings.OCC_EMAIL)
-            lk_mail = st.text_input("LinkedIn Email:", value=settings.LINKEDIN_EMAIL)
-            fb_mail = st.text_input("Facebook Email:", value=settings.FB_EMAIL)
-            wa_ph = st.text_input("WhatsApp Personal:", value=settings.USER_WHATSAPP_PHONE)
+            occ_mail = st.text_input("OCC Email:", value=getattr(settings, "OCC_EMAIL", os.getenv("OCC_EMAIL", "")))
+            lk_mail = st.text_input("LinkedIn Email:", value=getattr(settings, "LINKEDIN_EMAIL", os.getenv("LINKEDIN_EMAIL", "")))
+            fb_mail = st.text_input("Facebook Email:", value=getattr(settings, "FB_EMAIL", os.getenv("FB_EMAIL", "")))
+            wa_ph = st.text_input("WhatsApp Personal:", value=getattr(settings, "USER_WHATSAPP_PHONE", os.getenv("USER_WHATSAPP_PHONE", "")))
             
             if st.button("Guardar Cambios en .env"):
                 settings.update_env_variable("OCC_EMAIL", occ_mail)
