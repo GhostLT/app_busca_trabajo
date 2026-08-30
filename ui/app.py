@@ -380,18 +380,24 @@ with tab1:
 with tab2:
     st.subheader("💼 Explorador y Gestión de Vacantes")
 
-    # Interactive Filter Form with Submit Button
+    # Interactive Filter Form with Submit Button (including Ciudad / Ubicación)
     with st.form(key="job_filter_form"):
         st.markdown("#### 🎯 Filtros de Búsqueda")
-        f_col1, f_col2, f_col3 = st.columns([2.5, 1.5, 1.5])
+        f_col1, f_col2, f_col3, f_col4 = st.columns([2.2, 1.6, 1.6, 1.4])
         
         with f_col1:
             search_query = st.text_input(
-                "🔍 Buscar por puesto, tecnología, empresa o ciudad:",
-                placeholder="Ej: Python, RF, Subestaciones, Huawei, CDMX..."
+                "🔍 Puesto / Tecnología / Empresa:",
+                placeholder="Ej: Python, RF, Subestaciones, Huawei..."
             )
         
         with f_col2:
+            city_filter = st.text_input(
+                "📍 Ciudad / Ubicación:",
+                placeholder="Ej: CDMX, Guadalajara, Monterrey, Querétaro..."
+            )
+
+        with f_col3:
             cat_filter = st.selectbox("Especialidad:", [
                 "Todas las especialidades",
                 "Ingeniero de RF / Optimización",
@@ -399,7 +405,7 @@ with tab2:
                 "Ingeniero de Sistemas / Software"
             ])
         
-        with f_col3:
+        with f_col4:
             source_filter = st.selectbox("🌐 Plataforma:", [
                 "Todas las plataformas",
                 "LinkedIn",
@@ -407,36 +413,42 @@ with tab2:
                 "Redes Sociales (Facebook)"
             ])
 
-        f_col4, f_col5, f_col6, f_col7 = st.columns([1.5, 1.5, 2, 2])
+        f_col5, f_col6, f_col7, f_col8 = st.columns([1.5, 1.5, 1.8, 1.8])
         
-        with f_col4:
+        with f_col5:
             status_filter = st.selectbox("Estado:", ["Todos", "Pendiente", "Postulado", "Entrevista", "Descartado"])
 
-        with f_col5:
-            modality_filter = st.selectbox("Modalidad:", ["Todas", "Remoto", "Híbrido", "Presencial"])
-
         with f_col6:
-            st.write("")
-            st.write("")
-            phone_only = st.checkbox("Solo con WhatsApp 📱", value=False)
+            modality_filter = st.selectbox("Modalidad:", ["Todas", "Remoto", "Híbrido", "Presencial"])
 
         with f_col7:
             st.write("")
             st.write("")
+            phone_only = st.checkbox("Solo con WhatsApp 📱", value=False)
+
+        with f_col8:
+            st.write("")
+            st.write("")
             apply_filter_btn = st.form_submit_button("🔍 Aplicar Filtros", type="primary", use_container_width=True)
 
-    # Fetch Filtered Jobs
+    # Fetch Filtered Jobs with city support
     jobs = db.get_jobs(
         category=cat_filter if cat_filter != "Todas las especialidades" else None,
         source=source_filter,
         status=status_filter if status_filter != "Todos" else None,
         modality=modality_filter if modality_filter != "Todas" else None,
-        search_query=search_query,
+        location=city_filter if city_filter.strip() else None,
+        search_query=search_query if search_query.strip() else None,
         has_phone_only=phone_only,
         order_by="id DESC"
     )
 
-    st.markdown(f"**Resultados:** Se encontraron **{len(jobs)}** vacantes con los filtros aplicados (*Plataforma: {source_filter}*):")
+    filter_info_parts = [f"Plataforma: {source_filter}"]
+    if city_filter.strip():
+        filter_info_parts.append(f"Ciudad: '{city_filter.strip()}'")
+    filter_info_str = " | ".join(filter_info_parts)
+
+    st.markdown(f"**Resultados:** Se encontraron **{len(jobs)}** vacantes con los filtros aplicados (*{filter_info_str}*):")
 
     if not jobs:
         st.info("No se encontraron vacantes con los criterios seleccionados.")

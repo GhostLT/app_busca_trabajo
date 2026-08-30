@@ -1,4 +1,4 @@
-﻿import sqlite3
+import sqlite3
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
@@ -134,16 +134,17 @@ def get_jobs(
     source: Optional[str] = None,
     status: Optional[str] = None,
     modality: Optional[str] = None,
+    location: Optional[str] = None,
     search_query: Optional[str] = None,
     has_phone_only: bool = False,
     order_by: str = "id DESC"
 ) -> List[Dict[str, Any]]:
-    """Retrieve jobs matching filters, with flexible platform mapping."""
+    """Retrieve jobs matching filters, with flexible platform mapping and city/location filtering."""
     init_db()
     query = "SELECT * FROM jobs WHERE 1=1"
     params: List[Any] = []
 
-    if category and category not in ("Todos", "Todas"):
+    if category and category not in ("Todos", "Todas", "Todas las especialidades"):
         query += " AND category = ?"
         params.append(category)
 
@@ -165,6 +166,20 @@ def get_jobs(
     if modality and modality not in ("Todos", "Todas"):
         query += " AND modality = ?"
         params.append(modality)
+
+    if location and location not in ("Todos", "Todas", "Todas las ciudades", ""):
+        loc_clean = location.strip().lower()
+        if loc_clean in ("cdmx", "ciudad de mexico", "ciudad de méxico", "df", "distrito federal"):
+            query += " AND (LOWER(location) LIKE '%cdmx%' OR LOWER(location) LIKE '%ciudad de m%' OR LOWER(location) LIKE '%distrito federal%' OR LOWER(location) LIKE '%santa fe%')"
+        elif loc_clean in ("gdl", "guadalajara", "jalisco", "zapopan"):
+            query += " AND (LOWER(location) LIKE '%guadalajara%' OR LOWER(location) LIKE '%gdl%' OR LOWER(location) LIKE '%jalisco%' OR LOWER(location) LIKE '%zapopan%')"
+        elif loc_clean in ("mty", "monterrey", "nuevo leon", "nuevo león", "apodaca", "san pedro"):
+            query += " AND (LOWER(location) LIKE '%monterrey%' OR LOWER(location) LIKE '%mty%' OR LOWER(location) LIKE '%nuevo le%' OR LOWER(location) LIKE '%apodaca%')"
+        elif loc_clean in ("qro", "queretaro", "querétaro"):
+            query += " AND (LOWER(location) LIKE '%quer%')"
+        else:
+            query += " AND LOWER(location) LIKE ?"
+            params.append(f"%{loc_clean}%")
 
     if has_phone_only:
         query += " AND (phone IS NOT NULL AND phone != '')"
