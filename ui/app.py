@@ -17,7 +17,7 @@ from core.linkedin_scraper import LinkedInScraper
 
 # Page Configuration
 st.set_page_config(
-    page_title="AutoJob Hunter & Tracker | OCC, LinkedIn & Facebook",
+    page_title="AutoJob Hunter & Tracker | OCC, LinkedIn & Redes Sociales",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -184,7 +184,7 @@ with st.sidebar:
 
     st.divider()
     stats = db.get_stats()
-    st.subheader("📊 Resumen")
+    st.subheader("📊 Resumen General")
     st.write(f"📁 **Total Vacantes:** {stats['total_jobs']}")
     st.write(f"✅ **Postuladas:** {stats['applied_count']}")
     st.write(f"⏳ **Pendientes:** {stats['pending_count']}")
@@ -192,7 +192,7 @@ with st.sidebar:
 
 # Main Header
 st.markdown('<div class="main-header">🚀 AutoJob Hunter & Tracker</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Plataforma integral de búsqueda, extracción y postulación automática para Ingenieros de <b>RF / Telecomunicaciones</b>, <b>Eléctricos</b> y <b>Sistemas / Software</b> en <b>OCC Mundial</b>, <b>LinkedIn</b> y <b>Facebook</b></div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Plataforma integral de búsqueda, extracción y postulación automática para Ingenieros de <b>RF / Telecomunicaciones</b>, <b>Eléctricos</b> y <b>Sistemas / Software</b> en <b>LinkedIn</b>, <b>OCC Mundial</b> y <b>Redes Sociales</b></div>', unsafe_allow_html=True)
 
 # Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -245,15 +245,15 @@ with tab1:
             st.info("Sin datos de modalidad.")
 
     with ch_col3:
-        st.subheader("🌐 Por Fuente")
+        st.subheader("🌐 Por Plataforma / Fuente")
         if stats["by_source"]:
-            df_src = pd.DataFrame(list(stats["by_source"].items()), columns=["Fuente", "Vacantes"])
-            st.bar_chart(df_src.set_index("Fuente"), color="#0284C7")
+            df_src = pd.DataFrame(list(stats["by_source"].items()), columns=["Plataforma", "Vacantes"])
+            st.bar_chart(df_src.set_index("Plataforma"), color="#0284C7")
         else:
             st.info("Sin datos de fuente.")
 
     st.divider()
-    st.subheader("🕒 Vacantes Recientes (con Modalidad, Teléfono y WhatsApp)")
+    st.subheader("🕒 Vacantes Recientes")
     recent_jobs = db.get_jobs(order_by="created_at DESC")[:10]
     if recent_jobs:
         df_rec = pd.DataFrame(recent_jobs)
@@ -270,7 +270,7 @@ with tab1:
             "salary_raw": "Sueldo",
             "phone": "Teléfono",
             "whatsapp_url": "WhatsApp URL",
-            "source": "Fuente",
+            "source": "Plataforma",
             "status": "Estado",
             "created_at": "Fecha"
         }
@@ -280,43 +280,54 @@ with tab1:
         st.info("No hay vacantes registradas aún.")
 
 # -------------------------------------------------------------
-# TAB 2: EXPLORADOR DE VACANTES
+# TAB 2: BOLSA DE VACANTES (CON FILTRO POR PLATAFORMA)
 # -------------------------------------------------------------
 with tab2:
+    st.subheader("💼 Explorador y Gestión de Vacantes")
+
     # Filter Toolbar
-    f_col1, f_col2, f_col3, f_col4, f_col5 = st.columns([2, 1.5, 1.5, 1.5, 1.5])
+    f_col1, f_col2, f_col3, f_col4, f_col5 = st.columns([2.2, 1.6, 1.6, 1.4, 1.4])
     
     with f_col1:
         search_query = st.text_input("🔍 Buscar puesto, empresa, tecnología o ciudad...", placeholder="Ej: Python, RF, Subestaciones, CDMX...")
     
     with f_col2:
         cat_filter = st.selectbox("Especialidad:", [
-            "Todos",
+            "Todas las especialidades",
             "Ingeniero de RF / Optimización",
             "Ingeniero Eléctrico",
             "Ingeniero de Sistemas / Software"
         ])
     
     with f_col3:
-        status_filter = st.selectbox("Estado:", ["Todos", "Pendiente", "Postulado", "Entrevista", "Descartado"])
-        
+        # User-requested platform filter: LinkedIn, OCC, Redes Sociales
+        source_filter = st.selectbox("🌐 Plataforma:", [
+            "Todas las plataformas",
+            "LinkedIn",
+            "OCC Mundial",
+            "Redes Sociales (Facebook)"
+        ])
+
     with f_col4:
-        source_filter = st.selectbox("Fuente:", ["Todos", "OCC", "LinkedIn", "Facebook"])
+        status_filter = st.selectbox("Estado:", ["Todos", "Pendiente", "Postulado", "Entrevista", "Descartado"])
 
     with f_col5:
-        phone_only = st.checkbox("Solo con WhatsApp 📱", value=False)
+        modality_filter = st.selectbox("Modalidad:", ["Todas", "Remoto", "Híbrido", "Presencial"])
+
+    phone_only = st.checkbox("Solo vacantes con contacto telefónico / WhatsApp 📱", value=False)
 
     # Fetch Filtered Jobs
     jobs = db.get_jobs(
-        category=cat_filter,
+        category=cat_filter if cat_filter != "Todas las especialidades" else None,
         source=source_filter,
-        status=status_filter,
+        status=status_filter if status_filter != "Todos" else None,
+        modality=modality_filter if modality_filter != "Todas" else None,
         search_query=search_query,
         has_phone_only=phone_only,
         order_by="id DESC"
     )
 
-    st.caption(f"Mostrando **{len(jobs)}** vacantes encontradas:")
+    st.markdown(f"**Resultados:** Se encontraron **{len(jobs)}** vacantes filtradas por **{source_filter}**:")
 
     if not jobs:
         st.info("No se encontraron vacantes con los filtros seleccionados.")
@@ -347,13 +358,13 @@ with tab2:
             else:
                 cat_badge = f'<span class="badge-general">⚙️ {j_cat}</span>'
 
-            # Source Badge
+            # Platform Source Badge
             if j_src == "OCC":
                 src_badge = '<span class="badge-source-occ">🌐 OCC Mundial</span>'
             elif j_src == "LinkedIn":
                 src_badge = '<span class="badge-source-linkedin">💼 LinkedIn</span>'
             else:
-                src_badge = '<span class="badge-source-fb">📱 Facebook</span>'
+                src_badge = '<span class="badge-source-fb">📱 Red Social (Facebook)</span>'
             
             # Modality Badge
             mod_badge = f'<span class="badge-modality">🏢 {j_mod}</span>'
@@ -446,7 +457,7 @@ with tab2:
                     with det_c1:
                         st.write(f"🏢 **Modalidad:** `{j_mod}`")
                         st.write(f"📍 **Ubicación:** `{j_loc}`")
-                        st.write(f"🌐 **Fuente:** `{j_src}`")
+                        st.write(f"🌐 **Plataforma:** `{j_src}`")
                     with det_c2:
                         st.write(f"📞 **Teléfono:** `{j_phone or 'No especificado'}`")
                         st.write(f"💰 **Sueldo Ofertado:** `{j_sal}`")
@@ -625,7 +636,7 @@ with tab5:
 
     with exp_col1:
         st.markdown("### 📥 Exportar Base de Datos")
-        st.write("Descarga el listado completo de vacantes de **OCC, LinkedIn y Facebook** (incluyendo **Modalidad**, **Teléfono** y **WhatsApp URL**).")
+        st.write("Descarga el listado completo de vacantes de **OCC, LinkedIn y Redes Sociales** (incluyendo **Modalidad**, **Teléfono** y **WhatsApp URL**).")
 
         excel_path = db.export_to_excel()
         with open(excel_path, "rb") as f:

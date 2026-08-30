@@ -51,7 +51,6 @@ def init_db():
             )
         """)
 
-        # Indexes for fast querying
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_category ON jobs (category)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs (status)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_source ON jobs (source)")
@@ -138,24 +137,31 @@ def get_jobs(
     has_phone_only: bool = False,
     order_by: str = "id DESC"
 ) -> List[Dict[str, Any]]:
-    """Retrieve jobs matching filters."""
+    """Retrieve jobs matching filters, with flexible platform mapping."""
     init_db()
     query = "SELECT * FROM jobs WHERE 1=1"
     params: List[Any] = []
 
-    if category and category != "Todos":
+    if category and category not in ("Todos", "Todas"):
         query += " AND category = ?"
         params.append(category)
 
-    if source and source != "Todos":
-        query += " AND source = ?"
-        params.append(source)
+    if source and source not in ("Todos", "Todas", "Todas las plataformas"):
+        if source in ("LinkedIn", "linkedin", "💼 LinkedIn"):
+            query += " AND source = 'LinkedIn'"
+        elif source in ("OCC", "OCC Mundial", "occ", "🌐 OCC Mundial"):
+            query += " AND source = 'OCC'"
+        elif source in ("Facebook", "Red Social", "Redes Sociales", "Redes Sociales (Facebook)", "Red Social (Facebook)", "📱 Red Social (Facebook)", "facebook"):
+            query += " AND (source = 'Facebook' OR source LIKE '%Facebook%' OR source LIKE '%Red%')"
+        else:
+            query += " AND source = ?"
+            params.append(source)
 
-    if status and status != "Todos":
+    if status and status not in ("Todos", "Todas"):
         query += " AND status = ?"
         params.append(status)
 
-    if modality and modality != "Todos":
+    if modality and modality not in ("Todos", "Todas"):
         query += " AND modality = ?"
         params.append(modality)
 
@@ -292,7 +298,7 @@ def export_to_excel(filepath: Optional[str] = None) -> str:
             "title": "Puesto / Posición",
             "company": "Empresa / Contacto",
             "category": "Especialidad",
-            "source": "Fuente",
+            "source": "Plataforma / Fuente",
             "location": "Ubicación",
             "modality": "Modalidad (modality)",
             "salary_raw": "Sueldo Ofertado",
@@ -326,7 +332,7 @@ def export_to_csv(filepath: Optional[str] = None) -> str:
             "title": "Puesto / Posición",
             "company": "Empresa / Contacto",
             "category": "Especialidad",
-            "source": "Fuente",
+            "source": "Plataforma / Fuente",
             "location": "Ubicación",
             "modality": "Modalidad (modality)",
             "salary_raw": "Sueldo Ofertado",
