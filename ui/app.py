@@ -36,13 +36,6 @@ st.markdown("""
         color: #64748B;
         margin-bottom: 1.5rem;
     }
-    .metric-box {
-        background: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 10px;
-        padding: 16px 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
     .job-card {
         background-color: #FFFFFF;
         border: 1px solid #E2E8F0;
@@ -104,6 +97,24 @@ st.markdown("""
         font-weight: 600;
         font-size: 0.75rem;
     }
+    .badge-modality {
+        background-color: #F8FAFC;
+        color: #334155;
+        border: 1px solid #CBD5E1;
+        padding: 3px 9px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.82rem;
+    }
+    .badge-phone {
+        background-color: #F0FDF4;
+        color: #15803D;
+        border: 1px solid #BBF7D0;
+        padding: 3px 9px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.82rem;
+    }
     .badge-salary {
         background-color: #ECFDF5;
         color: #065F46;
@@ -111,6 +122,15 @@ st.markdown("""
         border-radius: 6px;
         font-weight: 700;
         font-size: 0.88rem;
+    }
+    .badge-whatsapp {
+        background-color: #25D366;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.78rem;
+        text-decoration: none;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -152,7 +172,7 @@ with st.sidebar:
     st.write(f"📁 **Total Vacantes:** {stats['total_jobs']}")
     st.write(f"✅ **Postuladas:** {stats['applied_count']}")
     st.write(f"⏳ **Pendientes:** {stats['pending_count']}")
-    st.write(f"💬 **Con WhatsApp:** {stats['with_phone_count']}")
+    st.write(f"💬 **Con Teléfono/WhatsApp:** {stats['with_phone_count']}")
 
 # Main Header
 st.markdown('<div class="main-header">🚀 AutoJob Hunter & Tracker</div>', unsafe_allow_html=True)
@@ -217,12 +237,30 @@ with tab1:
             st.info("Sin datos de fuente.")
 
     st.divider()
-    st.subheader("🕒 Vacantes Recientes")
-    recent_jobs = db.get_jobs(order_by="created_at DESC")[:5]
+    st.subheader("🕒 Vacantes Recientes (con Modalidad, Teléfono y WhatsApp)")
+    recent_jobs = db.get_jobs(order_by="created_at DESC")[:8]
     if recent_jobs:
-        df_rec = pd.DataFrame(recent_jobs)[["title", "company", "category", "salary_raw", "source", "status", "created_at"]]
-        df_rec.columns = ["Puesto", "Empresa", "Especialidad", "Sueldo", "Fuente", "Estado", "Fecha"]
-        st.dataframe(df_rec, use_container_width=True)
+        df_rec = pd.DataFrame(recent_jobs)
+        # Select and rename prominent columns requested by user
+        cols_to_show = ["title", "company", "category", "modality", "location", "salary_raw", "phone", "whatsapp_url", "source", "status", "created_at"]
+        existing_cols = [c for c in cols_to_show if c in df_rec.columns]
+        df_rec_display = df_rec[existing_cols].copy()
+        
+        column_mapping = {
+            "title": "Puesto",
+            "company": "Empresa",
+            "category": "Especialidad",
+            "modality": "Modalidad (modality)",
+            "location": "Ubicación",
+            "salary_raw": "Sueldo",
+            "phone": "Teléfono (phone)",
+            "whatsapp_url": "WhatsApp URL (whatsapp_url)",
+            "source": "Fuente",
+            "status": "Estado",
+            "created_at": "Fecha"
+        }
+        df_rec_display.rename(columns=column_mapping, inplace=True)
+        st.dataframe(df_rec_display, use_container_width=True)
     else:
         st.info("No hay vacantes registradas aún.")
 
@@ -276,10 +314,10 @@ with tab2:
             j_loc = job["location"] or "México"
             j_mod = job["modality"] or "No especificado"
             j_sal = job["salary_raw"] or "No especificado"
-            j_phone = job["phone"]
-            j_wa = job["whatsapp_url"]
+            j_phone = job["phone"] or ""
+            j_wa = job["whatsapp_url"] or ""
             j_desc = job["description"] or ""
-            j_url = job["url"]
+            j_url = job["url"] or ""
             j_status = job["status"]
             j_notes = job["notes"] or ""
 
@@ -296,6 +334,21 @@ with tab2:
             # Source Badge
             src_badge = f'<span class="badge-source-occ">🌐 OCC Mundial</span>' if job["source"] == "OCC" else f'<span class="badge-source-fb">📱 Facebook</span>'
             
+            # Modality Badge
+            mod_badge = f'<span class="badge-modality">🏢 {j_mod}</span>'
+
+            # Phone Badge
+            if j_phone:
+                phone_badge = f'<span class="badge-phone">📞 {j_phone}</span>'
+            else:
+                phone_badge = '<span style="color:#94A3B8; font-size:0.8rem;">📵 Sin teléfono directo</span>'
+
+            # WhatsApp URL representation
+            if not j_wa and j_phone:
+                j_wa = notifier.generate_whatsapp_link(j_phone, j_title, j_comp, category=j_cat)
+
+            wa_badge_html = f'<a href="{j_wa}" target="_blank" class="badge-whatsapp">💬 wa.me</a>' if j_wa else ''
+
             # Status Badge
             status_colors = {
                 "Pendiente": "🟡 Pendiente",
@@ -311,15 +364,18 @@ with tab2:
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                         <div>
                             <h3 style="margin: 0; color: #0F172A; font-size: 1.25rem;">{j_title}</h3>
-                            <p style="margin: 3px 0 0 0; color: #475569; font-weight: 500;">🏢 {j_comp} &nbsp;•&nbsp; 📍 {j_loc} ({j_mod})</p>
+                            <p style="margin: 3px 0 0 0; color: #475569; font-weight: 500;">🏢 {j_comp} &nbsp;•&nbsp; 📍 {j_loc}</p>
                         </div>
                         <div style="text-align: right;">
                             {cat_badge} &nbsp; {src_badge}
                         </div>
                     </div>
-                    <div style="margin-top: 10px; display: flex; gap: 15px; align-items: center;">
+                    <div style="margin-top: 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                         <span class="badge-salary">💰 {j_sal}</span>
-                        <span style="font-size: 0.9rem; color: #64748B;"><b>Estado:</b> {status_label}</span>
+                        {mod_badge}
+                        {phone_badge}
+                        {wa_badge_html}
+                        <span style="font-size: 0.88rem; color: #64748B; margin-left: auto;"><b>Estado:</b> {status_label}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -331,8 +387,10 @@ with tab2:
                     if j_phone:
                         wa_direct = notifier.generate_whatsapp_link(j_phone, j_title, j_comp, category=j_cat)
                         st.link_button(f"💬 WhatsApp ({j_phone})", wa_direct, use_container_width=True, type="primary")
+                    elif j_wa:
+                        st.link_button("💬 Abrir WhatsApp", j_wa, use_container_width=True, type="primary")
                     else:
-                        st.button(f"📵 Sin Teléfono", disabled=True, key=f"nophone_{j_id}", use_container_width=True)
+                        st.button("📵 Sin Teléfono", disabled=True, key=f"nophone_{j_id}", use_container_width=True)
 
                 with act_col2:
                     if j_url and j_url.startswith("http"):
@@ -362,12 +420,30 @@ with tab2:
                         st.rerun()
 
                 # Description Expander
-                with st.expander(f"📋 Ver Descripción Completa y Notas (#{j_id})"):
+                with st.expander(f"📋 Ver Ficha Completa: Modalidad, Teléfono, WhatsApp y Descripción (#{j_id})"):
+                    det_c1, det_c2, det_c3 = st.columns(3)
+                    with det_c1:
+                        st.write(f"🏢 **Modalidad:** `{j_mod}`")
+                        st.write(f"📍 **Ubicación:** `{j_loc}`")
+                    with det_c2:
+                        st.write(f"📞 **Teléfono:** `{j_phone or 'No especificado'}`")
+                        st.write(f"💰 **Sueldo Ofertado:** `{j_sal}`")
+                    with det_c3:
+                        if j_wa:
+                            st.markdown(f"🔗 **WhatsApp URL:** [Abrir Chat]({j_wa})")
+                            st.code(j_wa, language="text")
+                        else:
+                            st.write("🔗 **WhatsApp URL:** `No disponible`")
+
+                    st.divider()
+                    st.markdown("#### 📄 Descripción de la Posición")
                     st.write(j_desc if j_desc else "Sin descripción detallada.")
-                    new_notes = st.text_input("Notas personales:", value=j_notes, key=f"notes_{j_id}")
-                    if st.button("Guardar Nota", key=f"savenote_{j_id}"):
+                    
+                    st.divider()
+                    new_notes = st.text_input("Notas personales sobre esta vacante:", value=j_notes, key=f"notes_{j_id}")
+                    if st.button("💾 Guardar Nota", key=f"savenote_{j_id}"):
                         db.update_job_notes(j_id, new_notes)
-                        st.success("Nota actualizada.")
+                        st.success("Nota actualizada correctamente.")
 
                 st.markdown("<hr style='margin: 12px 0; border: none; border-top: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
 
@@ -382,7 +458,7 @@ with tab3:
     # OCC Scraper Box
     with sc_col1:
         st.markdown("### 🌐 OCC Mundial Bot")
-        st.info("Realiza búsquedas automáticas en OCC Mundial según las palabras clave de ingeniería y extrae salario, ubicación y datos de la empresa.")
+        st.info("Realiza búsquedas automáticas en OCC Mundial según las palabras clave de ingeniería y extrae salario, ubicación, modalidad y datos de la empresa.")
         
         occ_target = st.selectbox("Especialidad a buscar:", [
             "Todos",
@@ -402,12 +478,12 @@ with tab3:
     # Facebook Post Parser Box
     with sc_col2:
         st.markdown("### 📱 Extractor de Publicaciones de Redes Sociales")
-        st.info("Pega el texto de cualquier publicación de Facebook, grupo de WhatsApp o LinkedIn. El sistema extraerá automáticamente el Puesto, Teléfono/WhatsApp, Sueldo y Ubicación.")
+        st.info("Pega el texto de cualquier publicación de Facebook, grupo de WhatsApp o LinkedIn. El sistema extraerá automáticamente el Puesto, Modalidad, Teléfono, WhatsApp URL, Sueldo y Ubicación.")
         
         sample_paste = st.text_area(
             "Pega aquí el texto de la vacante:",
             height=160,
-            placeholder="Ejemplo:\nBuscamos Ingeniero de RF 5G para Huawei en CDMX. Sueldo $35,000 libres. Mandar CV al WhatsApp 55 1234 5678."
+            placeholder="Ejemplo:\nBuscamos Ingeniero de RF 5G para Huawei en CDMX (Híbrido). Sueldo $35,000 libres. Mandar CV al WhatsApp 55 1234 5678 o https://wa.me/525512345678"
         )
 
         if st.button("⚡ Extraer y Guardar Vacante", use_container_width=True):
@@ -421,8 +497,23 @@ with tab3:
                 else:
                     st.info(f"Vacante actualizada con los nuevos datos (ID #{job_id}).")
                 
-                # Preview extracted data
-                with st.expander("👀 Ver Datos Extraídos"):
+                # Highlight extracted fields
+                st.markdown("#### 🎯 Datos Extraídos:")
+                ex_c1, ex_c2, ex_c3 = st.columns(3)
+                with ex_c1:
+                    st.write(f"📌 **Puesto:** {parsed.get('title')}")
+                    st.write(f"🏢 **Modalidad (`modality`):** `{parsed.get('modality')}`")
+                with ex_c2:
+                    st.write(f"📞 **Teléfono (`phone`):** `{parsed.get('phone') or 'N/D'}`")
+                    st.write(f"💰 **Sueldo:** `{parsed.get('salary_raw') or 'N/D'}`")
+                with ex_c3:
+                    st.write(f"💬 **WhatsApp URL (`whatsapp_url`):**")
+                    if parsed.get('whatsapp_url'):
+                        st.markdown(f"[{parsed.get('whatsapp_url')}]({parsed.get('whatsapp_url')})")
+                    else:
+                        st.write("`N/D`")
+
+                with st.expander("👀 Ver JSON Completo"):
                     st.json(parsed)
                 st.rerun()
 
@@ -493,7 +584,7 @@ with tab5:
 
     with exp_col1:
         st.markdown("### 📥 Exportar Base de Datos")
-        st.write("Descarga el listado completo de vacantes y postulaciones registradas.")
+        st.write("Descarga el listado completo de vacantes y postulaciones registradas (incluyendo **Modalidad**, **Teléfono** y **WhatsApp URL**).")
 
         excel_path = db.export_to_excel()
         with open(excel_path, "rb") as f:

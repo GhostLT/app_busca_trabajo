@@ -83,7 +83,6 @@ def add_job(job_data: Dict[str, Any]) -> Tuple[int, bool]:
     with get_connection() as conn:
         cursor = conn.cursor()
         
-        # Check for existing job by URL (if url is provided) or (title + company)
         existing = None
         if url and len(url) > 5:
             cursor.execute("SELECT id FROM jobs WHERE url = ?", (url,))
@@ -164,9 +163,9 @@ def get_jobs(
         query += " AND (phone IS NOT NULL AND phone != '')"
 
     if search_query:
-        query += " AND (title LIKE ? OR company LIKE ? OR description LIKE ? OR location LIKE ?)"
+        query += " AND (title LIKE ? OR company LIKE ? OR description LIKE ? OR location LIKE ? OR phone LIKE ?)"
         term = f"%{search_query}%"
-        params.extend([term, term, term, term])
+        params.extend([term, term, term, term, term])
 
     query += f" ORDER BY {order_by}"
 
@@ -279,7 +278,7 @@ def get_stats() -> Dict[str, Any]:
         }
 
 def export_to_excel(filepath: Optional[str] = None) -> str:
-    """Export all jobs to an Excel spreadsheet."""
+    """Export all jobs to an Excel spreadsheet with modality, phone, and whatsapp_url."""
     init_db()
     if not filepath:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -288,7 +287,6 @@ def export_to_excel(filepath: Optional[str] = None) -> str:
     jobs = get_jobs(order_by="created_at DESC")
     df = pd.DataFrame(jobs)
     if not df.empty:
-        # Format columns for user friendly output
         cols_rename = {
             "id": "ID",
             "title": "Puesto / Posición",
@@ -296,9 +294,10 @@ def export_to_excel(filepath: Optional[str] = None) -> str:
             "category": "Especialidad",
             "source": "Fuente",
             "location": "Ubicación",
-            "modality": "Modalidad",
+            "modality": "Modalidad (modality)",
             "salary_raw": "Sueldo Ofertado",
-            "phone": "Teléfono / WhatsApp",
+            "phone": "Teléfono (phone)",
+            "whatsapp_url": "WhatsApp URL (whatsapp_url)",
             "status": "Estado Postulación",
             "url": "Enlace Vacante",
             "created_at": "Fecha Detección",
@@ -313,7 +312,7 @@ def export_to_excel(filepath: Optional[str] = None) -> str:
     return filepath
 
 def export_to_csv(filepath: Optional[str] = None) -> str:
-    """Export all jobs to a CSV file."""
+    """Export all jobs to a CSV file with modality, phone, and whatsapp_url."""
     init_db()
     if not filepath:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -321,7 +320,29 @@ def export_to_csv(filepath: Optional[str] = None) -> str:
 
     jobs = get_jobs(order_by="created_at DESC")
     df = pd.DataFrame(jobs)
-    df.to_csv(filepath, index=False, encoding="utf-8-sig")
+    if not df.empty:
+        cols_rename = {
+            "id": "ID",
+            "title": "Puesto / Posición",
+            "company": "Empresa / Contacto",
+            "category": "Especialidad",
+            "source": "Fuente",
+            "location": "Ubicación",
+            "modality": "Modalidad (modality)",
+            "salary_raw": "Sueldo Ofertado",
+            "phone": "Teléfono (phone)",
+            "whatsapp_url": "WhatsApp URL (whatsapp_url)",
+            "status": "Estado Postulación",
+            "url": "Enlace Vacante",
+            "created_at": "Fecha Detección",
+            "applied_at": "Fecha Postulación",
+            "notes": "Notas"
+        }
+        existing_cols = [c for c in cols_rename.keys() if c in df.columns]
+        df_export = df[existing_cols].rename(columns=cols_rename)
+        df_export.to_csv(filepath, index=False, encoding="utf-8-sig")
+    else:
+        df.to_csv(filepath, index=False, encoding="utf-8-sig")
     return filepath
 
 def seed_sample_jobs():
