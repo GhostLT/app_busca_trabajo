@@ -28,6 +28,10 @@ OCC_PASSWORD = os.getenv("OCC_PASSWORD", "")
 FB_EMAIL = os.getenv("FB_EMAIL", "")
 FB_PASSWORD = os.getenv("FB_PASSWORD", "")
 
+# LinkedIn Credentials
+LINKEDIN_EMAIL = os.getenv("LINKEDIN_EMAIL", "")
+LINKEDIN_PASSWORD = os.getenv("LINKEDIN_PASSWORD", "")
+
 # WhatsApp Notification Settings
 USER_WHATSAPP_PHONE = os.getenv("USER_WHATSAPP_PHONE", "")
 WHATSAPP_API_KEY = os.getenv("WHATSAPP_API_KEY", "")

@@ -17,10 +17,11 @@ sys.path.append(str(BASE_DIR))
 import core.database as db
 from core.occ_bot import OCCBot
 from core.facebook_scraper import FacebookScraper
+from core.linkedin_scraper import LinkedInScraper
 
 BANNER = """
 ===============================================================
-  AUTOJOB HUNTER & TRACKER (OCC & REDES SOCIALES)
+  AUTOJOB HUNTER & TRACKER (OCC, LINKEDIN & REDES SOCIALES)
   Especialidades: RF / Telecom, Eléctrica, Sistemas / Software
 ===============================================================
 """
@@ -46,14 +47,21 @@ def run_occ():
     print("\n[+] Iniciando búsqueda automática en OCC Mundial...")
     bot = OCCBot()
     res = bot.run_search_and_save()
-    print(f"[OK] Búsqueda terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
+    print(f"[OK] Búsqueda OCC terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
+    print_stats()
+
+def run_linkedin():
+    print("\n[+] Iniciando búsqueda automática en LinkedIn México...")
+    lk = LinkedInScraper()
+    res = lk.run_search_and_save()
+    print(f"[OK] Búsqueda LinkedIn terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
     print_stats()
 
 def run_fb():
     print("\n[+] Iniciando escaneo de ofertas en grupos de Facebook...")
     fb = FacebookScraper()
     res = fb.run_scan_and_save()
-    print(f"[OK] Escaneo terminado. Publicaciones procesadas: {res['total_found']} | Nuevas registradas: {res['new_saved']}")
+    print(f"[OK] Escaneo Facebook terminado. Procesadas: {res['total_found']} | Nuevas registradas: {res['new_saved']}")
     print_stats()
 
 def run_export():
@@ -75,6 +83,7 @@ def main():
     parser = argparse.ArgumentParser(description="AutoJob Hunter & Tracker CLI")
     parser.add_argument("--ui", action="store_true", help="Iniciar el Dashboard visual de Streamlit (por defecto)")
     parser.add_argument("--occ", action="store_true", help="Ejecutar búsqueda y extracción en OCC Mundial")
+    parser.add_argument("--linkedin", action="store_true", help="Ejecutar búsqueda y extracción en LinkedIn")
     parser.add_argument("--fb", action="store_true", help="Ejecutar escaneo de grupos de Facebook")
     parser.add_argument("--stats", action="store_true", help="Ver estadísticas de la base de datos")
     parser.add_argument("--export", action="store_true", help="Exportar vacantes a Excel y CSV")
@@ -84,6 +93,8 @@ def main():
 
     if args.occ:
         run_occ()
+    elif args.linkedin:
+        run_linkedin()
     elif args.fb:
         run_fb()
     elif args.stats:
@@ -95,7 +106,6 @@ def main():
         print(f"[OK] Se cargaron {added} vacantes de prueba.")
         print_stats()
     else:
-        # Default action: launch Streamlit UI
         launch_ui()
 
 if __name__ == "__main__":

@@ -13,10 +13,11 @@ import core.data_extractor as extractor
 import core.notifier_whatsapp as notifier
 from core.occ_bot import OCCBot
 from core.facebook_scraper import FacebookScraper
+from core.linkedin_scraper import LinkedInScraper
 
 # Page Configuration
 st.set_page_config(
-    page_title="AutoJob Hunter & Tracker | Ingeniería",
+    page_title="AutoJob Hunter & Tracker | OCC, LinkedIn & Facebook",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -89,6 +90,14 @@ st.markdown("""
         font-weight: 600;
         font-size: 0.75rem;
     }
+    .badge-source-linkedin {
+        background-color: #E0F2FE;
+        color: #0369A1;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
     .badge-source-fb {
         background-color: #EFF6FF;
         color: #1D4ED8;
@@ -142,7 +151,7 @@ db.init_db()
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3850/3850285.png", width=64)
     st.title("AutoJob Hunter")
-    st.caption("OCC Mundial & Redes Sociales")
+    st.caption("OCC Mundial, LinkedIn & Facebook")
     st.divider()
 
     st.subheader("⚡ Acciones Rápidas")
@@ -152,6 +161,13 @@ with st.sidebar:
             bot = OCCBot()
             res = bot.run_search_and_save()
             st.success(f"¡Búsqueda lista! {res['total_found']} encontradas ({res['total_new']} nuevas)")
+            st.rerun()
+
+    if st.button("💼 Escanear LinkedIn", use_container_width=True):
+        with st.spinner("Buscando vacantes en LinkedIn México..."):
+            lk = LinkedInScraper()
+            res = lk.run_search_and_save()
+            st.success(f"¡Listo! {res['total_found']} vacantes en LinkedIn ({res['total_new']} nuevas)")
             st.rerun()
 
     if st.button("📱 Escanear Redes (Facebook)", use_container_width=True):
@@ -176,7 +192,7 @@ with st.sidebar:
 
 # Main Header
 st.markdown('<div class="main-header">🚀 AutoJob Hunter & Tracker</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Plataforma integral de búsqueda, extracción y postulación automática para Ingenieros de <b>RF / Telecomunicaciones</b>, <b>Eléctricos</b> y <b>Sistemas / Software</b></div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Plataforma integral de búsqueda, extracción y postulación automática para Ingenieros de <b>RF / Telecomunicaciones</b>, <b>Eléctricos</b> y <b>Sistemas / Software</b> en <b>OCC Mundial</b>, <b>LinkedIn</b> y <b>Facebook</b></div>', unsafe_allow_html=True)
 
 # Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -232,16 +248,15 @@ with tab1:
         st.subheader("🌐 Por Fuente")
         if stats["by_source"]:
             df_src = pd.DataFrame(list(stats["by_source"].items()), columns=["Fuente", "Vacantes"])
-            st.bar_chart(df_src.set_index("Fuente"), color="#F59E0B")
+            st.bar_chart(df_src.set_index("Fuente"), color="#0284C7")
         else:
             st.info("Sin datos de fuente.")
 
     st.divider()
     st.subheader("🕒 Vacantes Recientes (con Modalidad, Teléfono y WhatsApp)")
-    recent_jobs = db.get_jobs(order_by="created_at DESC")[:8]
+    recent_jobs = db.get_jobs(order_by="created_at DESC")[:10]
     if recent_jobs:
         df_rec = pd.DataFrame(recent_jobs)
-        # Select and rename prominent columns requested by user
         cols_to_show = ["title", "company", "category", "modality", "location", "salary_raw", "phone", "whatsapp_url", "source", "status", "created_at"]
         existing_cols = [c for c in cols_to_show if c in df_rec.columns]
         df_rec_display = df_rec[existing_cols].copy()
@@ -250,11 +265,11 @@ with tab1:
             "title": "Puesto",
             "company": "Empresa",
             "category": "Especialidad",
-            "modality": "Modalidad (modality)",
+            "modality": "Modalidad",
             "location": "Ubicación",
             "salary_raw": "Sueldo",
-            "phone": "Teléfono (phone)",
-            "whatsapp_url": "WhatsApp URL (whatsapp_url)",
+            "phone": "Teléfono",
+            "whatsapp_url": "WhatsApp URL",
             "source": "Fuente",
             "status": "Estado",
             "created_at": "Fecha"
@@ -286,7 +301,7 @@ with tab2:
         status_filter = st.selectbox("Estado:", ["Todos", "Pendiente", "Postulado", "Entrevista", "Descartado"])
         
     with f_col4:
-        source_filter = st.selectbox("Fuente:", ["Todos", "OCC", "Facebook"])
+        source_filter = st.selectbox("Fuente:", ["Todos", "OCC", "LinkedIn", "Facebook"])
 
     with f_col5:
         phone_only = st.checkbox("Solo con WhatsApp 📱", value=False)
@@ -311,6 +326,7 @@ with tab2:
             j_title = job["title"]
             j_comp = job["company"]
             j_cat = job["category"]
+            j_src = job.get("source", "OCC")
             j_loc = job["location"] or "México"
             j_mod = job["modality"] or "No especificado"
             j_sal = job["salary_raw"] or "No especificado"
@@ -332,7 +348,12 @@ with tab2:
                 cat_badge = f'<span class="badge-general">⚙️ {j_cat}</span>'
 
             # Source Badge
-            src_badge = f'<span class="badge-source-occ">🌐 OCC Mundial</span>' if job["source"] == "OCC" else f'<span class="badge-source-fb">📱 Facebook</span>'
+            if j_src == "OCC":
+                src_badge = '<span class="badge-source-occ">🌐 OCC Mundial</span>'
+            elif j_src == "LinkedIn":
+                src_badge = '<span class="badge-source-linkedin">💼 LinkedIn</span>'
+            else:
+                src_badge = '<span class="badge-source-fb">📱 Facebook</span>'
             
             # Modality Badge
             mod_badge = f'<span class="badge-modality">🏢 {j_mod}</span>'
@@ -425,6 +446,7 @@ with tab2:
                     with det_c1:
                         st.write(f"🏢 **Modalidad:** `{j_mod}`")
                         st.write(f"📍 **Ubicación:** `{j_loc}`")
+                        st.write(f"🌐 **Fuente:** `{j_src}`")
                     with det_c2:
                         st.write(f"📞 **Teléfono:** `{j_phone or 'No especificado'}`")
                         st.write(f"💰 **Sueldo Ofertado:** `{j_sal}`")
@@ -453,79 +475,98 @@ with tab2:
 with tab3:
     st.subheader("🔍 Centro de Scraping y Extracción Inteligente")
 
-    sc_col1, sc_col2 = st.columns(2)
+    sc_col1, sc_col2, sc_col3 = st.columns(3)
 
     # OCC Scraper Box
     with sc_col1:
-        st.markdown("### 🌐 OCC Mundial Bot")
-        st.info("Realiza búsquedas automáticas en OCC Mundial según las palabras clave de ingeniería y extrae salario, ubicación, modalidad y datos de la empresa.")
+        st.markdown("### 🌐 OCC Mundial")
+        st.info("Búsqueda automatizada en OCC Mundial por palabras clave de ingeniería.")
         
-        occ_target = st.selectbox("Especialidad a buscar:", [
+        occ_target = st.selectbox("Especialidad OCC:", [
             "Todos",
             "Ingeniero de RF / Optimización",
             "Ingeniero Eléctrico",
             "Ingeniero de Sistemas / Software"
         ], key="occ_target_select")
 
-        if st.button("🚀 Ejecutar Scraping en OCC", type="primary", use_container_width=True):
-            with st.spinner("Conectando con OCC Mundial y analizando ofertas..."):
+        if st.button("🚀 Escanear OCC Mundial", type="primary", use_container_width=True):
+            with st.spinner("Conectando con OCC Mundial..."):
                 bot = OCCBot()
                 categories = None if occ_target == "Todos" else [occ_target]
                 res = bot.run_search_and_save(categories=categories)
-                st.success(f"✅ ¡Búsqueda completada! Se encontraron {res['total_found']} vacantes y se guardaron {res['total_new']} nuevas.")
+                st.success(f"✅ ¡OCC Listo! {res['total_found']} encontradas ({res['total_new']} nuevas).")
                 st.rerun()
 
-    # Facebook Post Parser Box
+    # LinkedIn Scraper Box
     with sc_col2:
-        st.markdown("### 📱 Extractor de Publicaciones de Redes Sociales")
-        st.info("Pega el texto de cualquier publicación de Facebook, grupo de WhatsApp o LinkedIn. El sistema extraerá automáticamente el Puesto, Modalidad, Teléfono, WhatsApp URL, Sueldo y Ubicación.")
+        st.markdown("### 💼 LinkedIn Jobs")
+        st.info("Búsqueda en tiempo real de ofertas laborales públicas de LinkedIn México.")
         
-        sample_paste = st.text_area(
-            "Pega aquí el texto de la vacante:",
-            height=160,
-            placeholder="Ejemplo:\nBuscamos Ingeniero de RF 5G para Huawei en CDMX (Híbrido). Sueldo $35,000 libres. Mandar CV al WhatsApp 55 1234 5678 o https://wa.me/525512345678"
-        )
+        lk_target = st.selectbox("Especialidad LinkedIn:", [
+            "Todos",
+            "Ingeniero de RF / Optimización",
+            "Ingeniero Eléctrico",
+            "Ingeniero de Sistemas / Software"
+        ], key="lk_target_select")
 
-        if st.button("⚡ Extraer y Guardar Vacante", use_container_width=True):
-            if not sample_paste.strip():
-                st.warning("Por favor pega el texto de una publicación.")
-            else:
-                parsed = extractor.parse_job_post(sample_paste, source="Facebook")
-                job_id, is_new = db.add_job(parsed)
-                if is_new:
-                    st.success(f"¡Vacante extraída y guardada con éxito! (ID #{job_id})")
-                else:
-                    st.info(f"Vacante actualizada con los nuevos datos (ID #{job_id}).")
-                
-                # Highlight extracted fields
-                st.markdown("#### 🎯 Datos Extraídos:")
-                ex_c1, ex_c2, ex_c3 = st.columns(3)
-                with ex_c1:
-                    st.write(f"📌 **Puesto:** {parsed.get('title')}")
-                    st.write(f"🏢 **Modalidad (`modality`):** `{parsed.get('modality')}`")
-                with ex_c2:
-                    st.write(f"📞 **Teléfono (`phone`):** `{parsed.get('phone') or 'N/D'}`")
-                    st.write(f"💰 **Sueldo:** `{parsed.get('salary_raw') or 'N/D'}`")
-                with ex_c3:
-                    st.write(f"💬 **WhatsApp URL (`whatsapp_url`):**")
-                    if parsed.get('whatsapp_url'):
-                        st.markdown(f"[{parsed.get('whatsapp_url')}]({parsed.get('whatsapp_url')})")
-                    else:
-                        st.write("`N/D`")
+        if st.button("💼 Escanear LinkedIn", type="primary", use_container_width=True):
+            with st.spinner("Consultando ofertas en LinkedIn México..."):
+                lk = LinkedInScraper()
+                categories = None if lk_target == "Todos" else [lk_target]
+                res = lk.run_search_and_save(categories=categories)
+                st.success(f"✅ ¡LinkedIn Listo! {res['total_found']} ofertas ({res['total_new']} nuevas).")
+                st.rerun()
 
-                with st.expander("👀 Ver JSON Completo"):
-                    st.json(parsed)
+    # Facebook & Social Media Box
+    with sc_col3:
+        st.markdown("### 📱 Redes Sociales / Facebook")
+        st.info("Escáner de publicaciones y grupos de empleo de ingeniería.")
+        
+        if st.button("🔄 Escanear Grupos Facebook", use_container_width=True):
+            with st.spinner("Escaneando feeds de Facebook..."):
+                fb = FacebookScraper()
+                res = fb.run_scan_and_save()
+                st.success(f"✅ ¡Facebook Listo! {res['total_found']} ofertas ({res['new_saved']} nuevas).")
                 st.rerun()
 
     st.divider()
-    st.markdown("### 📡 Escáner de Grupos de Empleo en Redes Sociales")
-    st.write("Escanea automáticamente grupos especializados de telecomunicaciones, electricidad y desarrollo de software en México.")
+    st.markdown("### 📝 Extractor Inteligente de Publicaciones (Pegar Texto)")
+    st.write("Pega el texto de cualquier publicación de Facebook, grupo de WhatsApp o mensaje de LinkedIn para extraer automáticamente todos sus campos:")
     
-    if st.button("🔄 Escanear Todos los Grupos de Empleo", use_container_width=True):
-        with st.spinner("Escaneando feeds de grupos de empleo..."):
-            fb = FacebookScraper()
-            res = fb.run_scan_and_save()
-            st.success(f"Escaneo finalizado: {res['total_found']} ofertas revisadas ({res['new_saved']} nuevas añadidas a la base de datos).")
+    sample_paste = st.text_area(
+        "Texto de la publicación:",
+        height=140,
+        placeholder="Ejemplo:\nBuscamos Ingeniero de RF 5G para Huawei en CDMX (Híbrido). Sueldo $35,000 libres. Mandar CV al WhatsApp 55 1234 5678 o https://wa.me/525512345678"
+    )
+
+    if st.button("⚡ Extraer y Guardar Publicación", use_container_width=True):
+        if not sample_paste.strip():
+            st.warning("Por favor pega el texto de una publicación.")
+        else:
+            parsed = extractor.parse_job_post(sample_paste, source="Facebook")
+            job_id, is_new = db.add_job(parsed)
+            if is_new:
+                st.success(f"¡Vacante extraída y guardada con éxito! (ID #{job_id})")
+            else:
+                st.info(f"Vacante actualizada con los nuevos datos (ID #{job_id}).")
+            
+            st.markdown("#### 🎯 Datos Extraídos:")
+            ex_c1, ex_c2, ex_c3 = st.columns(3)
+            with ex_c1:
+                st.write(f"📌 **Puesto:** {parsed.get('title')}")
+                st.write(f"🏢 **Modalidad (`modality`):** `{parsed.get('modality')}`")
+            with ex_c2:
+                st.write(f"📞 **Teléfono (`phone`):** `{parsed.get('phone') or 'N/D'}`")
+                st.write(f"💰 **Sueldo:** `{parsed.get('salary_raw') or 'N/D'}`")
+            with ex_c3:
+                st.write(f"💬 **WhatsApp URL (`whatsapp_url`):**")
+                if parsed.get('whatsapp_url'):
+                    st.markdown(f"[{parsed.get('whatsapp_url')}]({parsed.get('whatsapp_url')})")
+                else:
+                    st.write("`N/D`")
+
+            with st.expander("👀 Ver JSON Completo"):
+                st.json(parsed)
             st.rerun()
 
 # -------------------------------------------------------------
@@ -584,7 +625,7 @@ with tab5:
 
     with exp_col1:
         st.markdown("### 📥 Exportar Base de Datos")
-        st.write("Descarga el listado completo de vacantes y postulaciones registradas (incluyendo **Modalidad**, **Teléfono** y **WhatsApp URL**).")
+        st.write("Descarga el listado completo de vacantes de **OCC, LinkedIn y Facebook** (incluyendo **Modalidad**, **Teléfono** y **WhatsApp URL**).")
 
         excel_path = db.export_to_excel()
         with open(excel_path, "rb") as f:
@@ -613,11 +654,13 @@ with tab5:
         
         with st.expander("Ver / Editar Variables"):
             occ_mail = st.text_input("OCC Email:", value=settings.OCC_EMAIL)
+            lk_mail = st.text_input("LinkedIn Email:", value=settings.LINKEDIN_EMAIL)
             fb_mail = st.text_input("Facebook Email:", value=settings.FB_EMAIL)
             wa_ph = st.text_input("WhatsApp Personal:", value=settings.USER_WHATSAPP_PHONE)
             
             if st.button("Guardar Cambios en .env"):
                 settings.update_env_variable("OCC_EMAIL", occ_mail)
+                settings.update_env_variable("LINKEDIN_EMAIL", lk_mail)
                 settings.update_env_variable("FB_EMAIL", fb_mail)
                 settings.update_env_variable("USER_WHATSAPP_PHONE", wa_ph)
                 st.success("Variables de entorno actualizadas.")
