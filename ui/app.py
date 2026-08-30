@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 import os
 import textwrap
 import importlib
@@ -203,12 +203,12 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
-    stats = db.get_stats()
-    st.subheader("📊 Resumen General")
-    st.write(f"📁 **Total Vacantes:** {stats['total_jobs']}")
-    st.write(f"✅ **Postuladas:** {stats['applied_count']}")
-    st.write(f"⏳ **Pendientes:** {stats['pending_count']}")
-    st.write(f"💬 **Con Teléfono/WhatsApp:** {stats['with_phone_count']}")
+    app_kpi = db.get_application_stats()
+    st.subheader("📊 Mis Postulaciones")
+    st.write(f"✅ **Total Postuladas:** {app_kpi['applied_count']}")
+    st.write(f"📅 **Postuladas Hoy:** {app_kpi['today_count']}")
+    st.write(f"🟣 **En Entrevista:** {app_kpi['interview_count']}")
+    st.write(f"📁 **Total Bolsa:** {app_kpi['total_jobs']}")
 
 # Main Header
 st.markdown('<div class="main-header">🚀 AutoJob Hunter & Tracker</div>', unsafe_allow_html=True)
@@ -216,7 +216,7 @@ st.markdown('<div class="sub-header">Plataforma integral de búsqueda, extracci�
 
 # Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📊 Dashboard",
+    "📊 Estadísticas de Postulaciones",
     "💼 Bolsa de Vacantes",
     "🔍 Scraping & Extracción",
     "📄 Mi CV & Perfil",
@@ -224,80 +224,150 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 ])
 
 # -------------------------------------------------------------
-# TAB 1: DASHBOARD
+# TAB 1: DASHBOARD DE ESTADÍSTICAS Y POSTULACIONES DIARIAS
 # -------------------------------------------------------------
 with tab1:
-    stats = db.get_stats()
+    st.subheader("📊 Panel de Rendimiento y Control de Postulaciones")
     
-    # Top KPI Metrics
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
-        st.metric("Total Vacantes", stats["total_jobs"])
-    with col2:
-        st.metric("Postuladas", stats["applied_count"], delta=f"{stats['applied_count']}/{stats['total_jobs']}" if stats['total_jobs'] else "0")
-    with col3:
-        st.metric("Pendientes", stats["pending_count"])
-    with col4:
-        st.metric("En Entrevista", stats["interview_count"])
-    with col5:
-        avg_s = f"${stats['avg_salary']:,.0f} MXN" if stats['avg_salary'] > 0 else "N/D"
-        st.metric("Sueldo Promedio", avg_s)
+    app_stats = db.get_application_stats()
+    gen_stats = db.get_stats()
+
+    # TOP METRICS ROW: Total postuladas, hoy, semana, mes, entrevistas
+    m_col1, m_col2, m_col3, m_col4, m_col5 = st.columns(5)
+    
+    with m_col1:
+        st.metric(
+            label="🎯 Total Postuladas",
+            value=app_stats["applied_count"],
+            delta=f"{(app_stats['applied_count']/app_stats['total_jobs']*100):.1f}% de la bolsa" if app_stats['total_jobs'] > 0 else "0%"
+        )
+    with m_col2:
+        st.metric(
+            label="📅 Postuladas Hoy",
+            value=app_stats["today_count"],
+            delta="Hoy" if app_stats["today_count"] > 0 else "Sin actividad hoy"
+        )
+    with m_col3:
+        st.metric(
+            label="🗓️ Esta Semana (7d)",
+            value=app_stats["week_count"],
+            delta="Últimos 7 días"
+        )
+    with m_col4:
+        st.metric(
+            label="📆 Este Mes",
+            value=app_stats["month_count"],
+            delta=datetime.now().strftime("%B %Y")
+        )
+    with m_col5:
+        st.metric(
+            label="🟣 En Entrevista",
+            value=app_stats["interview_count"],
+            delta=f"Éxito: {app_stats['conversion_rate']}%"
+        )
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Charts Row
-    ch_col1, ch_col2, ch_col3 = st.columns(3)
+    # DAILY APPLICATIONS CHART & TIMELINE
+    st.markdown("### 📈 Cantidad de Postulaciones Realizadas Diariamente")
     
-    with ch_col1:
-        st.subheader("📡 Por Especialidad")
-        if stats["by_category"]:
-            df_cat = pd.DataFrame(list(stats["by_category"].items()), columns=["Especialidad", "Vacantes"])
-            st.bar_chart(df_cat.set_index("Especialidad"), color="#1E88E5")
-        else:
-            st.info("Sin datos de especialidades.")
-
-    with ch_col2:
-        st.subheader("🏢 Por Modalidad")
-        if stats["by_modality"]:
-            df_mod = pd.DataFrame(list(stats["by_modality"].items()), columns=["Modalidad", "Vacantes"])
-            st.bar_chart(df_mod.set_index("Modalidad"), color="#10B981")
-        else:
-            st.info("Sin datos de modalidad.")
-
-    with ch_col3:
-        st.subheader("🌐 Por Plataforma / Fuente")
-        if stats["by_source"]:
-            df_src = pd.DataFrame(list(stats["by_source"].items()), columns=["Plataforma", "Vacantes"])
-            st.bar_chart(df_src.set_index("Plataforma"), color="#0284C7")
-        else:
-            st.info("Sin datos de fuente.")
+    daily_dict = app_stats["daily_applications"]
+    
+    if daily_dict:
+        # Build chronological DataFrame
+        df_daily = pd.DataFrame(list(daily_dict.items()), columns=["Fecha", "Postulaciones"]).sort_values("Fecha")
+        
+        c_chart, c_table = st.columns([2.5, 1.2])
+        
+        with c_chart:
+            st.markdown("##### 📊 Historial Diario de Postulaciones")
+            st.bar_chart(df_daily.set_index("Fecha"), color="#2563EB")
+            
+        with c_table:
+            st.markdown("##### 📋 Resumen por Fecha")
+            st.dataframe(df_daily, use_container_width=True, hide_index=True)
+            avg_per_day = df_daily["Postulaciones"].mean()
+            st.caption(f"Promedio diario en días activos: **{avg_per_day:.1f} postulaciones/día**")
+    else:
+        st.info("💡 **Aún no has registrado postulaciones.** Ve a la pestaña **💼 Bolsa de Vacantes** y haz clic en el botón **`⬜ Postularme`** de cualquier vacante para comenzar a registrar tu actividad diaria.")
 
     st.divider()
-    st.subheader("🕒 Vacantes Recientes")
-    recent_jobs = db.get_jobs(order_by="created_at DESC")[:10]
-    if recent_jobs:
-        df_rec = pd.DataFrame(recent_jobs)
-        cols_to_show = ["title", "company", "category", "modality", "location", "salary_raw", "phone", "whatsapp_url", "source", "status", "created_at"]
-        existing_cols = [c for c in cols_to_show if c in df_rec.columns]
-        df_rec_display = df_rec[existing_cols].copy()
+
+    # BREAKDOWN CHARTS ROW
+    st.markdown("### 🌐 Desglose de Tus Postulaciones")
+    b_col1, b_col2, b_col3 = st.columns(3)
+
+    with b_col1:
+        st.markdown("#### 💼 Por Plataforma")
+        if app_stats["applied_by_source"]:
+            df_src_app = pd.DataFrame(list(app_stats["applied_by_source"].items()), columns=["Plataforma", "Postuladas"])
+            st.bar_chart(df_src_app.set_index("Plataforma"), color="#0284C7")
+        else:
+            st.caption("Sin postulaciones por plataforma.")
+
+    with b_col2:
+        st.markdown("#### 📡 Por Especialidad")
+        if app_stats["applied_by_category"]:
+            df_cat_app = pd.DataFrame(list(app_stats["applied_by_category"].items()), columns=["Especialidad", "Postuladas"])
+            st.bar_chart(df_cat_app.set_index("Especialidad"), color="#10B981")
+        else:
+            st.caption("Sin postulaciones por especialidad.")
+
+    with b_col3:
+        st.markdown("#### 🏢 Por Modalidad")
+        if app_stats["applied_by_modality"]:
+            df_mod_app = pd.DataFrame(list(app_stats["applied_by_modality"].items()), columns=["Modalidad", "Postuladas"])
+            st.bar_chart(df_mod_app.set_index("Modalidad"), color="#F59E0B")
+        else:
+            st.caption("Sin postulaciones por modalidad.")
+
+    st.divider()
+
+    # DETAILED TABLE OF APPLIED VACANCIES
+    st.markdown("### 📋 Registro Completo de Vacantes Postuladas")
+    applied_jobs = db.get_jobs(status="Postulado", order_by="applied_at DESC")
+    interview_jobs = db.get_jobs(status="Entrevista", order_by="applied_at DESC")
+    all_tracked = applied_jobs + interview_jobs
+
+    if all_tracked:
+        df_tracked = pd.DataFrame(all_tracked)
+        cols_tracked = ["applied_at", "title", "company", "category", "source", "modality", "phone", "whatsapp_url", "status", "notes"]
+        existing_cols = [c for c in cols_tracked if c in df_tracked.columns]
+        df_tracked_display = df_tracked[existing_cols].copy()
         
-        column_mapping = {
+        col_names = {
+            "applied_at": "Fecha Postulación",
             "title": "Puesto",
             "company": "Empresa",
             "category": "Especialidad",
-            "modality": "Modalidad",
-            "location": "Ubicación",
-            "salary_raw": "Sueldo",
-            "phone": "Teléfono",
-            "whatsapp_url": "WhatsApp URL",
             "source": "Plataforma",
+            "modality": "Modalidad",
+            "phone": "Teléfono",
+            "whatsapp_url": "WhatsApp",
             "status": "Estado",
-            "created_at": "Fecha"
+            "notes": "Notas"
         }
-        df_rec_display.rename(columns=column_mapping, inplace=True)
-        st.dataframe(df_rec_display, use_container_width=True)
+        df_tracked_display.rename(columns=col_names, inplace=True)
+        st.dataframe(df_tracked_display, use_container_width=True)
     else:
-        st.info("No hay vacantes registradas aún.")
+        st.info("No hay vacantes registradas en estado 'Postulado' o 'Entrevista' todavía.")
+
+    st.divider()
+
+    # GLOBAL OVERVIEW OF TOTAL DATABASE
+    with st.expander("📁 Ver Estadísticas Globales de la Base de Vacantes (Disponibles vs Postuladas)"):
+        g_c1, g_c2, g_c3 = st.columns(3)
+        with g_c1:
+            st.write(f"📂 **Total Vacantes Detectadas:** {gen_stats['total_jobs']}")
+            st.write(f"⏳ **Vacantes Pendientes:** {gen_stats['pending_count']}")
+        with g_c2:
+            st.write(f"📞 **Vacantes con WhatsApp Directo:** {gen_stats['with_phone_count']}")
+            st.write(f"💰 **Sueldo Promedio Detectado:** ${gen_stats['avg_salary']:,.0f} MXN")
+        with g_c3:
+            if gen_stats["by_category"]:
+                st.write("**Distribución Total por Especialidad:**")
+                for k, v in gen_stats["by_category"].items():
+                    st.write(f"- {k}: **{v}**")
 
 # -------------------------------------------------------------
 # TAB 2: BOLSA DE VACANTES (CON FILTRO POR PLATAFORMA Y ACCIONES DE ESTADO)

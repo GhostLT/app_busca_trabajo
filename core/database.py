@@ -54,6 +54,7 @@ def init_db():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_category ON jobs (category)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs (status)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_source ON jobs (source)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_applied_at ON jobs (applied_at)")
         conn.commit()
 
 def add_job(job_data: Dict[str, Any]) -> Tuple[int, bool]:
@@ -194,7 +195,6 @@ def update_job_status(job_id: int, new_status: str, notes: Optional[str] = None)
     """Update status of a job (e.g., Postulado, En Proceso, Entrevista, Pendiente)."""
     init_db()
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    applied_at = now_str if new_status == "Postulado" else None
 
     with get_connection() as conn:
         cursor = conn.cursor()
@@ -203,13 +203,19 @@ def update_job_status(job_id: int, new_status: str, notes: Optional[str] = None)
                 UPDATE jobs
                 SET status = ?, updated_at = ?, applied_at = COALESCE(applied_at, ?), notes = COALESCE(?, notes)
                 WHERE id = ?
-            """, (new_status, now_str, applied_at, notes, job_id))
+            """, (new_status, now_str, now_str, notes, job_id))
         elif new_status == "Pendiente":
             cursor.execute("""
                 UPDATE jobs
                 SET status = ?, updated_at = ?, applied_at = NULL, notes = COALESCE(?, notes)
                 WHERE id = ?
             """, (new_status, now_str, notes, job_id))
+        elif new_status == "Entrevista":
+            cursor.execute("""
+                UPDATE jobs
+                SET status = ?, updated_at = ?, applied_at = COALESCE(applied_at, ?), notes = COALESCE(?, notes)
+                WHERE id = ?
+            """, (new_status, now_str, now_str, notes, job_id))
         else:
             cursor.execute("""
                 UPDATE jobs
@@ -287,6 +293,111 @@ def get_stats() -> Dict[str, Any]:
             "by_source": by_source,
             "by_modality": by_modality,
             "avg_salary": round(avg_sal, 2)
+        }
+
+def get_application_stats() -> Dict[str, Any]:
+    """Detailed statistics specifically for applications: daily counts, conversion, breakdown by platform and specialty."""
+    init_db()
+    with get_connection() as conn:
+        cursor = conn.cursor()
+
+        # Total vacancies in DB
+        cursor.execute("SELECT COUNT(*) FROM jobs")
+        total_jobs = cursor.fetchone()[0]
+
+        # Total registered as Postulado
+        cursor.execute("SELECT COUNT(*) FROM jobs WHERE status = 'Postulado'")
+        applied_count = cursor.fetchone()[0]
+
+        # Total registered in Entrevista
+        cursor.execute("SELECT COUNT(*) FROM jobs WHERE status = 'Entrevista'")
+        interview_count = cursor.fetchone()[0]
+
+        # Total active applications (Postulado + Entrevista)
+        total_active_applied = applied_count + interview_count
+
+        # Applications made today
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        cursor.execute("""
+            SELECT COUNT(*) FROM jobs 
+            WHERE status IN ('Postulado', 'Entrevista') 
+            AND SUBSTR(applied_at, 1, 10) = ?
+        """, (today_str,))
+        today_count = cursor.fetchone()[0]
+
+        # Applications made this week (last 7 days)
+        cursor.execute("""
+            SELECT COUNT(*) FROM jobs 
+            WHERE status IN ('Postulado', 'Entrevista') 
+            AND applied_at >= datetime('now', '-7 days')
+        """)
+        week_count = cursor.fetchone()[0]
+
+        # Applications made this month (current YYYY-MM)
+        month_prefix = datetime.now().strftime("%Y-%m")
+        cursor.execute("""
+            SELECT COUNT(*) FROM jobs 
+            WHERE status IN ('Postulado', 'Entrevista') 
+            AND SUBSTR(applied_at, 1, 7) = ?
+        """, (month_prefix,))
+        month_count = cursor.fetchone()[0]
+
+        # Daily applications series (sorted chronologically)
+        cursor.execute("""
+            SELECT 
+                SUBSTR(applied_at, 1, 10) as day,
+                COUNT(*) as count
+            FROM jobs 
+            WHERE status IN ('Postulado', 'Entrevista') AND applied_at IS NOT NULL
+            GROUP BY day 
+            ORDER BY day ASC
+        """)
+        daily_rows = cursor.fetchall()
+        daily_applications = {row["day"]: row["count"] for row in daily_rows}
+
+        # Applications by platform
+        cursor.execute("""
+            SELECT source, COUNT(*) as count 
+            FROM jobs 
+            WHERE status IN ('Postulado', 'Entrevista') 
+            GROUP BY source
+        """)
+        applied_by_source = {row["source"]: row["count"] for row in cursor.fetchall()}
+
+        # Applications by specialty
+        cursor.execute("""
+            SELECT category, COUNT(*) as count 
+            FROM jobs 
+            WHERE status IN ('Postulado', 'Entrevista') 
+            GROUP BY category
+        """)
+        applied_by_category = {row["category"]: row["count"] for row in cursor.fetchall()}
+
+        # Applications by modality
+        cursor.execute("""
+            SELECT modality, COUNT(*) as count 
+            FROM jobs 
+            WHERE status IN ('Postulado', 'Entrevista') 
+            GROUP BY modality
+        """)
+        applied_by_modality = {row["modality"]: row["count"] for row in cursor.fetchall()}
+
+        # Success / Conversion Rate (% of applied that reached interview)
+        conversion_rate = round((interview_count / total_active_applied) * 100.0, 1) if total_active_applied > 0 else 0.0
+
+        return {
+            "total_jobs": total_jobs,
+            "applied_count": applied_count,
+            "interview_count": interview_count,
+            "total_active_applied": total_active_applied,
+            "today_count": today_count,
+            "week_count": week_count,
+            "month_count": month_count,
+            "conversion_rate": conversion_rate,
+            "daily_applications": daily_applications,
+            "applied_by_source": applied_by_source,
+            "applied_by_category": applied_by_category,
+            "applied_by_modality": applied_by_modality
         }
 
 def export_to_excel(filepath: Optional[str] = None) -> str:
