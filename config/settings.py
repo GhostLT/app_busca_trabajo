@@ -54,6 +54,7 @@ JOBSORA_PASSWORD = os.getenv("JOBSORA_PASSWORD", "")
 
 # WhatsApp Notification & Bot Settings
 USER_WHATSAPP_PHONE = os.getenv("USER_WHATSAPP_PHONE", "")
+WHATSAPP_API_KEY = os.getenv("WHATSAPP_API_KEY", "")
 WHATSAPP_PROVIDER = os.getenv("WHATSAPP_PROVIDER", "greenapi")
 GREENAPI_INSTANCE_ID = os.getenv("GREENAPI_INSTANCE_ID", "")
 GREENAPI_API_TOKEN = os.getenv("GREENAPI_API_TOKEN", "")
