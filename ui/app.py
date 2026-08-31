@@ -33,16 +33,17 @@ from core.glassdoor_scraper import GlassdoorScraper
 from core.jobrapido_scraper import JobrapidoScraper
 from core.jobleads_scraper import JobLeadsScraper
 from core.jobsora_scraper import JobsoraScraper
+from core.whatsapp_bot import WhatsAppBot
 
 # Page Configuration
 st.set_page_config(
-    page_title="AutoJob Hunter & Tracker | Empleos y Cotizaciones Eléctricas México",
+    page_title="AutoJob Hunter | WhatsApp Bot, Empleos y Cotizaciones",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Modern Clean UI
+# Custom CSS for Modern Clean UI and WhatsApp Chat Bubble
 st.markdown("""
 <style>
     .main-header {
@@ -221,17 +222,30 @@ st.markdown("""
         text-decoration: none;
         display: inline-block;
     }
+    .wa-bubble {
+        background-color: #E7FEDE;
+        border: 1px solid #C4F7B5;
+        border-radius: 12px 12px 12px 0px;
+        padding: 16px 20px;
+        margin: 12px 0;
+        color: #111B21;
+        font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        white-space: pre-wrap;
+        line-height: 1.5;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize DB
+# Initialize DB & Bot
 db.init_db()
+bot = WhatsAppBot()
 
 # Sidebar
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3850/3850285.png", width=64)
     st.title("AutoJob Hunter")
-    st.caption("Bolsas de Empleo & Cotizaciones de Instalaciones Eléctricas")
+    st.caption("Bolsas de Empleo & Bot Interactivo de WhatsApp")
     st.divider()
 
     st.subheader("⚡ Acciones Rápidas")
@@ -318,13 +332,14 @@ with st.sidebar:
     st.write(f"📁 **Total Base:** {app_kpi['total_jobs']}")
 
 # Main Header
-st.markdown('<div class="main-header">🚀 AutoJob Hunter & Cotizador de Obras</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Plataforma integral de rastreo laboral y <b>captura de solicitudes de instalaciones eléctricas, cotizaciones y presupuestos</b> para Ingenieros y Técnicos en <b>Facebook, LinkedIn, OCC, CompuTrabajo, Glassdoor, Jobrapido, JobLeads y Jobsora</b></div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🚀 AutoJob Hunter & Bot de WhatsApp</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Plataforma integral de rastreo laboral, <b>captura de clientes para cotizaciones</b> y <b>control total remoto desde tu WhatsApp</b></div>', unsafe_allow_html=True)
 
 # Tabs
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 Estadísticas de Postulaciones",
     "💼 Bolsa de Vacantes & Cotizaciones",
+    "📱 WhatsApp Bot & Control Remoto",
     "🔍 Scraping & Extracción",
     "📄 Mi CV & Plantillas de Cotización",
     "⚙️ Configuración & Exportación"
@@ -395,7 +410,7 @@ with tab1:
             avg_per_day = df_daily["Gestiones"].mean()
             st.caption(f"Promedio diario: **{avg_per_day:.1f} por día**")
     else:
-        st.info("💡 **Aún no has registrado postulaciones o llamadas de cotización.** Ve a la pestaña **💼 Bolsa de Vacantes & Cotizaciones** y haz clic en **`⬜ Postularme / Cotizar`**.")
+        st.info("💡 **Aún no has registrado postulaciones o llamadas de cotización.** Ve a la pestaña **💼 Bolsa de Vacantes & Cotizaciones** o usa el comando `!contacto [id]` en tu WhatsApp.")
 
     st.divider()
 
@@ -458,30 +473,12 @@ with tab1:
     else:
         st.info("No hay registros en estado 'Postulado' o 'Entrevista / Cotización' todavía.")
 
-    st.divider()
-
-    # GLOBAL OVERVIEW OF TOTAL DATABASE
-    with st.expander("📁 Ver Estadísticas Globales de la Base de Oportunidades"):
-        g_c1, g_c2, g_c3 = st.columns(3)
-        with g_c1:
-            st.write(f"📂 **Total Vacantes y Solicitudes:** {gen_stats['total_jobs']}")
-            st.write(f"⏳ **Pendientes de Llamar / Contactar:** {gen_stats['pending_count']}")
-        with g_c2:
-            st.write(f"📞 **Con Teléfono / WhatsApp Directo:** {gen_stats['with_phone_count']}")
-            st.write(f"💰 **Presupuesto Promedio:** ${gen_stats['avg_salary']:,.0f} MXN")
-        with g_c3:
-            if gen_stats["by_category"]:
-                st.write("**Distribución Total por Especialidad:**")
-                for k, v in gen_stats["by_category"].items():
-                    st.write(f"- {k}: **{v}**")
-
 # -------------------------------------------------------------
 # TAB 2: BOLSA DE VACANTES & COTIZACIONES DE INSTALACIONES
 # -------------------------------------------------------------
 with tab2:
     st.subheader("💼 Explorador y Gestión de Vacantes y Cotizaciones")
 
-    # Interactive Filter Form with Submit Button
     with st.form(key="job_filter_form"):
         st.markdown("#### 🎯 Filtros de Búsqueda")
         f_col1, f_col2, f_col3, f_col4 = st.columns([2.2, 1.6, 1.6, 1.4])
@@ -489,13 +486,13 @@ with tab2:
         with f_col1:
             search_query = st.text_input(
                 "🔍 Puesto / Instalación / Contacto:",
-                placeholder="Ej: Electricista, Instalación, Cableado, Tablero, David Sotomayor..."
+                placeholder="Ej: Oficial Electricista, Ayudante, Tablero, David Sotomayor..."
             )
         
         with f_col2:
             city_filter = st.text_input(
                 "📍 Ciudad / Ubicación:",
-                placeholder="Ej: Querétaro, CDMX, Monterrey, Guadalajara..."
+                placeholder="Ej: Querétaro, CDMX, Monterrey, Guadalajara, Toluca..."
             )
 
         with f_col3:
@@ -575,10 +572,8 @@ with tab2:
             j_status = job.get("status", "Pendiente")
             j_notes = job["notes"] or ""
 
-            # Check if this is a quote / installation request
             is_quote_lead = any(w in j_title.lower() or w in j_desc.lower() for w in ["cotización", "cotizacion", "instalación", "instalacion", "presupuesto", "obra", "remodelación", "mantenimiento industrial"])
 
-            # Category Badge styling
             if "RF" in j_cat:
                 cat_badge = f'<span class="badge-rf">📡 {j_cat}</span>'
             elif "Eléctric" in j_cat:
@@ -588,7 +583,6 @@ with tab2:
             else:
                 cat_badge = f'<span class="badge-general">⚙️ {j_cat}</span>'
 
-            # Platform Source Badges
             if j_src == "OCC":
                 src_badge = '<span class="badge-source-occ">🌐 OCC Mundial</span>'
             elif j_src == "LinkedIn":
@@ -606,23 +600,19 @@ with tab2:
             else:
                 src_badge = '<span class="badge-source-fb">📱 Facebook (Grupos / Clientes)</span>'
             
-            # Modality Badge
             mod_badge = f'<span class="badge-modality">🏢 {j_mod}</span>'
 
-            # Phone Badge
             if j_phone:
                 phone_badge = f'<span class="badge-phone">📞 {j_phone}</span>'
             else:
                 phone_badge = '<span style="color:#94A3B8; font-size:0.8rem;">📵 Sin teléfono directo</span>'
 
-            # WhatsApp URL representation
             if not j_wa and j_phone:
                 j_wa = notifier.generate_whatsapp_link(j_phone, j_title, j_comp, category=j_cat)
 
             wa_badge_label = "💬 Cotizar wa.me" if is_quote_lead else "💬 wa.me"
             wa_badge_html = f'<a href="{j_wa}" target="_blank" class="badge-whatsapp">{wa_badge_label}</a>' if j_wa else ''
 
-            # Status Badge representation
             status_colors = {
                 "Pendiente": "🟡 Pendiente",
                 "Postulado": "🟢 Postulado / En Contacto",
@@ -630,8 +620,6 @@ with tab2:
                 "Descartado": "⚪ Descartado"
             }
             status_label = status_colors.get(j_status, j_status)
-
-            # Contact badge if present
             contact_label_html = f'<span style="background-color: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.8rem;">👤 Contacto: {j_comp}</span>'
 
             card_html = textwrap.dedent(f"""
@@ -658,7 +646,6 @@ with tab2:
             with st.container():
                 st.markdown(card_html, unsafe_allow_html=True)
 
-                # Action row: WhatsApp / Cotizar, Llamar al teléfono, Postularme, Entrevista / Cotizado, Descartar
                 act_col1, act_col2, act_col3, act_col4, act_col5 = st.columns([2.4, 1.4, 1.4, 1.4, 1.0])
                 
                 with act_col1:
@@ -682,12 +669,12 @@ with tab2:
                 with act_col3:
                     label_app = "✅ En Contacto" if j_status == "Postulado" else "⬜ Postular / Contactar"
                     if j_status == "Postulado":
-                        if st.button(label_app, key=f"app_{j_id}", use_container_width=True, type="primary", help="Registrado en la base de datos. Haz clic para desmarcar."):
+                        if st.button(label_app, key=f"app_{j_id}", use_container_width=True, type="primary"):
                             db.update_job_status(j_id, "Pendiente")
                             st.toast(f"Oportunidad #{j_id} desmarcada (Pendiente).", icon="↩️")
                             st.rerun()
                     else:
-                        if st.button(label_app, key=f"app_{j_id}", use_container_width=True, help="Haz clic para registrar tu contacto o postulación en la base de datos."):
+                        if st.button(label_app, key=f"app_{j_id}", use_container_width=True):
                             db.update_job_status(j_id, "Postulado")
                             st.toast(f"¡Contacto/Postulación registrada en base de datos para #{j_id}!", icon="✅")
                             st.rerun()
@@ -695,34 +682,33 @@ with tab2:
                 with act_col4:
                     label_ent = "🟣 En Cotización" if j_status == "Entrevista" else "🎯 Cotizar / Entrevista"
                     if j_status == "Entrevista":
-                        if st.button(label_ent, key=f"ent_{j_id}", use_container_width=True, type="primary", help="Registrado como Cotización/Entrevista. Haz clic para desmarcar."):
+                        if st.button(label_ent, key=f"ent_{j_id}", use_container_width=True, type="primary"):
                             db.update_job_status(j_id, "Pendiente")
                             st.toast(f"Oportunidad #{j_id} desmarcada (Pendiente).", icon="↩️")
                             st.rerun()
                     else:
-                        if st.button(label_ent, key=f"ent_{j_id}", use_container_width=True, help="Haz clic para registrar que enviaste presupuesto o conseguiste entrevista."):
+                        if st.button(label_ent, key=f"ent_{j_id}", use_container_width=True):
                             db.update_job_status(j_id, "Entrevista")
                             st.toast(f"¡Cotización/Entrevista registrada en base de datos para #{j_id}!", icon="🎯")
                             st.rerun()
 
                 with act_col5:
-                    if st.button("🗑️ Descartar", key=f"del_{j_id}", use_container_width=True, help="Eliminar vacante"):
+                    if st.button("🗑️ Descartar", key=f"del_{j_id}", use_container_width=True):
                         db.delete_job(j_id)
                         st.rerun()
 
-                # Description Expander with full details and action recommendations
                 with st.expander(f"📋 Ficha Técnica, Contacto y Alcance del Trabajo (#{j_id})"):
                     det_c1, det_c2, det_c3 = st.columns(3)
                     with det_c1:
                         st.write(f"🏢 **Cliente / Contacto:** `{j_comp}`")
-                        st.write(f"📍 **Ubicación de la Obra:** `{j_loc}`")
+                        st.write(f"📍 **Ubicación:** `{j_loc}`")
                         st.write(f"🌐 **Plataforma:** `{j_src}`")
                     with det_c2:
-                        st.write(f"📞 **Teléfono para Llamada:** `{j_phone or 'No especificado'}`")
+                        st.write(f"📞 **Teléfono:** `{j_phone or 'No especificado'}`")
                         st.write(f"💰 **Presupuesto / Sueldo:** `{j_sal}`")
                     with det_c3:
                         if j_wa:
-                            st.markdown(f"🔗 **WhatsApp Directo:** [Abrir Chat de Cotización]({j_wa})")
+                            st.markdown(f"🔗 **WhatsApp Directo:** [Abrir Chat]({j_wa})")
                             st.code(j_wa, language="text")
                         else:
                             st.write("🔗 **WhatsApp URL:** `No disponible`")
@@ -740,12 +726,86 @@ with tab2:
                 st.markdown("<hr style='margin: 12px 0; border: none; border-top: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# TAB 3: SCRAPING & EXTRACCIÓN (8 CANALES LABORALES & COTIZACIONES)
+# TAB 3: WHATSAPP BOT & CONTROL REMOTO (OPCIÓN 1)
 # -------------------------------------------------------------
 with tab3:
+    st.subheader("📱 Bot Interactivo de WhatsApp & Centro de Comandos")
+    st.markdown("Controla tu búsqueda de empleo, cotizaciones de obra y estados de postulaciones **directamente desde tu WhatsApp personal**.")
+
+    wb_col1, wb_col2 = st.columns([1.4, 1])
+
+    with wb_col1:
+        st.markdown("### 💬 Simulador de Comandos de WhatsApp")
+        st.caption("Escribe y prueba los comandos tal como responderá el Bot en tu celular:")
+
+        # Quick action command pills
+        st.write("**Botones de Acceso Rápido:**")
+        q_c1, q_c2, q_c3, q_c4 = st.columns(4)
+        cmd_to_run = None
+        if q_c1.button("📊 !resumen", use_container_width=True):
+            cmd_to_run = "!resumen"
+        if q_c2.button("⚡ !cotizaciones", use_container_width=True):
+            cmd_to_run = "!cotizaciones"
+        if q_c3.button("💼 !vacantes", use_container_width=True):
+            cmd_to_run = "!vacantes"
+        if q_c4.button("🔄 !escanear fb", use_container_width=True):
+            cmd_to_run = "!escanear fb"
+
+        with st.form(key="wa_command_form"):
+            wa_cmd_input = st.text_input(
+                "Escribe un comando para WhatsApp:",
+                value=cmd_to_run if cmd_to_run else "!cotizaciones",
+                placeholder="Ej: !resumen, !cotizaciones, !vacantes cdmx, !contacto 15..."
+            )
+            submit_cmd = st.form_submit_button("⚡ Enviar Comando al Bot", type="primary", use_container_width=True)
+
+        if submit_cmd or cmd_to_run:
+            active_cmd = wa_cmd_input if not cmd_to_run else cmd_to_run
+            with st.spinner("Procesando comando en el motor de WhatsApp..."):
+                response_text = bot.process_message(active_cmd)
+
+            st.markdown("#### 📱 Vista Previa del Mensaje de WhatsApp:")
+            st.markdown(f'<div class="wa-bubble">{response_text}</div>', unsafe_allow_html=True)
+
+    with wb_col2:
+        st.markdown("### 📖 Guía de Comandos Disponibles")
+        st.markdown("""
+| Comando | Descripción | Ejemplo |
+| :--- | :--- | :--- |
+| `!resumen` | Métricas de hoy, postulaciones y cotizaciones | `!resumen` |
+| `!cotizaciones` | Solicitudes de electricistas, obras y presupuestos | `!cotizaciones` |
+| `!vacantes` | Lista las últimas vacantes encontradas | `!vacantes` |
+| `!vacantes [rol]` | Filtra por puesto o ciudad | `!vacantes oficial cdmx` |
+| `!buscar [texto]` | Búsqueda libre en toda la base | `!buscar queretaro` |
+| `!detalle [id]` | Ver ficha completa, teléfono y enlaces | `!detalle 15` |
+| `!contacto [id]` | Marca como **Postulado / En Contacto** en la base | `!contacto 15` |
+| `!cotizado [id]` | Marca como **En Cotización / Entrevista** | `!cotizado 15` |
+| `!descartar [id]` | Elimina o descarta una vacante | `!descartar 15` |
+| `!escanear [fuente]` | Dispara escaneo en vivo remoto | `!escanear fb` |
+| `!ayuda` | Muestra el menú de ayuda en WhatsApp | `!ayuda` |
+""")
+
+        st.divider()
+        st.markdown("### 🚀 Cómo Conectar tu WhatsApp Real")
+        st.markdown("""
+1. **Ejecutar el Servidor Webhook en tu máquina:**
+   ```bash
+   python main.py --bot --port 5000
+   ```
+2. **Exponer el puerto local con Ngrok (gratis):**
+   ```bash
+   ngrok http 5000
+   ```
+3. **Pegar tu URL de Webhook en tu proveedor (GreenAPI, Twilio o Meta Cloud):**
+   `https://tu-ngrok.ngrok-free.app/whatsapp/webhook`
+""")
+
+# -------------------------------------------------------------
+# TAB 4: SCRAPING & EXTRACCIÓN (8 CANALES LABORALES & COTIZACIONES)
+# -------------------------------------------------------------
+with tab4:
     st.subheader("🔍 Centro de Scraping, Extracción y Captura de Obras")
 
-    # Global Scan Banner
     if st.button("⚡ ESCANEAR TODAS LAS PLATAFORMAS (Vacantes y Cotizaciones de Instalaciones)", type="primary", use_container_width=True):
         with st.spinner("Rastreando vacantes y solicitudes de instalaciones eléctricas simultáneamente..."):
             total_s = 0
@@ -774,12 +834,11 @@ with tab3:
 
     st.divider()
 
-    # ROW 1: Facebook Cotizaciones, OCC, LinkedIn, CompuTrabajo
     sc_c1, sc_c2, sc_c3, sc_c4 = st.columns(4)
 
     with sc_c1:
         st.markdown("### 📱 FB Cotizaciones")
-        st.caption("Solicitudes de Electricistas, Instalaciones y Obras.")
+        st.caption("Oficiales, Ayudantes, Obras y Presupuestos.")
         if st.button("⚡ Escanear Solicitudes FB", use_container_width=True, type="primary"):
             with st.spinner("Rastreando solicitudes en grupos de Facebook..."):
                 r = FacebookScraper().run_scan_and_save()
@@ -815,7 +874,6 @@ with tab3:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ROW 2: Glassdoor, Jobrapido, JobLeads, Jobsora
     sc_c5, sc_c6, sc_c7, sc_c8 = st.columns(4)
 
     with sc_c5:
@@ -856,12 +914,10 @@ with tab3:
 
     st.divider()
     st.markdown("### 📝 Extractor Inteligente de Solicitudes y Publicaciones (Pegar Texto)")
-    st.write("Pega el texto de cualquier publicación o mensaje de Facebook/WhatsApp para extraer los datos del cliente, teléfono y requerimiento:")
-    
     sample_paste = st.text_area(
-        "Texto de la solicitud:",
+        "Texto de la solicitud o vacante:",
         height=130,
-        placeholder="Ejemplo:\nRequiero electricista urgente para instalación de acometida trifásica y centro de carga en Querétaro. Presupuesto $35,000. Llamar al Ing. David Sotomayor al 442 819 2039 o WhatsApp https://wa.me/524428192039"
+        placeholder="Ejemplo:\nSolicito Oficial Eléctrico para obra en Querétaro. Sueldo $6,000 semanales. Comunicarse con Ing. Mateo Carvajal al 55 4190 8273 o WhatsApp https://wa.me/525541908273"
     )
 
     if st.button("⚡ Extraer y Guardar Solicitud / Oportunidad", use_container_width=True):
@@ -892,9 +948,9 @@ with tab3:
             st.rerun()
 
 # -------------------------------------------------------------
-# TAB 4: CV, PERFIL & PLANTILLAS DE COTIZACIÓN
+# TAB 5: CV, PERFIL & PLANTILLAS DE COTIZACIÓN
 # -------------------------------------------------------------
-with tab4:
+with tab5:
     st.subheader("📄 Perfil Profesional y Plantillas de Cotización / Presupuesto")
     
     cv_col1, cv_col2 = st.columns([1.5, 1])
@@ -944,9 +1000,9 @@ with tab4:
             st.rerun()
 
 # -------------------------------------------------------------
-# TAB 5: CONFIGURACIÓN & EXPORTACIÓN
+# TAB 6: CONFIGURACIÓN & EXPORTACIÓN
 # -------------------------------------------------------------
-with tab5:
+with tab6:
     st.subheader("⚙️ Configuración del Sistema y Exportación de Datos")
 
     exp_col1, exp_col2 = st.columns(2)
@@ -980,28 +1036,22 @@ with tab5:
         st.markdown("### 🔐 Credenciales y Variables de Entorno (.env)")
         st.write(f"Archivo de configuración: `{settings.ENV_PATH}`")
         
-        with st.expander("Ver / Editar Variables de Entorno"):
-            occ_mail = st.text_input("OCC Email:", value=getattr(settings, "OCC_EMAIL", os.getenv("OCC_EMAIL", "")))
-            lk_mail = st.text_input("LinkedIn Email:", value=getattr(settings, "LINKEDIN_EMAIL", os.getenv("LINKEDIN_EMAIL", "")))
-            ct_mail = st.text_input("CompuTrabajo Email:", value=getattr(settings, "COMPUTRABAJO_EMAIL", os.getenv("COMPUTRABAJO_EMAIL", "")))
-            gd_mail = st.text_input("Glassdoor Email:", value=getattr(settings, "GLASSDOOR_EMAIL", os.getenv("GLASSDOOR_EMAIL", "")))
-            jr_mail = st.text_input("Jobrapido Email:", value=getattr(settings, "JOBRAPIDO_EMAIL", os.getenv("JOBRAPIDO_EMAIL", "")))
-            jl_mail = st.text_input("JobLeads Email:", value=getattr(settings, "JOBLEADS_EMAIL", os.getenv("JOBLEADS_EMAIL", "")))
-            js_mail = st.text_input("Jobsora Email:", value=getattr(settings, "JOBSORA_EMAIL", os.getenv("JOBSORA_EMAIL", "")))
-            fb_mail = st.text_input("Facebook Email:", value=getattr(settings, "FB_EMAIL", os.getenv("FB_EMAIL", "")))
+        with st.expander("Ver / Editar Variables de Entorno y WhatsApp Bot"):
+            wa_prov = st.selectbox("Proveedor de WhatsApp Bot:", ["greenapi", "meta", "ultramsg", "twilio", "simulation"], index=0)
             wa_ph = st.text_input("WhatsApp Personal / Negocio:", value=getattr(settings, "USER_WHATSAPP_PHONE", os.getenv("USER_WHATSAPP_PHONE", "")))
+            green_id = st.text_input("GreenAPI Instance ID:", value=getattr(settings, "GREENAPI_INSTANCE_ID", os.getenv("GREENAPI_INSTANCE_ID", "")))
+            green_token = st.text_input("GreenAPI Token:", value=getattr(settings, "GREENAPI_API_TOKEN", os.getenv("GREENAPI_API_TOKEN", "")))
+            meta_pid = st.text_input("Meta Phone ID (Cloud API):", value=getattr(settings, "META_PHONE_NUMBER_ID", os.getenv("META_PHONE_NUMBER_ID", "")))
+            meta_token = st.text_input("Meta Access Token:", value=getattr(settings, "META_ACCESS_TOKEN", os.getenv("META_ACCESS_TOKEN", "")))
             
             if st.button("Guardar Cambios en .env"):
-                settings.update_env_variable("OCC_EMAIL", occ_mail)
-                settings.update_env_variable("LINKEDIN_EMAIL", lk_mail)
-                settings.update_env_variable("COMPUTRABAJO_EMAIL", ct_mail)
-                settings.update_env_variable("GLASSDOOR_EMAIL", gd_mail)
-                settings.update_env_variable("JOBRAPIDO_EMAIL", jr_mail)
-                settings.update_env_variable("JOBLEADS_EMAIL", jl_mail)
-                settings.update_env_variable("JOBSORA_EMAIL", js_mail)
-                settings.update_env_variable("FB_EMAIL", fb_mail)
+                settings.update_env_variable("WHATSAPP_PROVIDER", wa_prov)
                 settings.update_env_variable("USER_WHATSAPP_PHONE", wa_ph)
-                st.success("Variables de entorno actualizadas con éxito.")
+                settings.update_env_variable("GREENAPI_INSTANCE_ID", green_id)
+                settings.update_env_variable("GREENAPI_API_TOKEN", green_token)
+                settings.update_env_variable("META_PHONE_NUMBER_ID", meta_pid)
+                settings.update_env_variable("META_ACCESS_TOKEN", meta_token)
+                st.success("Variables de entorno y WhatsApp Bot actualizadas con éxito.")
 
     st.divider()
     st.markdown("### 🏷️ Palabras Clave y Filtros (`config/keywords.json`)")

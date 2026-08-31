@@ -1,6 +1,51 @@
-# 🚀 AutoJob Hunter & Tracker (8 Canales Laborales & Cotizador de Instalaciones Eléctricas)
+# 🚀 AutoJob Hunter & Tracker (8 Canales Laborales & Bot Interactivo de WhatsApp)
 
-Sistema integral de automatización multiplataforma para la **búsqueda de empleo, extracción de vacantes y captura de solicitudes de cotizaciones de obras e instalaciones eléctricas** en las 8 plataformas líderes en México (**Facebook**, **LinkedIn**, **OCC Mundial**, **CompuTrabajo**, **Glassdoor**, **Jobrapido**, **JobLeads**, **Jobsora**).
+Sistema integral de automatización multiplataforma para la **búsqueda de empleo, extracción de vacantes, captura de solicitudes de cotizaciones eléctricas y control total remoto desde tu WhatsApp** en las 8 plataformas líderes en México (**Facebook**, **LinkedIn**, **OCC Mundial**, **CompuTrabajo**, **Glassdoor**, **Jobrapido**, **JobLeads**, **Jobsora**).
+
+---
+
+## 📱 Módulo Especial: Bot Interactivo de WhatsApp (Control Total desde tu Celular)
+
+Gestiona toda tu búsqueda y cotizaciones directamente desde un chat de WhatsApp sin necesidad de abrir la computadora:
+
+```
+                  ┌────────────────────────────────────────┐
+                  │          Tu WhatsApp Personal          │
+                  │   [ !cotizaciones / !contacto 15 ]     │
+                  └───────────────────┬────────────────────┘
+                                      │
+                                      ▼
+                  ┌────────────────────────────────────────┐
+                  │    Servidor Webhook (FastAPI/HTTP)     │
+                  │      (core/whatsapp_server.py)         │
+                  └───────────────────┬────────────────────┘
+                                      │
+                                      ▼
+                  ┌────────────────────────────────────────┐
+                  │       Motor WhatsAppBot (NLP)          │
+                  │        (core/whatsapp_bot.py)          │
+                  └──────────────┬──────────────────┬──────┘
+                                 │                  │
+                                 ▼                  ▼
+                    [Base de Datos SQLite]    [Scrapers en Vivo]
+                    [ Métricas / Estados ]    [ Facebook / OCC ]
+```
+
+### 📋 Comandos Disponibles en WhatsApp:
+
+| Comando | Descripción | Ejemplo de Uso |
+| :--- | :--- | :--- |
+| `!resumen` / `!stats` | Métricas de hoy: postuladas hoy, esta semana, pendientes y promedios | `!resumen` |
+| `!cotizaciones` / `!obras` | Lista solicitudes de electricistas, obras y presupuestos para llamar | `!cotizaciones` |
+| `!vacantes` | Lista las últimas vacantes encontradas con sueldo y ubicación | `!vacantes` |
+| `!vacantes [filtro]` | Filtra por puesto, tecnología o ciudad | `!vacantes oficial cdmx` |
+| `!buscar [texto]` | Búsqueda libre en toda la base de datos | `!buscar queretaro` |
+| `!detalle [id]` | Ver ficha técnica completa, teléfono, cliente y enlace directo | `!detalle 15` |
+| `!contacto [id]` | Marca como **Postulado / En Contacto** y devuelve enlace WhatsApp | `!contacto 15` |
+| `!cotizado [id]` | Marca como **En Cotización / Entrevista** en la base de datos | `!cotizado 15` |
+| `!descartar [id]` | Elimina o descarta una vacante de la base | `!descartar 15` |
+| `!escanear [fuente]` | Dispara escaneo remoto en vivo (`fb`, `occ`, `linkedin`, `todas`) | `!escanear fb` |
+| `!ayuda` / `!menu` | Despliega el menú de comandos en tu chat | `!ayuda` |
 
 ---
 
@@ -14,13 +59,13 @@ Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos, 
 - 👤 **Nombre y Cargo del Contacto:** Captura directa del encargado de la obra (*Ing. Mateo Carvajal, Ing. Sergio Valenzuela, Ing. Gerardo Albarrán, Arq. Brenda Salgado, Arq. Luis Fernando Ríos, Ing. David Sotomayor, Arq. Roberto Morales, Lic. Claudia Benítez*).
 - 📞 **Teléfono Directo:** Enlace de marcado telefónico inmediato (`tel:+52...`) para llamadas rápidas de postulación o prospección.
 - 💬 **Generador de Cotizaciones por WhatsApp:** Enlace con mensaje formal precargado para solicitar planos y agendar visitas técnicas para enviar presupuestos bajo norma NOM-001-SEDE.
-- 💰 **Presupuestos y Salarios:** Rangos semanales (*$5,500 - $6,800 para Oficiales; $3,800 - $4,800 para Medio Oficiales; $2,800 - $3,800 para Ayudantes*) y presupuestos de obra (*$25,000 - $70,000 MXN*).
 
 ---
 
 ## 📋 Tabla de Contenidos
 
 - [Características Principales](#-características-principales)
+- [Bot Interactivo de WhatsApp](#-módulo-especial-bot-interactivo-de-whatsapp-control-total-desde-tu-celular)
 - [Módulo de Obras, Oficiales y Ayudantes Eléctricos](#-módulo-especial-captura-de-obras-clientes-y-categorías-eléctricas)
 - [Plataformas de Empleo Integradas (8 Canales)](#-plataformas-de-empleo-integradas-8-canales)
 - [Grupos de Facebook Rastreados](#-grupos-de-facebook-rastreados)
@@ -29,54 +74,26 @@ Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos, 
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 - [Requisitos Previos](#-requisitos-previos)
 - [Instalación y Puesta en Marcha](#-instalación-y-puesta-en-marcha)
-- [Variables de Entorno (.env)](#-variables-de-entorno-env)
-- [Guía de Uso (CLI y Dashboard)](#-guía-de-uso)
+- [Configuración de Webhook de WhatsApp](#-configuración-de-webhook-de-whatsapp)
+- [Guía de Uso (CLI, WhatsApp y Dashboard)](#-guía-de-uso)
 - [Panel de Control Web (Streamlit)](#-panel-de-control-web-streamlit)
 - [Estructura de Datos Extraídos](#-estructura-de-datos-extraídos)
 - [Plantilla de Mensaje de Cotización](#-plantilla-de-mensaje-de-cotización)
-- [Próximas Mejoras](#-próximas-mejoras)
 
 ---
 
-## ✨ Características Principales
+## 🌐 Plataformas de Empleo Integradas (8 Canales)
 
-### 1. 🌐 Rastreo y Extracción Multiplataforma (8 Canales)
-- 📱 **Facebook (Grupos, Obras, Oficiales y Ayudantes):** Solicitudes de Oficiales Eléctricos, Medio Oficiales, Ayudantes Electricistas, técnicos instaladores de fibra, CCTV y telecomunicaciones.
-- 💼 **LinkedIn Jobs México:** Vacantes corporativas de ingeniería en empresas globales.
-- 🌐 **OCC Mundial:** Extracción de ofertas técnicas y postulación con CV.
-- 🟧 **CompuTrabajo:** Empleos técnicos, de campo e industriales.
-- 🟢 **Glassdoor México:** Estimaciones salariales, valoraciones de empresa y vacantes Tech.
-- 🌐 **Jobrapido México:** Agregador nacional de ofertas de ingeniería y telecomunicaciones.
-- 🎯 **JobLeads México:** Oportunidades Senior, Lead y de nivel ejecutivo.
-- 🔴 **Jobsora México:** Cobertura de vacantes técnicas y de ingeniería.
-
-### 2. 📊 Dashboard de Estadísticas y Control Diario
-- **Monitoreo Diario:** Registro cronológico exacto de la fecha y hora (`applied_at`) en que contactas o postulas a cada vacante/obra.
-- **Métricas de Rendimiento:** KPIs en tiempo real para postulaciones de **Hoy**, **Esta Semana (7 días)**, **Este Mes** y **Total Histórico**.
-- **Tasa de Conversión:** Porcentaje de éxito entre contactos realizados y entrevistas/cotizaciones enviadas (`% de Éxito`).
-- **Gráfica de Ritmo Diario:** Visualización en barras de la actividad diaria acumulada.
-- **Desglose Multidimensional:** Gráficas comparativas por plataforma (8 Canales), por especialidad y por modalidad (*Remoto*, *Híbrido*, *Presencial*).
-- **Historial Completo:** Tabla interactiva para dar seguimiento a cada contacto con su estado, fecha, teléfono y notas.
-
-### 3. 🎛️ Bolsa de Vacantes & Cotizaciones con Filtros Avanzados
-- **Filtro por Plataforma:** Selector rápido para filtrar entre las 8 fuentes laborales.
-- **Filtro por Ciudad / Ubicación:** Búsqueda inteligente con resolución de alias locales (*Querétaro/Qro, CDMX, Toluca, Monterrey/MTY, Guadalajara/GDL, etc.*).
-- **Botón de Aplicar Filtros:** Formulario interactivo con botón primario `🔍 Aplicar Filtros`.
-- **Botones de Estado Sincronizados:** Los botones `⬜ Postular / Contactar` y `🎯 Cotizar / Entrevista` inician sin seleccionar por defecto y actualizan la base de datos en tiempo real al hacer clic (`✅ En Contacto` o `🟣 En Cotización`), permitiendo también desmarcarlos con un segundo clic.
-- **Exportación de Datos:** Descarga de reportes completos en **Excel (`.xlsx`)** y **CSV** con columnas para `company` (contacto), `phone`, `whatsapp_url`, `modality` y `applied_at`.
-
----
-
-## 👥 Grupos de Facebook Rastreados
-
-El módulo `core/facebook_scraper.py` monitorea activamente:
-1. **Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México** (Obras industriales, cuadrillas, cableado, chalupas, tubería).
-2. **Cotizaciones y Trabajos Eléctricos e Instalaciones México** (Naves industriales, acometidas, tableros).
-3. **Servicios Eléctricos, Subestaciones y Obras Eléctricas CDMX / EdoMex** (Plazas comerciales, CFE, media tensión).
-4. **Obras, Remodelaciones y Contratistas Eléctricos Monterrey & Querétaro** (Mantenimiento de subestaciones, parques industriales).
-5. **Bolsa de Proyectos e Instalaciones Eléctricas Industriales Guadalajara** (Restaurantes, bancos de capacitores, control).
-6. **Bolsa de Trabajo Técnicos Instaladores de Fibra Óptica y Telecomunicaciones México** (FTTH, Empalmes por fusión).
-7. **Técnicos en Sistemas, Soporte TI y Redes México** (Cableado estructurado, racks, redes).
+| Plataforma | Módulo | Enfoque Principal |
+| :--- | :--- | :--- |
+| **📱 Facebook** | `core/facebook_scraper.py` | Solicitudes de electricistas, Oficiales, Ayudantes, obras y presupuestos |
+| **💼 LinkedIn** | `core/linkedin_scraper.py` | Multinacionales de telecomunicaciones, software y manufactura avanzada |
+| **🌐 OCC Mundial** | `core/occ_bot.py` | Ofertas corporativas y contratación formal en México con subida de CV |
+| **🟧 CompuTrabajo** | `core/computrabajo_scraper.py` | Empleos técnicos, de campo (Drive Test / Planta Externa) e industriales |
+| **🟢 Glassdoor** | `core/glassdoor_scraper.py` | Posiciones con insights de compensación salarial y empresas calificadas |
+| **🌐 Jobrapido** | `core/jobrapido_scraper.py` | Agregador masivo de vacantes de ingeniería a nivel nacional |
+| **🎯 JobLeads** | `core/jobleads_scraper.py` | Puestos ejecutivos, Senior Engineers, Tech Leads y Gerencias Técnicas |
+| **🔴 Jobsora** | `core/jobsora_scraper.py` | Empleos de ingeniería, técnicos en telecomunicaciones, electricidad y redes |
 
 ---
 
@@ -96,47 +113,6 @@ El módulo `core/facebook_scraper.py` monitorea activamente:
  │ Promedio diario: 4.2 gestiones/día       │    │ - Por Especialidad (Eléctrica, RF, Soft) │
  └──────────────────────────────────────────┘    │ - Por Modalidad (Presencial, Híbrido...) │
                                                  └──────────────────────────────────────────┘
-                                               │
-                                               ▼
- ┌──────────────────────────────────────────────────────────────────────────────────────────┐
- │ 📋 Tabla Detallada de Oportunidades (Fecha, Contacto/Cliente, Puesto, Teléfono, WhatsApp)│
- └──────────────────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🛠️ Arquitectura del Sistema
-
-```
-                         ┌───────────────────────────────┐
-                         │   Panel de Control Visual     │
-                         │   (Streamlit / CLI / Web)     │
-                         └──────────────┬────────────────┘
-                                        │
-           ┌────────────────────────────┼────────────────────────────┐
-           ▼                            ▼                            ▼
- ┌───────────────────┐        ┌───────────────────┐        ┌───────────────────┐
- │   Facebook / FB   │        │   LinkedIn / OCC  │        │CT / GD / JR / JS  │
- │ (core/facebook...)│        │(core/linkedin...) │        │(core/jobsora_sc..)│
- └─────────┬─────────┘        └─────────┬─────────┘        └─────────┬─────────┘
-           │                            │                            │
-[Oficiales / Ayudantes]         [Ofertas en Vivo]           [Extracción Datos]
-           │                            │                            │
-           └────────────────────────────┼────────────────────────────┘
-                                        │
-                                        ▼
-       ┌───────────────────────────────────────────────────────────┐
-       │             Base de Datos (SQLite / jobs.db)              │
-       │      - Vacantes y Cotizaciones (8 Canales Laborales)      │
-       │      - Métricas Diarias (applied_at, status, modality)    │
-       │      - Historial de Cotizaciones y Notas de Seguimiento   │
-       └────────────────────────────┬──────────────────────────────┘
-                                    │
-                                    ▼
-                    ┌───────────────────────────────┐
-                    │    Notificaciones WhatsApp    │
-                    │  (core/notifier_whatsapp.py)  │
-                    └───────────────────────────────┘
 ```
 
 ---
@@ -148,11 +124,13 @@ app_busca_trabajo/
 ├── config/
 │   ├── __init__.py
 │   ├── settings.py              # Configuraciones generales, variables .env y rutas
-│   └── keywords.json            # Palabras clave (RF, Eléctrica, Oficial, Medio Oficial, Ayudante, Sistemas)
+│   └── keywords.json            # Palabras clave (RF, Eléctrica, Oficial, Medio Oficial, Ayudante)
 ├── core/
 │   ├── __init__.py
 │   ├── database.py              # SQLite (jobs.db), métricas diarias, filtros y exportaciones
 │   ├── data_extractor.py        # Parser inteligente (Puesto, Teléfono, Salario, Modalidad)
+│   ├── whatsapp_bot.py          # Motor interactivo de comandos NLP para WhatsApp
+│   ├── whatsapp_server.py       # Servidor Webhook HTTP universal para WhatsApp
 │   ├── occ_bot.py               # Automatizador y scraper para OCC Mundial
 │   ├── linkedin_scraper.py      # Scraper de ofertas en tiempo real en LinkedIn
 │   ├── computrabajo_scraper.py  # Scraper de ofertas en tiempo real en CompuTrabajo
@@ -168,10 +146,9 @@ app_busca_trabajo/
 │   └── jobs.db                  # Base de datos local SQLite con índices
 ├── ui/
 │   ├── __init__.py
-│   └── app.py                   # Dashboard interactivo con 5 pestañas en Streamlit
+│   └── app.py                   # Dashboard interactivo con 6 pestañas en Streamlit
 ├── main.py                      # Lanzador unificado por línea de comandos (CLI)
 ├── .env.example                 # Plantilla de variables de entorno
-├── .gitignore                   # Archivos ignorados por Git
 ├── requirements.txt             # Dependencias de Python
 └── README.md                    # Documentación técnica completa
 ```
@@ -182,7 +159,7 @@ app_busca_trabajo/
 
 - **Python 3.10+** (probado y 100% compatible con Python 3.14 en Windows/Linux/macOS).
 - Navegador web moderno (Chrome, Edge, Firefox, Brave).
-- Conexión a Internet para la consulta en vivo de vacantes.
+- Conexión a Internet.
 
 ---
 
@@ -194,7 +171,7 @@ app_busca_trabajo/
    cd app_busca_trabajo
    ```
 
-2. **Crear y activar un entorno virtual:**
+2. **Crear y activar entorno virtual:**
    ```bash
    python -m venv venv
    # En Windows:
@@ -213,13 +190,24 @@ app_busca_trabajo/
    cp .env.example .env
    ```
 
-5. **Iniciar la aplicación:**
+---
+
+## 📲 Configuración de Webhook de WhatsApp
+
+1. **Iniciar el servidor Webhook en segundo plano:**
    ```bash
-   python main.py
-   # O directamente con Streamlit:
-   streamlit run ui/app.py
+   python main.py --bot --port 5000
    ```
-   *Accede desde tu navegador en **[http://localhost:8501](http://localhost:8501)**.*
+
+2. **Exponer el puerto local con Ngrok (gratuito):**
+   ```bash
+   ngrok http 5000
+   ```
+
+3. **Configurar tu URL de Webhook en tu proveedor (GreenAPI, Twilio o Meta Cloud API):**
+   - URL: `https://tu-subdominio.ngrok-free.app/whatsapp/webhook`
+
+4. **¡Listo!** Escribe `!ayuda` o `!cotizaciones` desde tu WhatsApp para interactuar.
 
 ---
 
@@ -229,36 +217,30 @@ app_busca_trabajo/
 # Iniciar la interfaz web gráfica (Streamlit)
 python main.py
 
-# Escanear Oficiales, Ayudantes y cotizaciones en Facebook
+# Iniciar la Consola Interactiva para probar comandos de WhatsApp en tu terminal
+python main.py --chat
+
+# Iniciar el Servidor Webhook de WhatsApp
+python main.py --bot --port 5000
+
+# Escanear solicitudes de electricistas y cotizaciones en Facebook
 python main.py --fb
 
 # Escanear TODAS las 8 plataformas simultáneamente
 python main.py --all
-
-# Escanear plataformas individuales
-python main.py --linkedin       # LinkedIn México
-python main.py --occ            # OCC Mundial
-python main.py --computrabajo   # CompuTrabajo México (alias: --ct)
-python main.py --glassdoor      # Glassdoor México (alias: --gd)
-python main.py --jobrapido      # Jobrapido México (alias: --jr)
-python main.py --jobleads       # JobLeads México (alias: --jl)
-python main.py --jobsora        # Jobsora México (alias: --js)
 
 # Ver estadísticas de la base de datos
 python main.py --stats
 
 # Exportar reporte a Excel (.xlsx) y CSV
 python main.py --export
-
-# Cargar vacantes de demostración
-python main.py --seed
 ```
 
 ---
 
-## 💬 Plantilla de Mensaje de Cotización y Contacto
+## 💬 Plantilla de Mensaje de Cotización
 
-Al pulsar el botón **"💬 Cotizar por WhatsApp"** en cualquier solicitud de obra, se abre directamente la conversación con una propuesta formal:
+Al pulsar el botón **"💬 Cotizar por WhatsApp"** o usar el comando `!contacto [id]`, se abre la conversación con una propuesta formal:
 
 > *"¡Hola **[Nombre del Contacto]**! Buen día. Espero que se encuentre muy bien.*  
 > *Vi su solicitud en Facebook requiriendo **[Oficial Eléctrico / Medio Oficial / Ayudante / Instalación Eléctrica]** en **[Ubicación]**.*  
@@ -268,12 +250,4 @@ Al pulsar el botón **"💬 Cotizar por WhatsApp"** en cualquier solicitud de ob
 
 ---
 
-## 🔮 Próximas Mejoras
-
-- [ ] Generador automático de presupuestos en PDF con membrete personalizado.
-- [ ] Integración con modelos de lenguaje (Gemini / Claude) para análisis de compatibilidad y generación de memorias de cálculo.
-- [ ] Notificaciones automáticas por WhatsApp Cloud API / Webhooks.
-
----
-
-**Desarrollado para automatizar la prospección, cotización y contratación en Ingeniería, Obras y Puestos de Oficial Eléctrico, Medio Oficial y Ayudante.**
+**Desarrollado para automatizar la prospección, cotización y contratación en Ingeniería y Obras Eléctricas.**

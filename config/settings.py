@@ -52,9 +52,15 @@ JOBLEADS_PASSWORD = os.getenv("JOBLEADS_PASSWORD", "")
 JOBSORA_EMAIL = os.getenv("JOBSORA_EMAIL", "")
 JOBSORA_PASSWORD = os.getenv("JOBSORA_PASSWORD", "")
 
-# WhatsApp Notification Settings
+# WhatsApp Notification & Bot Settings
 USER_WHATSAPP_PHONE = os.getenv("USER_WHATSAPP_PHONE", "")
-WHATSAPP_API_KEY = os.getenv("WHATSAPP_API_KEY", "")
+WHATSAPP_PROVIDER = os.getenv("WHATSAPP_PROVIDER", "greenapi")
+GREENAPI_INSTANCE_ID = os.getenv("GREENAPI_INSTANCE_ID", "")
+GREENAPI_API_TOKEN = os.getenv("GREENAPI_API_TOKEN", "")
+META_PHONE_NUMBER_ID = os.getenv("META_PHONE_NUMBER_ID", "")
+META_ACCESS_TOKEN = os.getenv("META_ACCESS_TOKEN", "")
+META_VERIFY_TOKEN = os.getenv("META_VERIFY_TOKEN", "autojob_token_2026")
+WHATSAPP_WEBHOOK_PORT = int(os.getenv("WHATSAPP_WEBHOOK_PORT", "5000"))
 
 # Candidate Profile and CV
 CV_PATH = os.getenv("CV_PATH", str(CV_DIR / "mi_cv.pdf"))

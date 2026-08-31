@@ -15,6 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent
 sys.path.append(str(BASE_DIR))
 
 import core.database as db
+from config import settings
 from core.occ_bot import OCCBot
 from core.facebook_scraper import FacebookScraper
 from core.linkedin_scraper import LinkedInScraper
@@ -23,11 +24,14 @@ from core.glassdoor_scraper import GlassdoorScraper
 from core.jobrapido_scraper import JobrapidoScraper
 from core.jobleads_scraper import JobLeadsScraper
 from core.jobsora_scraper import JobsoraScraper
+from core.whatsapp_bot import WhatsAppBot
+from core.whatsapp_server import run_webhook_server
 
 BANNER = """
 =============================================================================
   AUTOJOB HUNTER & TRACKER (LINKEDIN, OCC, COMPUTRABAJO, GLASSDOOR, ETC.)
   Especialidades: RF / Telecom, Eléctrica, Sistemas / Software & Técnicos
+  Bot Interactivo de WhatsApp & Servidor Webhook Integrado
 =============================================================================
 """
 
@@ -100,7 +104,7 @@ def run_jobsora():
     print_stats()
 
 def run_fb():
-    print("\n[+] Iniciando escaneo de ofertas en grupos de Facebook (Ingeniería y Técnicos)...")
+    print("\n[+] Iniciando escaneo de ofertas en grupos de Facebook (Ingeniería, Técnicos y Cotizaciones)...")
     fb = FacebookScraper()
     res = fb.run_scan_and_save()
     print(f"[OK] Escaneo Facebook terminado. Procesadas: {res['total_found']} | Nuevas registradas: {res['new_saved']}")
@@ -131,6 +135,29 @@ def run_export():
     print(f"[OK] Reporte Excel guardado en: {excel_path}")
     print(f"[OK] Reporte CSV guardado en:   {csv_path}\n")
 
+def run_chat_console():
+    """Interactive terminal console to test WhatsApp Bot commands directly."""
+    bot = WhatsAppBot()
+    print("\n" + "=" * 65)
+    print("  💬 CONSOLA DE PRUEBA DE COMANDOS DE WHATSAPP BOT")
+    print("  Escribe '!ayuda', '!cotizaciones', '!resumen', '!vacantes' o 'salir'")
+    print("=" * 65 + "\n")
+    while True:
+        try:
+            user_input = input("WhatsApp > ").strip()
+            if not user_input:
+                continue
+            if user_input.lower() in ["salir", "exit", "quit", "q"]:
+                print("Saliendo de la consola...")
+                break
+            reply = bot.process_message(user_input)
+            print("\nBot Respuesta:")
+            print(reply)
+            print("-" * 65 + "\n")
+        except (KeyboardInterrupt, EOFError):
+            print("\nSaliendo...")
+            break
+
 def launch_ui():
     print("\n[+] Iniciando interfaz gráfica Streamlit...")
     app_path = BASE_DIR / "ui" / "app.py"
@@ -142,6 +169,9 @@ def main():
 
     parser = argparse.ArgumentParser(description="AutoJob Hunter & Tracker CLI")
     parser.add_argument("--ui", action="store_true", help="Iniciar el Dashboard visual de Streamlit (por defecto)")
+    parser.add_argument("--bot", "--webhook", action="store_true", help="Iniciar el Servidor Webhook de WhatsApp Bot")
+    parser.add_argument("--port", type=int, default=5000, help="Puerto para el servidor Webhook de WhatsApp (default 5000)")
+    parser.add_argument("--chat", action="store_true", help="Consola interactiva en terminal para probar comandos de WhatsApp")
     parser.add_argument("--occ", action="store_true", help="Ejecutar búsqueda en OCC Mundial")
     parser.add_argument("--linkedin", action="store_true", help="Ejecutar búsqueda en LinkedIn")
     parser.add_argument("--computrabajo", "--ct", action="store_true", help="Ejecutar búsqueda en CompuTrabajo")
@@ -157,7 +187,11 @@ def main():
 
     args = parser.parse_args()
 
-    if args.all:
+    if args.chat:
+        run_chat_console()
+    elif args.bot:
+        run_webhook_server(args.port)
+    elif args.all:
         run_all_scrapers()
     elif args.occ:
         run_occ()
