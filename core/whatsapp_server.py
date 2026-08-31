@@ -1,6 +1,8 @@
 import sys
 import json
+import time
 import logging
+import threading
 from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime
@@ -41,7 +43,7 @@ def send_whatsapp_outbound(to_phone: str, message: str) -> Dict[str, Any]:
                 "message": message
             }
             try:
-                r = requests.post(url, json=payload, timeout=10)
+                r = requests.post(url, json=payload, timeout=15)
                 return {"success": r.status_code == 200, "response": r.text}
             except Exception as e:
                 logger.error(f"Error sending GreenAPI message: {e}")
@@ -65,13 +67,63 @@ def send_whatsapp_outbound(to_phone: str, message: str) -> Dict[str, Any]:
                 "text": {"body": message}
             }
             try:
-                r = requests.post(url, headers=headers, json=payload, timeout=10)
+                r = requests.post(url, headers=headers, json=payload, timeout=15)
                 return {"success": r.status_code == 200, "response": r.text}
             except Exception as e:
                 logger.error(f"Error sending Meta Cloud message: {e}")
                 return {"success": False, "error": str(e)}
 
     return {"success": True, "note": "Simulation mode or credentials not configured"}
+
+def run_greenapi_polling_loop():
+    """
+    Direct polling loop for GreenAPI.
+    Receives incoming WhatsApp messages from your phone line (+52...) without needing ngrok or open ports.
+    """
+    instance_id = getattr(settings, "GREENAPI_INSTANCE_ID", "")
+    api_token = getattr(settings, "GREENAPI_API_TOKEN", "")
+
+    if not instance_id or not api_token:
+        logger.info("[GreenAPI Polling] Instance ID o API Token no configurados. En espera de credenciales en .env...")
+        return
+
+    logger.info(f"🔄 Iniciando escucha activa GreenAPI para la instancia {instance_id}...")
+    receive_url = f"https://api.green-api.com/waInstance{instance_id}/ReceiveNotification/{api_token}"
+
+    while True:
+        try:
+            r = requests.get(receive_url, timeout=25)
+            if r.status_code == 200 and r.text and r.text != "null":
+                notification = r.json()
+                receipt_id = notification.get("receiptId")
+                body = notification.get("body", {})
+                type_webhook = body.get("typeWebhook")
+
+                if type_webhook == "incomingMessageReceived":
+                    msg_data = body.get("messageData", {})
+                    incoming_text = (
+                        msg_data.get("textMessageData", {}).get("textMessage")
+                        or msg_data.get("extendedTextMessageData", {}).get("text", "")
+                    )
+                    sender_data = body.get("senderData", {})
+                    sender_chat = sender_data.get("chatId", "")
+                    sender_phone = sender_chat.replace("@c.us", "")
+
+                    if incoming_text:
+                        logger.info(f"📱 Mensaje recibido de +{sender_phone}: '{incoming_text}'")
+                        reply_text = bot_engine.process_message(incoming_text, sender_phone)
+                        send_whatsapp_outbound(sender_chat, reply_text)
+                        logger.info(f"✅ Respuesta enviada exitosamente a +{sender_phone}")
+
+                # Delete processed notification from GreenAPI queue
+                if receipt_id:
+                    delete_url = f"https://api.green-api.com/waInstance{instance_id}/DeleteNotification/{api_token}/{receipt_id}"
+                    requests.delete(delete_url, timeout=10)
+
+        except Exception as e:
+            time.sleep(2)
+
+        time.sleep(0.5)
 
 class WhatsAppWebhookHandler(BaseHTTPRequestHandler):
     """
@@ -115,6 +167,7 @@ class WhatsAppWebhookHandler(BaseHTTPRequestHandler):
             self._send_json_response({
                 "status": "active",
                 "service": "AutoJob Hunter WhatsApp Webhook",
+                "configured_phone": getattr(settings, "USER_WHATSAPP_PHONE", ""),
                 "timestamp": str(datetime.now())
             })
             return
@@ -123,7 +176,8 @@ class WhatsAppWebhookHandler(BaseHTTPRequestHandler):
             self._send_json_response({
                 "status": "healthy",
                 "uptime": "running",
-                "bot": "WhatsAppBot Interactive Engine"
+                "bot": "WhatsAppBot Interactive Engine",
+                "user_phone": getattr(settings, "USER_WHATSAPP_PHONE", "")
             })
             return
 
@@ -137,7 +191,6 @@ class WhatsAppWebhookHandler(BaseHTTPRequestHandler):
         incoming_text = ""
         sender_phone = ""
 
-        # Parse request format
         content_type = self.headers.get("Content-Type", "")
         if "application/json" in content_type:
             try:
@@ -145,12 +198,10 @@ class WhatsAppWebhookHandler(BaseHTTPRequestHandler):
             except Exception:
                 data = {}
 
-            # Direct / Test simulation payload
             if "text" in data:
                 incoming_text = data.get("text", "")
                 sender_phone = data.get("phone", "")
 
-            # GreenAPI format
             elif data.get("typeWebhook") == "incomingMessageReceived":
                 msg_data = data.get("messageData", {})
                 incoming_text = (
@@ -159,12 +210,10 @@ class WhatsAppWebhookHandler(BaseHTTPRequestHandler):
                 )
                 sender_phone = data.get("senderData", {}).get("chatId", "").replace("@c.us", "")
 
-            # UltraMsg format
             elif "data" in data and "body" in data["data"]:
                 incoming_text = data["data"].get("body", "")
                 sender_phone = data["data"].get("from", "").replace("@c.us", "")
 
-            # Meta WhatsApp Cloud API format
             elif "entry" in data:
                 try:
                     entry = data["entry"][0]
@@ -179,17 +228,14 @@ class WhatsAppWebhookHandler(BaseHTTPRequestHandler):
                     logger.error(f"Error parsing Meta payload: {e}")
 
         elif "application/x-www-form-urlencoded" in content_type:
-            # Twilio format: Body & From
             form_data = urllib.parse.parse_qs(raw_body)
             incoming_text = form_data.get("Body", [""])[0]
             sender_phone = form_data.get("From", [""])[0].replace("whatsapp:", "")
 
-        # Process via WhatsAppBot
         if incoming_text:
             logger.info(f"Incoming message from '{sender_phone}': '{incoming_text}'")
             reply_text = bot_engine.process_message(incoming_text, sender_phone)
             
-            # Send outbound reply if sender_phone is provided
             if sender_phone:
                 send_whatsapp_outbound(sender_phone, reply_text)
 
@@ -207,11 +253,20 @@ class WhatsAppWebhookHandler(BaseHTTPRequestHandler):
         }, 400)
 
 def run_webhook_server(port: int = 5000):
-    """Start local HTTP Webhook Server."""
+    """Start local HTTP Webhook Server and background GreenAPI polling listener."""
+    # Launch GreenAPI Polling thread if credentials exist
+    instance_id = getattr(settings, "GREENAPI_INSTANCE_ID", "")
+    api_token = getattr(settings, "GREENAPI_API_TOKEN", "")
+    if instance_id and api_token:
+        polling_thread = threading.Thread(target=run_greenapi_polling_loop, daemon=True)
+        polling_thread.start()
+        logger.info("📡 Escucha continua en segundo plano iniciada para GreenAPI.")
+
     server_address = ("", port)
     httpd = HTTPServer(server_address, WhatsAppWebhookHandler)
     logger.info(f"🚀 Servidor Webhook de WhatsApp iniciado en http://localhost:{port}")
     logger.info(f"👉 Endpoint Webhook: http://localhost:{port}/whatsapp/webhook")
+    logger.info(f"📞 Línea de WhatsApp configurada: {getattr(settings, 'USER_WHATSAPP_PHONE', '+526691798672')}")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
