@@ -37,6 +37,12 @@
     "Ingeniero Eléctrico": {
       "keywords": [
         "Ingeniero Eléctrico",
+        "Oficial Eléctrico",
+        "Oficial Electricista",
+        "Medio Oficial Eléctrico",
+        "Medio Oficial Electricista",
+        "Medio Oficial",
+        "Oficial de Instalaciones Eléctricas",
         "Técnico Electricista",
         "Técnico Electricista Industrial",
         "Técnico en Mantenimiento Eléctrico",
@@ -55,7 +61,9 @@
         "NOM-001-SEDE",
         "Protecciones Eléctricas",
         "Plantas de Emergencia",
-        "Tierras Físicas"
+        "Tierras Físicas",
+        "Canalizaciones Conduit",
+        "Charola Portacable"
       ],
       "color": "#F59E0B",
       "icon": "⚡"

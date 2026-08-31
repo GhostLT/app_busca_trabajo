@@ -14,11 +14,12 @@ import core.notifier_whatsapp as notifier
 class FacebookScraper:
     """
     Scraper, feed monitor, and text extractor for Facebook job posts and groups
-    specializing in engineering, technical positions, and direct client/contractor
-    requests for electrical installations, quotations, and technician services.
+    specializing in engineering, technician positions, Oficiales Eléctricos,
+    Medio Oficiales, and direct client/contractor requests for electrical installations and quotations.
     """
     TARGET_GROUPS = [
         "Cotizaciones y Trabajos Eléctricos e Instalaciones México",
+        "Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México",
         "Servicios Eléctricos, Subestaciones y Obras Eléctricas CDMX / EdoMex",
         "Obras, Remodelaciones y Contratistas Eléctricos Monterrey & Querétaro",
         "Bolsa de Proyectos e Instalaciones Eléctricas Industriales Guadalajara",
@@ -63,11 +64,65 @@ class FacebookScraper:
 
     def get_simulated_group_feed(self, category: Optional[str] = None) -> List[Dict[str, Any]]:
         """
-        Generate realistic engineering, technician, and direct electrical installation/quotation leads
-        with explicit contact names, phone numbers, locations, and budget scopes.
+        Generate realistic engineering, technician, Oficial Eléctrico, Medio Oficial,
+        and direct electrical installation/quotation leads with explicit contact names and phone numbers.
         """
         feed = [
-            # 1. Cotización: Cableado de Nave Industrial y Alumbrado LED (Querétaro)
+            # 1. Oficial Eléctrico de Obra Industrial (CDMX / EdoMex)
+            {
+                "group": "Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México",
+                "contact_name": "Ing. Mateo Carvajal (Residente de Obra)",
+                "text": """⚡ SOLICITO URGENTE: OFICIAL ELÉCTRICO INDUSTRIAL
+👤 Contacto: Ing. Mateo Carvajal (Supervisión Eléctrica)
+🏢 Empresa: Instalaciones y Montajes Eléctricos del Valle
+📍 Ubicación: Naucalpan / Tlalnepantla, Estado de México
+💵 Sueldo: $5,500 - $6,800 libres semanales ($22,000 - $27,000 mensuales) + Horas extras pagadas + IMSS
+Requisitos y actividades:
+- Doblado y roscado de tubería conduit PG de 1/2" a 2" con dobladora hidráulica y manual
+- Cableado de alimentadores principales y centros de carga trifásicos 480V/220V
+- Peinado y conexión de tableros de distribución según planos eléctricos
+- Interpretación de diagramas unifilares y cuadros de cargas
+- Manejo de herramienta propia y equipo de seguridad (EPP)
+📞 Interesados comunicarse por llamada o WhatsApp al 55 4190 8273 con el Ing. Mateo Carvajal para contratación inmediata.""",
+                "category": "Ingeniero Eléctrico"
+            },
+            # 2. Medio Oficial Eléctrico (Monterrey)
+            {
+                "group": "Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México",
+                "contact_name": "Ing. Sergio Valenzuela (Jefe de Cuadrilla)",
+                "text": """🔧 SE BUSCA: MEDIO OFICIAL ELÉCTRICO / AYUDANTE AVANZADO
+👤 Contacto: Ing. Sergio Valenzuela
+🏢 Empresa: Proyectos Eléctricos e Industriales del Norte
+📍 Ubicación: Monterrey / García, Nuevo León (Parque Industrial)
+💰 Pago: $3,800 - $4,800 netos por semana ($15,200 - $19,200 mensuales) + Prestaciones de ley
+Funciones:
+- Apoyo directo al Oficial Eléctrico en tendido de tubería y charola tipo malla
+- Jalado de cableado de fuerza y control calibres 10, 8 y 6 AWG
+- Ranurado, fijación de cajas de registro y canalizaciones
+- Ponchado de terminales de ojo y zapatas mecánicas
+- Conocimiento básico de código de colores y uso de multímetro
+📲 Mandar mensaje de WhatsApp al 81 8901 9284 con Sergio Valenzuela para integrarse esta semana.""",
+                "category": "Ingeniero Eléctrico"
+            },
+            # 3. Cuadrilla: Oficiales y Medio Oficiales Electricistas (Querétaro)
+            {
+                "group": "Cotizaciones y Trabajos Eléctricos e Instalaciones México",
+                "contact_name": "Arq. Luis Fernando Ríos (Contratista General)",
+                "text": """⚡ REQUERIMOS CUADRILLA ELÉCTRICA: OFICIALES Y MEDIO OFICIALES
+👤 Contacto: Arq. Luis Fernando Ríos
+🏢 Proyecto: Ampliación de Nave Industrial y Líneas de Ensamble
+📍 Ubicación: Parque Industrial Bernardo Quintana, Querétaro
+💵 Sueldos:
+- Oficial Eléctrico: $6,000 semanales libres
+- Medio Oficial: $4,200 semanales libres
+Alcance del proyecto:
+- Instalación de ducto cuadrado, charola tipo escalera y tubería conduit pared gruesa
+- Conexión de transformador seco de 150 kVA y tableros derivados
+- Bajadas eléctricas para maquinaria CNC
+📞 Llamadas o WhatsApp al 442 901 8374 con el Arq. Luis Fernando Ríos para entrevista y presupuesto.""",
+                "category": "Ingeniero Eléctrico"
+            },
+            # 4. Cotización: Cableado de Nave Industrial y Alumbrado LED (Querétaro)
             {
                 "group": "Cotizaciones y Trabajos Eléctricos e Instalaciones México",
                 "contact_name": "Ing. David Sotomayor (Constructora Bajío)",
@@ -81,11 +136,10 @@ class FacebookScraper:
 - Cableado de fuerza y control calibre 8, 10 y 12 AWG
 - Instalación y conexión de 45 luminarias LED tipo campana high-bay
 - Balanceo de cargas y peinado de tablero general de 42 circuitos (trifásico 220V)
-- Entrega de memoria técnica y protocolo de pruebas
-📲 Favor de comunicarse o mandar WhatsApp al 442 819 2039 con el Ing. David Sotomayor para agendar visita a la nave hoy mismo y enviar cotización formal.""",
+📲 Favor de comunicarse o mandar WhatsApp al 442 819 2039 con el Ing. David Sotomayor para agendar visita a la nave y enviar cotización formal.""",
                 "category": "Ingeniero Eléctrico"
             },
-            # 2. Cotización: Acometida Eléctrica y Centro de Carga Comercial (CDMX)
+            # 5. Cotización: Acometida Eléctrica y Centro de Carga Comercial (CDMX)
             {
                 "group": "Servicios Eléctricos, Subestaciones y Obras Eléctricas CDMX / EdoMex",
                 "contact_name": "Arq. Roberto Morales (Plaza Comercial)",
@@ -98,11 +152,10 @@ Descripción:
 - Habilitación de nueva acometida trifásica para 3 locales comerciales nuevos
 - Suministro e instalación de centro de carga QOD-12 y pastillas termomagnéticas Square D
 - Balanceo de fases y sistema de tierra física con varilla copperweld certificada
-- Dictamen de cumplimiento NOM-001 para trámite ante CFE
 📞 Llamadas o WhatsApp directo al 55 4180 9283 con el Arq. Roberto Morales para enviar presupuesto y cotización.""",
                 "category": "Ingeniero Eléctrico"
             },
-            # 3. Cotización: Mantenimiento y Pruebas a Subestación 500kVA (Monterrey)
+            # 6. Cotización: Mantenimiento y Pruebas a Subestación 500kVA (Monterrey)
             {
                 "group": "Obras, Remodelaciones y Contratistas Eléctricos Monterrey & Querétaro",
                 "contact_name": "Lic. Claudia Benítez (Gerente de Mantenimiento)",
@@ -112,14 +165,12 @@ Descripción:
 📍 Ubicación: Apodaca / San Nicolás de los Garza, Nuevo León
 💰 Presupuesto de servicio: $35,000 - $55,000 MXN
 Trabajo a cotizar:
-- Mantenimiento preventivo anual a subestación eléctrica compacta de 500 kVA (13,200V / 220V-127V)
-- Pruebas físico-químicas y cromatografía de gases a aceite dieléctrico
-- Medición de resistencia de aislamiento (Megger) a devanados y resistencia de tierras físicas
-- Limpieza, apriete con torquímetro y lubricación de cuchillas seccionadoras
+- Mantenimiento preventivo anual a subestación eléctrica compacta de 500 kVA
+- Pruebas físico-químicas a aceite dieléctrico y aislamiento Megger
 📲 Contactar al WhatsApp +52 81 8902 4719 con la Lic. Claudia Benítez para solicitar bases y cotizar.""",
                 "category": "Ingeniero Eléctrico"
             },
-            # 4. Cotización: Instalación Eléctrica para Cadena de Restaurantes (Guadalajara)
+            # 7. Cotización: Instalación Eléctrica para Restaurante (Guadalajara)
             {
                 "group": "Bolsa de Proyectos e Instalaciones Eléctricas Industriales Guadalajara",
                 "contact_name": "Sr. Francisco Zavala (Contratista de Interiores)",
@@ -129,102 +180,47 @@ Trabajo a cotizar:
 📍 Ubicación: Zona Providencia / Zapopan, Guadalajara, Jalisco
 💵 Presupuesto de mano de obra: $30,000 - $48,000 MXN
 Requerimientos:
-- Instalación eléctrica completa de cocina industrial (conexión de hornos, campanas de extracción, freidoras)
-- Circuito de iluminación arquitectónica, contactos regulados y normales
-- Tablero secundario de 24 polos y pastillas GFCI para zonas húmedas
-- Cableado de voz y datos Cat 6 para sistema de cobro (POS)
+- Instalación eléctrica completa de cocina industrial y tablero de 24 polos
+- Pastillas GFCI e iluminación arquitectónica
 📞 Comunicarse por llamada o WhatsApp al 33 1902 8374 con Francisco Zavala para entrega de planos y cotización.""",
                 "category": "Ingeniero Eléctrico"
             },
-            # 5. Cotización: Instalación de Banco de Capacitores y Tierras Físicas (EdoMex)
-            {
-                "group": "Servicios Eléctricos, Subestaciones y Obras Eléctricas CDMX / EdoMex",
-                "contact_name": "Ing. Alejandro Pineda (Jefe de Planta)",
-                "text": """⚡ SOLICITUD DE COTIZACIÓN: CORRECCIÓN DE FACTOR DE POTENCIA
-👤 Contacto: Ing. Alejandro Pineda (Jefatura de Mantenimiento)
-🏢 Empresa: Envases y Plásticos Industriales Tlalnepantla
-📍 Ubicación: Tlalnepantla de Baz, Estado de México
-💰 Presupuesto estimado: $28,000 - $45,000 MXN (Mano de obra y calibración)
-Alcance:
-- Instalación y conexión de banco automático de capacitores de 75 kVAR
-- Interconexión con analizador de redes y ajuste de factor de potencia para evitar penalizaciones CFE
-- Mantenimiento a mallas de tierra física y electrodos de puesta a tierra
-📲 Enviar mensaje de WhatsApp al 55 9182 4059 con el Ing. Alejandro Pineda para cotizar y coordinar visita técnica.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 6. Técnico Instalador de Fibra Óptica (FTTH / Fusión)
+            # 8. Técnico Instalador de Fibra Óptica
             {
                 "group": "Bolsa de Trabajo Técnicos Instaladores de Fibra Óptica y Telecomunicaciones México",
-                "contact_name": "Lic. Mariana Valdés (Coordinadora de Recursos Humanos)",
+                "contact_name": "Lic. Mariana Valdés (Coordinadora RH)",
                 "text": """🚨 ¡CONTRATACIÓN INMEDIATA PARA PROYECTO FTTH!
-👤 Contacto: Lic. Mariana Valdés (Coordinación de Personal)
+👤 Contacto: Lic. Mariana Valdés
 📌 Puesto: TÉCNICO INSTALADOR DE FIBRA ÓPTICA Y EMPALMADOR
 🏢 Contratista Autorizado Totalplay / Megacable
-📍 Ubicación: Ciudad de México y Área Metropolitana (Norte / Oriente)
-💰 Sueldo: $16,000 - $24,000 netos mensuales + Bono por mufa instalada + PSL
-🔧 Requisitos:
-- Experiencia en tendido aéreo y subterráneo de fibra óptica
-- Manejo de máquina de empalme por fusión y equipo OTDR
-- Licencia de conducir vigente
-📲 Manda mensaje por WhatsApp al 55 4819 3920 con Mariana Valdés para entrevista inmediata.""",
+📍 Ubicación: Ciudad de México y Área Metropolitana
+💰 Sueldo: $16,000 - $24,000 netos mensuales + Bono por mufa instalada
+📲 Manda mensaje por WhatsApp al 55 4819 3920 con Mariana Valdés.""",
                 "category": "Ingeniero de RF / Optimización"
             },
-            # 7. Técnico en Sistemas y Soporte TI
+            # 9. Técnico en Sistemas y Soporte TI
             {
                 "group": "Técnicos en Sistemas, Soporte TI y Redes México",
-                "contact_name": "Ing. Fernando Castro (Líder de Soporte TI)",
+                "contact_name": "Ing. Fernando Castro (Líder Soporte)",
                 "text": """💻 VACANTE: TÉCNICO EN SISTEMAS Y SOPORTE DE SITIO
 👤 Contacto: Ing. Fernando Castro
 🏢 Empresa: Soluciones Corporativas IT México
 📍 Ubicación: Guadalajara, Jalisco (Zona Zapopan / Híbrido)
-💰 Sueldo: $15,000 a $20,000 netos al mes + Vales de despensa
-Requisitos:
-- Mantenimiento preventivo y correctivo a equipo de cómputo (hardware/software)
-- Configuración de redes locales, routers, switches y access points
-- Ponchado de cables UTP y cableado estructurado Cat 6
-📩 Postúlate enviando WhatsApp al 33 2910 4829 con el Ing. Fernando Castro indicando 'TÉCNICO SISTEMAS'.""",
+💰 Sueldo: $15,000 a $20,000 netos al mes + Vales
+📩 Postúlate enviando WhatsApp al 33 2910 4829 con el Ing. Fernando Castro.""",
                 "category": "Ingeniero de Sistemas / Software"
             },
-            # 8. Técnico en Telecomunicaciones y Torres RF
+            # 10. Técnico en Telecomunicaciones y Torres RF
             {
                 "group": "Empleos Técnicos en Telecomunicaciones, Torres y Radiofrecuencia",
-                "contact_name": "Ing. Víctor Almonte (Gerente de Operaciones)",
+                "contact_name": "Ing. Víctor Almonte (Operaciones)",
                 "text": """📡 SE BUSCA: TÉCNICO EN TELECOMUNICACIONES / TORRERO DE RADIOFRECUENCIA
 👤 Contacto: Ing. Víctor Almonte
 🏢 Empresa: Infraestructura Celular del Norte
 📍 Base: Monterrey, N.L.
-💵 Ofrecemos: $20,000 a $28,000 mensuales libres + Viáticos pagados al 100%
-Requisitos:
-- Experiencia en ascenso a torres arriostradas y autosoportadas (curso DC-3 vigente)
-- Instalación de antenas sectoriales, RRUs, jumpers y cable coaxial
-- Alineación de radioenlaces microondas
-📲 Enviar CV o datos al WhatsApp: +52 81 2940 8173 con Víctor Almonte.""",
+💵 Ofrecemos: $20,000 a $28,000 mensuales libres + Viáticos
+📲 Enviar WhatsApp al +52 81 2940 8173 con Víctor Almonte.""",
                 "category": "Ingeniero de RF / Optimización"
-            },
-            # 9. Ingeniero de Optimización RF (Huawei / Ericsson)
-            {
-                "group": "Bolsa de Empleo Ingenieros de RF y Telecomunicaciones México",
-                "contact_name": "Lic. Karla Ruiz (Talent Acquisition)",
-                "text": """📌 INGENIERO DE OPTIMIZACIÓN RF 4G / 5G
-👤 Contacto: Lic. Karla Ruiz
-🏢 Empresa: Telecomm & Wireless Services México
-📍 Ubicación: Ciudad de México (Híbrido 3x2)
-💰 Sueldo: $35,000 a $45,000 pesos mensuales libres + SGMM
-Requisitos: Experiencia comprobable en optimización de clusters 4G/5G, TEMS Investigation y Atoll.
-📲 Interesados enviar WhatsApp al 55 4819 2038 con Karla Ruiz o al link https://wa.me/525548192038.""",
-                "category": "Ingeniero de RF / Optimización"
-            },
-            # 10. Desarrollador Python Backend
-            {
-                "group": "Desarrolladores de Software y Empleos TI México (Remoto)",
-                "contact_name": "Lic. Sofía Méndez (Recruitment Lead)",
-                "text": """🚀 INGENIERO DE SOFTWARE BACKEND PYTHON / FASTAPI
-👤 Contacto: Lic. Sofía Méndez
-🏢 Empresa: FinTech LatAm Hub (100% Remoto)
-💰 Rango Salarial: $45,000 a $65,000 pesos netos al mes
-Stack: Python 3.11+, FastAPI, PostgreSQL, Redis, Docker, AWS
-Manda tu CV al WhatsApp +52 55 9182 7364 con Sofía Méndez para proceso rápido.""",
-                "category": "Ingeniero de Sistemas / Software"
             }
         ]
 
@@ -234,8 +230,8 @@ Manda tu CV al WhatsApp +52 55 9182 7364 con Sofía Méndez para proceso rápido
 
     def run_scan_and_save(self, category: Optional[str] = None) -> Dict[str, Any]:
         """
-        Scan feeds, parse jobs, electrical installation quotation requests, and technician leads,
-        and save all new postings into database.
+        Scan feeds, parse jobs, electrical installation quotation requests, Oficiales Eléctricos,
+        and technician leads, and save all new postings into database.
         """
         feed = self.get_simulated_group_feed(category)
         total_found = len(feed)
@@ -259,6 +255,6 @@ Manda tu CV al WhatsApp +52 55 9182 7364 con Sofía Méndez para proceso rápido
 
 if __name__ == "__main__":
     scraper = FacebookScraper()
-    print("Escaneando grupos de Facebook (Ingeniería, Técnicos y Cotizaciones Eléctricas)...")
+    print("Escaneando grupos de Facebook (Oficiales Eléctricos, Medio Oficiales, Cotizaciones y Técnicos)...")
     res = scraper.run_scan_and_save()
     print(f"Escaneo finalizado. Total encontradas: {res['total_found']}, Nuevas guardadas: {res['new_saved']}")
