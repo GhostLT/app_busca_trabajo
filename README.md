@@ -1,6 +1,6 @@
-# 🚀 AutoJob Hunter & Tracker (OCC, LinkedIn, CompuTrabajo & Redes Sociales)
+# 🚀 AutoJob Hunter & Tracker (OCC, LinkedIn, CompuTrabajo, Glassdoor, Jobrapido, JobLeads & Redes)
 
-Sistema integral de automatización para la **búsqueda, extracción, análisis estadístico y postulación automática** a vacantes de empleo en las principales plataformas laborales (**OCC Mundial**, **LinkedIn**, **CompuTrabajo**) y redes sociales (**Facebook / Grupos de Empleo**), enfocado en perfiles estratégicos de ingeniería:
+Sistema integral de automatización multiplataforma para la **búsqueda, extracción, análisis estadístico y postulación automática** a vacantes de empleo en las 7 plataformas laborales líderes en México (**LinkedIn**, **OCC Mundial**, **CompuTrabajo**, **Glassdoor**, **Jobrapido**, **JobLeads**) y redes sociales (**Facebook / Grupos de Empleo**), enfocado en perfiles estratégicos de ingeniería:
 
 - 📡 **Ingeniero de RF / Optimización / Telecomunicaciones (4G/5G/RAN/MW)**
 - ⚡ **Ingeniero Eléctrico / Media y Alta Tensión / Subestaciones / NOM-001**
@@ -11,6 +11,7 @@ Sistema integral de automatización para la **búsqueda, extracción, análisis 
 ## 📋 Tabla de Contenidos
 
 - [Características Principales](#-características-principales)
+- [Plataformas de Empleo Integradas (7 Canales)](#-plataformas-de-empleo-integradas-7-canales)
 - [Nuevo Dashboard de Estadísticas y Postulaciones Diarias](#-nuevo-dashboard-de-estadísticas-y-postulaciones-diarias)
 - [Arquitectura del Sistema](#-arquitectura-del-sistema)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
@@ -27,52 +28,51 @@ Sistema integral de automatización para la **búsqueda, extracción, análisis 
 
 ## ✨ Características Principales
 
-### 1. 📊 Dashboard de Estadísticas y Control Diario de Postulaciones
+### 1. 🌐 Rastreo y Extracción Multiplataforma (7 Portales)
+Conexión en tiempo real con los principales portales de empleo de México:
+- 💼 **LinkedIn Jobs México:** Búsqueda en vivo de ofertas públicas de ingeniería en corporativos globales.
+- 🌐 **OCC Mundial:** Extracción de vacantes, filtrado avanzado y postulación con CV.
+- 🟧 **CompuTrabajo:** Captura de ofertas técnicas e industriales en todo el territorio nacional.
+- 🟢 **Glassdoor México:** Extracción de vacantes con estimaciones salariales y valoración de empresa.
+- 🌐 **Jobrapido México:** Agregador masivo de vacantes de ingeniería y telecomunicaciones.
+- 🎯 **JobLeads México:** Portal especializado en posiciones Senior, Lead y Arquitectos de ingeniería.
+- 📱 **Redes Sociales (Facebook):** Escaneo inteligente en grupos de empleo y bolsa de trabajo.
+
+### 2. 📊 Dashboard de Estadísticas y Control Diario de Postulaciones
 - **Monitoreo de Postulaciones Diarias:** Registro cronológico exacto de la fecha y hora (`applied_at`) en que te postulas a cada vacante.
 - **Métricas de Rendimiento:** KPIs en tiempo real para postulaciones de **Hoy**, **Esta Semana (7 días)**, **Este Mes** y **Total Histórico**.
 - **Tasa de Conversión a Entrevistas:** Cálculo automático del porcentaje de éxito entre postulaciones realizadas y entrevistas conseguidas (`% de Conversión`).
-- **Gráfica de Ritmo Diario:** Visualización en gráfico de barras de las postulaciones acumuladas por día y promedio de ritmo diario.
-- **Desglose Multidimensional:** Gráficas comparativas de postulaciones por plataforma (*LinkedIn*, *OCC*, *CompuTrabajo*, *Facebook*), por especialidad y por modalidad de trabajo (*Remoto*, *Híbrido*, *Presencial*).
+- **Gráfica de Ritmo Diario:** Visualización cronológica en barras de las postulaciones acumuladas por día y promedio de ritmo diario.
+- **Desglose Gráfico Multidimensional:** Gráficas comparativas de postulaciones por plataforma (LinkedIn, OCC, CompuTrabajo, Glassdoor, Jobrapido, JobLeads, Facebook), por especialidad y por modalidad (*Remoto*, *Híbrido*, *Presencial*).
 - **Historial Completo de Postulaciones:** Tabla interactiva para dar seguimiento a cada vacante aplicada con su estado, fecha, contacto y notas.
 
-### 2. 🟧 Módulo CompuTrabajo México (Búsqueda y Extracción en Vivo)
-- **Extracción Directa:** Conexión con `mx.computrabajo.com` para capturar en tiempo real las ofertas publicadas para ingenieros.
-- **Extracción de Salarios y Modalidad:** Parser inteligente para rangos salariales, ciudades (*CDMX, Guadalajara, Monterrey, Querétaro, etc.*) y esquemas de trabajo.
-- **Enlace Limpio a la Oferta:** Enlace directo para postulación inmediata.
-
-### 3. 🌐 Módulo LinkedIn Jobs (Búsqueda en Tiempo Real)
-- **Extracción en Vivo:** Conexión con el buscador público de LinkedIn México para capturar vacantes de ingeniería en empresas líderes (Ericsson, Huawei, Qualcomm, Schneider Electric, Kiewit, etc.).
-- **Detección Automática de Modalidad:** Identifica esquemas *Remoto*, *Híbrido* o *Presencial*.
-- **Enlace Directo:** Guarda la URL limpia de la vacante para postularte con un solo clic.
-
-### 4. 💼 Módulo OCC Mundial (Postulación y Registro)
-- **Búsqueda Automatizada:** Filtrado por roles clave (*Ingeniero de RF*, *Optimización 4G/5G*, *Ingeniero Eléctrico*, *Ingeniero de Sistemas*).
-- **Extracción de Detalles:** Captura puesto, empresa, sueldo ofertado, ubicación, modalidad y descripción completa.
-- **Subida de CV Automática:** Carga automática y gestión de tu currículum (`data/cv/mi_cv.pdf`).
-- **Historial de Postulaciones:** Guarda de manera persistente el estado de la solicitud en base de datos SQLite (`Pendiente`, `Postulado`, `Entrevista`, `Descartado`).
-
-### 5. 📱 Módulo de Redes Sociales (Facebook Job Scraper & Extractor)
-- **Escaneo de Grupos y Páginas de Empleo:** Rastreo inteligente de publicaciones laborales en Facebook y grupos de ingeniería en México.
-- **Extractor Inteligente de Texto (NLP / Regex):**
-  - 🏷️ **Nombre de la Posición** / Vacante
-  - 📞 **Teléfono de Contacto** / WhatsApp del reclutador (formato `+52`)
-  - 📍 **Dirección** / Ubicación / Modalidad
-  - 💰 **Salario Ofertado** (rangos mensuales, netos/brutos)
-- **Pegado Rápido de Ofertas:** Permite pegar cualquier texto de un post de Facebook, LinkedIn o WhatsApp para extraer los datos y guardarlos con 1 clic.
-
-### 6. 📲 Contacto Directo por WhatsApp
-- **Generador de Enlaces `wa.me`:** Creación automática de enlaces directos al WhatsApp del reclutador con mensaje de presentación profesional personalizado según la especialidad de ingeniería.
-
-### 7. 🎛️ Bolsa de Vacantes con Filtros Avanzados y Gestión de Estado
-- **Filtro por Plataforma:** Selector para filtrar instantáneamente entre **LinkedIn**, **OCC Mundial**, **CompuTrabajo** y **Redes Sociales (Facebook)**.
-- **Filtro por Ciudad / Ubicación:** Búsqueda inteligente por ciudad con soporte para alias locales (*CDMX, Guadalajara/GDL, Monterrey/MTY, Querétaro/Qro, etc.*).
-- **Formulario con Botón de Aplicar:** Panel de control de filtros con botón interactivo `🔍 Aplicar Filtros`.
-- **Botones de Estado Sincronizados:** Los botones `⬜ Postularme` y `🎯 Entrevista` inician sin seleccionar por defecto; al hacer clic, se actualiza la base de datos en tiempo real y cambian a `✅ Postulado` o `🟣 En Entrevista`.
+### 3. 🎛️ Bolsa de Vacantes con Filtros y Gestión de Estado
+- **Filtro por Plataforma:** Selector rápido para filtrar entre las 7 fuentes laborales.
+- **Filtro por Ciudad / Ubicación:** Búsqueda inteligente con resolución de alias locales (*CDMX, Guadalajara/GDL, Monterrey/MTY, Querétaro/Qro, etc.*).
+- **Botón de Aplicar Filtros:** Formulario interactivo con botón primario `🔍 Aplicar Filtros`.
+- **Botones de Estado Sincronizados:** Los botones `⬜ Postularme` y `🎯 Entrevista` inician sin seleccionar por defecto y actualizan la base de datos en tiempo real al hacer clic (`✅ Postulado` o `🟣 En Entrevista`), permitiendo también desmarcarlos con un segundo clic.
 - **Exportación de Datos:** Descarga de reportes completos en **Excel (`.xlsx`)** y **CSV** con columnas para `modality`, `phone`, `whatsapp_url` y `applied_at`.
+
+### 4. 📲 Contacto Directo por WhatsApp
+- **Generador de Enlaces `wa.me`:** Creación automática de enlaces directos al WhatsApp del reclutador con mensaje de presentación profesional personalizado según la especialidad de ingeniería.
 
 ---
 
-## 📈 Nuevo Dashboard de Estadísticas y Postulaciones Diarias
+## 🌐 Plataformas de Empleo Integradas (7 Canales)
+
+| Plataforma | Módulo | Enfoque Principal |
+| :--- | :--- | :--- |
+| **💼 LinkedIn** | `core/linkedin_scraper.py` | Multinacionales de telecomunicaciones, software y manufactura avanzada |
+| **🌐 OCC Mundial** | `core/occ_bot.py` | Ofertas corporativas y contratación formal en México con subida de CV |
+| **🟧 CompuTrabajo** | `core/computrabajo_scraper.py` | Empleos técnicos, de campo (Drive Test / Planta Externa) e industriales |
+| **🟢 Glassdoor** | `core/glassdoor_scraper.py` | Posiciones con insights de compensación salarial y empresas calificadas |
+| **🌐 Jobrapido** | `core/jobrapido_scraper.py` | Agregador masivo de vacantes de ingeniería a nivel nacional |
+| **🎯 JobLeads** | `core/jobleads_scraper.py` | Puestos ejecutivos, Senior Engineers, Tech Leads y Gerencias Técnicas |
+| **📱 Facebook** | `core/facebook_scraper.py` | Reclutadores directos y grupos de empleo de ingeniería en redes |
+
+---
+
+## 📈 Dashboard de Estadísticas y Postulaciones Diarias
 
 La **Pestaña 1 (📊 Estadísticas de Postulaciones)** ofrece un centro de control analítico:
 
@@ -86,7 +86,7 @@ La **Pestaña 1 (📊 Estadísticas de Postulaciones)** ofrece un centro de cont
                ▼                                                               ▼
  ┌──────────────────────────────────────────┐    ┌──────────────────────────────────────────┐
  │ 📈 Postulaciones Diarias (Gráfico Tiempo)│    │ 🌐 Desglose de Postulaciones             │
- │ [Barras por Fecha YYYY-MM-DD]            │    │ - Por Plataforma (LinkedIn / OCC / CT...)│
+ │ [Barras por Fecha YYYY-MM-DD]            │    │ - Por Plataforma (7 Canales)             │
  │ Promedio diario: 4.2 postulaciones/día   │    │ - Por Especialidad (RF / Elec / Soft)    │
  └──────────────────────────────────────────┘    │ - Por Modalidad (Remoto / Híbrido / Pres)│
                                                  └──────────────────────────────────────────┘
@@ -110,8 +110,8 @@ La **Pestaña 1 (📊 Estadísticas de Postulaciones)** ofrece un centro de cont
            ┌────────────────────────────┼────────────────────────────┐
            ▼                            ▼                            ▼
  ┌───────────────────┐        ┌───────────────────┐        ┌───────────────────┐
- │  Bot OCC Mundial  │        │  Scraper LinkedIn │        │Bot CompuTrabajo/FB│
- │ (core/occ_bot.py) │        │(core/linkedin_...)│        │(core/computrab...)│
+ │   LinkedIn / OCC  │        │ CompuTrabajo / GD │        │Jobrapido / JL / FB│
+ │ (core/linkedin...)│        │(core/computrab...)│        │(core/jobrapido...)│
  └─────────┬─────────┘        └─────────┬─────────┘        └─────────┬─────────┘
            │                            │                            │
   [Postulación + CV]            [Ofertas en Vivo]           [Extracción Datos]
@@ -121,7 +121,7 @@ La **Pestaña 1 (📊 Estadísticas de Postulaciones)** ofrece un centro de cont
                                         ▼
        ┌───────────────────────────────────────────────────────────┐
        │             Base de Datos (SQLite / jobs.db)              │
-       │      - Vacantes (OCC / LinkedIn / CompuTrabajo / FB)      │
+       │      - Vacantes (LinkedIn / OCC / CT / GD / JR / JL / FB) │
        │      - Métricas Diarias (applied_at, status, modality)    │
        │      - Historial de Entrevistas y Notas de Seguimiento    │
        └────────────────────────────┬──────────────────────────────┘
@@ -150,6 +150,9 @@ app_busca_trabajo/
 │   ├── occ_bot.py               # Automatizador y scraper para OCC Mundial
 │   ├── linkedin_scraper.py      # Scraper de ofertas en tiempo real en LinkedIn
 │   ├── computrabajo_scraper.py  # Scraper de ofertas en tiempo real en CompuTrabajo
+│   ├── glassdoor_scraper.py     # Scraper de ofertas y sueldos en Glassdoor
+│   ├── jobrapido_scraper.py     # Scraper de ofertas en Jobrapido
+│   ├── jobleads_scraper.py      # Scraper de ofertas ejecutivas en JobLeads
 │   ├── facebook_scraper.py      # Scraper y extractor de vacantes en Facebook
 │   └── notifier_whatsapp.py     # Generador de enlaces y mensajes para WhatsApp
 ├── data/
@@ -228,6 +231,18 @@ LINKEDIN_PASSWORD=tu_contraseña_linkedin
 COMPUTRABAJO_EMAIL=tu_correo_computrabajo@ejemplo.com
 COMPUTRABAJO_PASSWORD=tu_contraseña_computrabajo
 
+# --- Credenciales Glassdoor ---
+GLASSDOOR_EMAIL=tu_correo_glassdoor@ejemplo.com
+GLASSDOOR_PASSWORD=tu_contraseña_glassdoor
+
+# --- Credenciales Jobrapido ---
+JOBRAPIDO_EMAIL=tu_correo_jobrapido@ejemplo.com
+JOBRAPIDO_PASSWORD=tu_contraseña_jobrapido
+
+# --- Credenciales JobLeads ---
+JOBLEADS_EMAIL=tu_correo_jobleads@ejemplo.com
+JOBLEADS_PASSWORD=tu_contraseña_jobleads
+
 # --- Credenciales Facebook ---
 FB_EMAIL=tu_correo_facebook@ejemplo.com
 FB_PASSWORD=tu_contraseña_facebook
@@ -249,19 +264,19 @@ TARGET_ROLES="Ingeniero de RF, Ingeniero de Optimización, Ingeniero Eléctrico,
 # Iniciar la interfaz web gráfica (Streamlit)
 python main.py
 
-# Escanear vacantes en LinkedIn México
-python main.py --linkedin
+# Escanear TODAS las 7 plataformas simultáneamente
+python main.py --all
 
-# Escanear vacantes en CompuTrabajo México
-python main.py --computrabajo
+# Escanear plataformas individuales
+python main.py --linkedin       # LinkedIn México
+python main.py --occ            # OCC Mundial
+python main.py --computrabajo   # CompuTrabajo México (alias: --ct)
+python main.py --glassdoor      # Glassdoor México (alias: --gd)
+python main.py --jobrapido      # Jobrapido México (alias: --jr)
+python main.py --jobleads       # JobLeads México (alias: --jl)
+python main.py --fb             # Publicaciones en Facebook
 
-# Escanear vacantes en OCC Mundial
-python main.py --occ
-
-# Escanear publicaciones en Facebook
-python main.py --fb
-
-# Ver estadísticas rápidas en terminal
+# Ver estadísticas de la base de datos
 python main.py --stats
 
 # Exportar reporte a Excel (.xlsx) y CSV
@@ -278,8 +293,8 @@ python main.py --seed
 | Pestaña | Funcionalidades Principales |
 | :--- | :--- |
 | **📊 Estadísticas de Postulaciones** | KPI cards de postulaciones (*Hoy*, *Semana*, *Mes*, *Total*), tasa de conversión a entrevistas, gráfico cronológico de postulaciones diarias, gráficos de desglose por plataforma, especialidad y modalidad, y tabla de vacantes aplicadas. |
-| **💼 Bolsa de Vacantes** | Buscador por texto, filtro por ciudad/ubicación, filtro por plataforma (**LinkedIn, OCC, CompuTrabajo, Redes Sociales**), especialidad, estado y modalidad con botón **`🔍 Aplicar Filtros`**. Botones de postulación interactiva `⬜ Postularme` y `🎯 Entrevista`, y enlace directo a WhatsApp. |
-| **🔍 Scraping & Extracción** | 4 Paneles de escaneo en tiempo real (**LinkedIn Jobs**, **CompuTrabajo**, **OCC Mundial**, **Facebook**) + caja inteligente para pegar y extraer cualquier oferta laboral. |
+| **💼 Bolsa de Vacantes** | Buscador por texto, filtro por ciudad/ubicación, selector de plataforma (**LinkedIn, OCC, CompuTrabajo, Glassdoor, Jobrapido, JobLeads, Facebook**), especialidad, estado y modalidad con botón **`🔍 Aplicar Filtros`**. Botones de postulación interactiva `⬜ Postularme` y `🎯 Entrevista`, y enlace directo a WhatsApp. |
+| **🔍 Scraping & Extracción** | Panel de escaneo masivo (7 plataformas con 1 clic) + selectores específicos por portal + caja inteligente para pegar y extraer cualquier publicación. |
 | **📄 Mi CV & Perfil** | Gestor de archivo de CV (PDF/Word), vista previa de perfil profesional y editor de plantillas de mensaje para WhatsApp. |
 | **⚙️ Configuración & Exportación** | Descarga en 1 clic de reportes en **Excel (`.xlsx`)** y **CSV** con `modality`, `phone`, `whatsapp_url` y `applied_at`, editor de credenciales `.env` y visor de palabras clave JSON. |
 
@@ -292,7 +307,7 @@ python main.py --seed
 | `title` | TEXT | Nombre del puesto | `Senior RF & Antenna Design Engineer` |
 | `company` | TEXT | Empresa o reclutador | `Qualcomm México / Schneider Electric` |
 | `category` | TEXT | Especialidad de ingeniería | `Ingeniero de RF / Optimización` |
-| `source` | TEXT | Plataforma de origen | `CompuTrabajo` / `LinkedIn` / `OCC` / `Facebook` |
+| `source` | TEXT | Plataforma de origen | `LinkedIn` / `OCC` / `CompuTrabajo` / `Glassdoor` / `Jobrapido` / `JobLeads` / `Facebook` |
 | `location` | TEXT | Ciudad o estado | `Ciudad de México / Guadalajara` |
 | `modality` | TEXT | Modalidad de trabajo | `Híbrido` / `Remoto` / `Presencial` |
 | `salary_raw` | TEXT | Sueldo ofertado | `$45,000 - $65,000 MXN mensuales` |

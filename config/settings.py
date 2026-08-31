@@ -36,6 +36,18 @@ LINKEDIN_PASSWORD = os.getenv("LINKEDIN_PASSWORD", "")
 COMPUTRABAJO_EMAIL = os.getenv("COMPUTRABAJO_EMAIL", "")
 COMPUTRABAJO_PASSWORD = os.getenv("COMPUTRABAJO_PASSWORD", "")
 
+# Glassdoor Credentials
+GLASSDOOR_EMAIL = os.getenv("GLASSDOOR_EMAIL", "")
+GLASSDOOR_PASSWORD = os.getenv("GLASSDOOR_PASSWORD", "")
+
+# Jobrapido Credentials
+JOBRAPIDO_EMAIL = os.getenv("JOBRAPIDO_EMAIL", "")
+JOBRAPIDO_PASSWORD = os.getenv("JOBRAPIDO_PASSWORD", "")
+
+# JobLeads Credentials
+JOBLEADS_EMAIL = os.getenv("JOBLEADS_EMAIL", "")
+JOBLEADS_PASSWORD = os.getenv("JOBLEADS_PASSWORD", "")
+
 # WhatsApp Notification Settings
 USER_WHATSAPP_PHONE = os.getenv("USER_WHATSAPP_PHONE", "")
 WHATSAPP_API_KEY = os.getenv("WHATSAPP_API_KEY", "")

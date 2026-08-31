@@ -19,12 +19,15 @@ from core.occ_bot import OCCBot
 from core.facebook_scraper import FacebookScraper
 from core.linkedin_scraper import LinkedInScraper
 from core.computrabajo_scraper import CompuTrabajoScraper
+from core.glassdoor_scraper import GlassdoorScraper
+from core.jobrapido_scraper import JobrapidoScraper
+from core.jobleads_scraper import JobLeadsScraper
 
 BANNER = """
-===============================================================
-  AUTOJOB HUNTER & TRACKER (OCC, LINKEDIN, COMPUTRABAJO & FB)
+=============================================================================
+  AUTOJOB HUNTER & TRACKER (OCC, LINKEDIN, COMPUTRABAJO, GLASSDOOR, ETC.)
   Especialidades: RF / Telecom, Eléctrica, Sistemas / Software
-===============================================================
+=============================================================================
 """
 
 def print_stats():
@@ -67,12 +70,50 @@ def run_computrabajo():
     print(f"[OK] Búsqueda CompuTrabajo terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
     print_stats()
 
+def run_glassdoor():
+    print("\n[+] Iniciando búsqueda automática en Glassdoor México...")
+    gd = GlassdoorScraper()
+    res = gd.run_search_and_save()
+    print(f"[OK] Búsqueda Glassdoor terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
+    print_stats()
+
+def run_jobrapido():
+    print("\n[+] Iniciando búsqueda automática en Jobrapido México...")
+    jr = JobrapidoScraper()
+    res = jr.run_search_and_save()
+    print(f"[OK] Búsqueda Jobrapido terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
+    print_stats()
+
+def run_jobleads():
+    print("\n[+] Iniciando búsqueda automática en JobLeads México...")
+    jl = JobLeadsScraper()
+    res = jl.run_search_and_save()
+    print(f"[OK] Búsqueda JobLeads terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
+    print_stats()
+
 def run_fb():
     print("\n[+] Iniciando escaneo de ofertas en grupos de Facebook...")
     fb = FacebookScraper()
     res = fb.run_scan_and_save()
     print(f"[OK] Escaneo Facebook terminado. Procesadas: {res['total_found']} | Nuevas registradas: {res['new_saved']}")
     print_stats()
+
+def run_all_scrapers():
+    print("\n[⚡] INICIANDO ESCANEO COMPLETO EN TODAS LAS PLATAFORMAS...")
+    for scraper_func, name in [
+        (run_linkedin, "LinkedIn"),
+        (run_occ, "OCC Mundial"),
+        (run_computrabajo, "CompuTrabajo"),
+        (run_glassdoor, "Glassdoor"),
+        (run_jobrapido, "Jobrapido"),
+        (run_jobleads, "JobLeads"),
+        (run_fb, "Facebook")
+    ]:
+        try:
+            scraper_func()
+        except Exception as e:
+            print(f"[!] Error en {name}: {e}")
+    print("\n[✓] ¡ESCANEO GLOBAL DE TODAS LAS PLATAFORMAS FINALIZADO!")
 
 def run_export():
     print("\n[+] Generando reportes de exportación...")
@@ -92,22 +133,34 @@ def main():
 
     parser = argparse.ArgumentParser(description="AutoJob Hunter & Tracker CLI")
     parser.add_argument("--ui", action="store_true", help="Iniciar el Dashboard visual de Streamlit (por defecto)")
-    parser.add_argument("--occ", action="store_true", help="Ejecutar búsqueda y extracción en OCC Mundial")
-    parser.add_argument("--linkedin", action="store_true", help="Ejecutar búsqueda y extracción en LinkedIn")
-    parser.add_argument("--computrabajo", "--ct", action="store_true", help="Ejecutar búsqueda y extracción en CompuTrabajo")
-    parser.add_argument("--fb", action="store_true", help="Ejecutar escaneo de grupos de Facebook")
+    parser.add_argument("--occ", action="store_true", help="Ejecutar búsqueda en OCC Mundial")
+    parser.add_argument("--linkedin", action="store_true", help="Ejecutar búsqueda en LinkedIn")
+    parser.add_argument("--computrabajo", "--ct", action="store_true", help="Ejecutar búsqueda en CompuTrabajo")
+    parser.add_argument("--glassdoor", "--gd", action="store_true", help="Ejecutar búsqueda en Glassdoor")
+    parser.add_argument("--jobrapido", "--jr", action="store_true", help="Ejecutar búsqueda en Jobrapido")
+    parser.add_argument("--jobleads", "--jl", action="store_true", help="Ejecutar búsqueda en JobLeads")
+    parser.add_argument("--fb", action="store_true", help="Ejecutar escaneo en Facebook")
+    parser.add_argument("--all", action="store_true", help="Ejecutar escaneo en TODAS las plataformas simultáneamente")
     parser.add_argument("--stats", action="store_true", help="Ver estadísticas de la base de datos")
     parser.add_argument("--export", action="store_true", help="Exportar vacantes a Excel y CSV")
     parser.add_argument("--seed", action="store_true", help="Cargar vacantes de ejemplo en la base de datos")
 
     args = parser.parse_args()
 
-    if args.occ:
+    if args.all:
+        run_all_scrapers()
+    elif args.occ:
         run_occ()
     elif args.linkedin:
         run_linkedin()
     elif args.computrabajo:
         run_computrabajo()
+    elif args.glassdoor:
+        run_glassdoor()
+    elif args.jobrapido:
+        run_jobrapido()
+    elif args.jobleads:
+        run_jobleads()
     elif args.fb:
         run_fb()
     elif args.stats:

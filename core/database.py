@@ -155,6 +155,12 @@ def get_jobs(
             query += " AND source = 'OCC'"
         elif source in ("CompuTrabajo", "computrabajo", "Computrabajo", "🟧 CompuTrabajo", "💼 CompuTrabajo"):
             query += " AND (source = 'CompuTrabajo' OR source LIKE '%CompuTrabajo%')"
+        elif source in ("Glassdoor", "glassdoor", "GlassDoor", "🟢 Glassdoor", "💼 Glassdoor"):
+            query += " AND (source = 'Glassdoor' OR source LIKE '%Glassdoor%')"
+        elif source in ("Jobrapido", "jobrapido", "JobRapido", "🌐 Jobrapido"):
+            query += " AND (source = 'Jobrapido' OR source LIKE '%Jobrapido%')"
+        elif source in ("JobLeads", "jobleads", "Jobleads", "🎯 JobLeads"):
+            query += " AND (source = 'JobLeads' OR source LIKE '%JobLeads%')"
         elif source in ("Facebook", "Red Social", "Redes Sociales", "Redes Sociales (Facebook)", "Red Social (Facebook)", "📱 Red Social (Facebook)", "facebook"):
             query += " AND (source = 'Facebook' OR source LIKE '%Facebook%' OR source LIKE '%Red%')"
         else:
