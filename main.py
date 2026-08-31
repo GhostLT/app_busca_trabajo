@@ -22,11 +22,12 @@ from core.computrabajo_scraper import CompuTrabajoScraper
 from core.glassdoor_scraper import GlassdoorScraper
 from core.jobrapido_scraper import JobrapidoScraper
 from core.jobleads_scraper import JobLeadsScraper
+from core.jobsora_scraper import JobsoraScraper
 
 BANNER = """
 =============================================================================
-  AUTOJOB HUNTER & TRACKER (OCC, LINKEDIN, COMPUTRABAJO, GLASSDOOR, ETC.)
-  Especialidades: RF / Telecom, Eléctrica, Sistemas / Software
+  AUTOJOB HUNTER & TRACKER (LINKEDIN, OCC, COMPUTRABAJO, GLASSDOOR, ETC.)
+  Especialidades: RF / Telecom, Eléctrica, Sistemas / Software & Técnicos
 =============================================================================
 """
 
@@ -91,15 +92,22 @@ def run_jobleads():
     print(f"[OK] Búsqueda JobLeads terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
     print_stats()
 
+def run_jobsora():
+    print("\n[+] Iniciando búsqueda automática en Jobsora México...")
+    js = JobsoraScraper()
+    res = js.run_search_and_save()
+    print(f"[OK] Búsqueda Jobsora terminada. Encontradas: {res['total_found']} | Nuevas registradas: {res['total_new']}")
+    print_stats()
+
 def run_fb():
-    print("\n[+] Iniciando escaneo de ofertas en grupos de Facebook...")
+    print("\n[+] Iniciando escaneo de ofertas en grupos de Facebook (Ingeniería y Técnicos)...")
     fb = FacebookScraper()
     res = fb.run_scan_and_save()
     print(f"[OK] Escaneo Facebook terminado. Procesadas: {res['total_found']} | Nuevas registradas: {res['new_saved']}")
     print_stats()
 
 def run_all_scrapers():
-    print("\n[⚡] INICIANDO ESCANEO COMPLETO EN TODAS LAS PLATAFORMAS...")
+    print("\n[⚡] INICIANDO ESCANEO COMPLETO EN TODAS LAS PLATAFORMAS (8 CANALES)...")
     for scraper_func, name in [
         (run_linkedin, "LinkedIn"),
         (run_occ, "OCC Mundial"),
@@ -107,6 +115,7 @@ def run_all_scrapers():
         (run_glassdoor, "Glassdoor"),
         (run_jobrapido, "Jobrapido"),
         (run_jobleads, "JobLeads"),
+        (run_jobsora, "Jobsora"),
         (run_fb, "Facebook")
     ]:
         try:
@@ -139,7 +148,8 @@ def main():
     parser.add_argument("--glassdoor", "--gd", action="store_true", help="Ejecutar búsqueda en Glassdoor")
     parser.add_argument("--jobrapido", "--jr", action="store_true", help="Ejecutar búsqueda en Jobrapido")
     parser.add_argument("--jobleads", "--jl", action="store_true", help="Ejecutar búsqueda en JobLeads")
-    parser.add_argument("--fb", action="store_true", help="Ejecutar escaneo en Facebook")
+    parser.add_argument("--jobsora", "--js", action="store_true", help="Ejecutar búsqueda en Jobsora")
+    parser.add_argument("--fb", action="store_true", help="Ejecutar escaneo en Facebook (Ingeniería y Técnicos)")
     parser.add_argument("--all", action="store_true", help="Ejecutar escaneo en TODAS las plataformas simultáneamente")
     parser.add_argument("--stats", action="store_true", help="Ver estadísticas de la base de datos")
     parser.add_argument("--export", action="store_true", help="Exportar vacantes a Excel y CSV")
@@ -161,6 +171,8 @@ def main():
         run_jobrapido()
     elif args.jobleads:
         run_jobleads()
+    elif args.jobsora:
+        run_jobsora()
     elif args.fb:
         run_fb()
     elif args.stats:

@@ -32,6 +32,7 @@ from core.computrabajo_scraper import CompuTrabajoScraper
 from core.glassdoor_scraper import GlassdoorScraper
 from core.jobrapido_scraper import JobrapidoScraper
 from core.jobleads_scraper import JobLeadsScraper
+from core.jobsora_scraper import JobsoraScraper
 
 # Page Configuration
 st.set_page_config(
@@ -162,6 +163,16 @@ st.markdown("""
         font-size: 0.75rem;
         display: inline-block;
     }
+    .badge-source-jobsora {
+        background-color: #FEF2F2;
+        color: #DC2626;
+        border: 1px solid #FECACA;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        display: inline-block;
+    }
     .badge-source-fb {
         background-color: #EFF6FF;
         color: #1D4ED8;
@@ -220,15 +231,15 @@ db.init_db()
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3850/3850285.png", width=64)
     st.title("AutoJob Hunter")
-    st.caption("OCC, LinkedIn, CompuTrabajo, Glassdoor, Jobrapido, JobLeads & FB")
+    st.caption("8 Canales: LinkedIn, OCC, CompuTrabajo, Glassdoor, Jobrapido, JobLeads, Jobsora & FB")
     st.divider()
 
     st.subheader("⚡ Acciones Rápidas")
     
-    if st.button("🚀 Escanear TODAS las Plataformas", use_container_width=True, type="primary"):
-        with st.spinner("Escaneando en tiempo real en todas las bolsas laborales..."):
+    if st.button("🚀 Escanear TODAS las Plataformas (8)", use_container_width=True, type="primary"):
+        with st.spinner("Escaneando en tiempo real en todas las bolsas y redes de México..."):
             total_saved = 0
-            for scraper_cls in [LinkedInScraper, OCCBot, CompuTrabajoScraper, GlassdoorScraper, JobrapidoScraper, JobLeadsScraper, FacebookScraper]:
+            for scraper_cls in [LinkedInScraper, OCCBot, CompuTrabajoScraper, GlassdoorScraper, JobrapidoScraper, JobLeadsScraper, JobsoraScraper, FacebookScraper]:
                 try:
                     s = scraper_cls()
                     if hasattr(s, "run_search_and_save"):
@@ -262,6 +273,12 @@ with st.sidebar:
                 st.success(f"CompuTrabajo: {r['total_new']} nuevas")
                 st.rerun()
 
+        if st.button("🔴 Jobsora", use_container_width=True):
+            with st.spinner("Jobsora..."):
+                r = JobsoraScraper().run_search_and_save()
+                st.success(f"Jobsora: {r['total_new']} nuevas")
+                st.rerun()
+
     with sc_col_b:
         if st.button("🟢 Glassdoor", use_container_width=True):
             with st.spinner("Glassdoor..."):
@@ -281,11 +298,11 @@ with st.sidebar:
                 st.success(f"JobLeads: {r['total_new']} nuevas")
                 st.rerun()
 
-    if st.button("📱 Redes Sociales (FB)", use_container_width=True):
-        with st.spinner("Facebook..."):
-            r = FacebookScraper().run_scan_and_save()
-            st.success(f"Facebook: {r['new_saved']} nuevas")
-            st.rerun()
+        if st.button("📱 Facebook", use_container_width=True):
+            with st.spinner("Facebook (Técnicos)..."):
+                r = FacebookScraper().run_scan_and_save()
+                st.success(f"FB: {r['new_saved']} nuevas")
+                st.rerun()
 
     if st.button("🧪 Cargar Vacantes Demo", use_container_width=True):
         added = db.seed_sample_jobs()
@@ -302,7 +319,7 @@ with st.sidebar:
 
 # Main Header
 st.markdown('<div class="main-header">🚀 AutoJob Hunter & Tracker</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Plataforma integral de búsqueda, extracción y postulación automática para Ingenieros de <b>RF / Telecomunicaciones</b>, <b>Eléctricos</b> y <b>Sistemas / Software</b> en <b>LinkedIn</b>, <b>OCC</b>, <b>CompuTrabajo</b>, <b>Glassdoor</b>, <b>Jobrapido</b>, <b>JobLeads</b> y <b>Redes Sociales</b></div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Plataforma integral de búsqueda, extracción y postulación para <b>Ingenieros</b> (RF, Eléctricos, Sistemas) y <b>Técnicos</b> (Instalador, Fibra Óptica, Electricista, Telecomunicaciones) en <b>LinkedIn, OCC, CompuTrabajo, Glassdoor, Jobrapido, JobLeads, Jobsora y Facebook</b></div>', unsafe_allow_html=True)
 
 # Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -322,7 +339,7 @@ with tab1:
     app_stats = db.get_application_stats()
     gen_stats = db.get_stats()
 
-    # TOP METRICS ROW: Total postuladas, hoy, semana, mes, entrevistas
+    # TOP METRICS ROW
     m_col1, m_col2, m_col3, m_col4, m_col5 = st.columns(5)
     
     with m_col1:
@@ -459,12 +476,12 @@ with tab1:
                     st.write(f"- {k}: **{v}**")
 
 # -------------------------------------------------------------
-# TAB 2: BOLSA DE VACANTES (CON FILTROS MULTIPLATAFORMA)
+# TAB 2: BOLSA DE VACANTES (8 PLATAFORMAS & BÚSQUEDA TÉCNICA)
 # -------------------------------------------------------------
 with tab2:
     st.subheader("💼 Explorador y Gestión de Vacantes")
 
-    # Interactive Filter Form with Submit Button (All 7 platforms support)
+    # Interactive Filter Form with Submit Button (All 8 platforms support)
     with st.form(key="job_filter_form"):
         st.markdown("#### 🎯 Filtros de Búsqueda")
         f_col1, f_col2, f_col3, f_col4 = st.columns([2.2, 1.6, 1.6, 1.4])
@@ -472,7 +489,7 @@ with tab2:
         with f_col1:
             search_query = st.text_input(
                 "🔍 Puesto / Tecnología / Empresa:",
-                placeholder="Ej: Python, RF, Subestaciones, Huawei..."
+                placeholder="Ej: Técnico Instalador, Fibra Óptica, Electricista, Python, RF..."
             )
         
         with f_col2:
@@ -498,6 +515,7 @@ with tab2:
                 "Glassdoor",
                 "Jobrapido",
                 "JobLeads",
+                "Jobsora",
                 "Redes Sociales (Facebook)"
             ])
 
@@ -580,6 +598,8 @@ with tab2:
                 src_badge = '<span class="badge-source-jobrapido">🌐 Jobrapido</span>'
             elif j_src == "JobLeads":
                 src_badge = '<span class="badge-source-jobleads">🎯 JobLeads</span>'
+            elif j_src == "Jobsora":
+                src_badge = '<span class="badge-source-jobsora">🔴 Jobsora</span>'
             else:
                 src_badge = '<span class="badge-source-fb">📱 Red Social (Facebook)</span>'
             
@@ -631,7 +651,7 @@ with tab2:
             with st.container():
                 st.markdown(card_html, unsafe_allow_html=True)
 
-                # Action row for the job card: WhatsApp, Ver Vacante, Postularme, Entrevista, Descartar
+                # Action row: WhatsApp, Ver Vacante, Postularme, Entrevista, Descartar
                 act_col1, act_col2, act_col3, act_col4, act_col5 = st.columns([2.2, 1.4, 1.4, 1.4, 1.2])
                 
                 with act_col1:
@@ -708,13 +728,13 @@ with tab2:
                 st.markdown("<hr style='margin: 12px 0; border: none; border-top: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# TAB 3: SCRAPING & EXTRACCIÓN (7 PLATAFORMAS)
+# TAB 3: SCRAPING & EXTRACCIÓN (8 CANALES LABORALES)
 # -------------------------------------------------------------
 with tab3:
     st.subheader("🔍 Centro de Scraping y Extracción Inteligente")
 
     # Global Scan Banner
-    if st.button("⚡ ESCANEAR TODAS LAS PLATAFORMAS (LinkedIn, OCC, CompuTrabajo, Glassdoor, Jobrapido, JobLeads, FB)", type="primary", use_container_width=True):
+    if st.button("⚡ ESCANEAR TODAS LAS PLATAFORMAS (LinkedIn, OCC, CompuTrabajo, Glassdoor, Jobrapido, JobLeads, Jobsora, FB)", type="primary", use_container_width=True):
         with st.spinner("Rastreando vacantes simultáneamente en todos los portales de México..."):
             total_s = 0
             for sc_name, sc_cls in [
@@ -724,6 +744,7 @@ with tab3:
                 ("Glassdoor", GlassdoorScraper),
                 ("Jobrapido", JobrapidoScraper),
                 ("JobLeads", JobLeadsScraper),
+                ("Jobsora", JobsoraScraper),
                 ("Facebook", FacebookScraper)
             ]:
                 try:
@@ -782,8 +803,8 @@ with tab3:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ROW 2: Jobrapido, JobLeads, Facebook
-    sc_c5, sc_c6, sc_c7 = st.columns(3)
+    # ROW 2: Jobrapido, JobLeads, Jobsora, Facebook (Técnicos e Ingenieros)
+    sc_c5, sc_c6, sc_c7, sc_c8 = st.columns(4)
 
     with sc_c5:
         st.markdown("### 🌐 Jobrapido")
@@ -804,12 +825,21 @@ with tab3:
                 st.rerun()
 
     with sc_c7:
-        st.markdown("### 📱 Redes Sociales")
-        st.write("Escanea publicaciones en grupos de empleo de ingeniería en Facebook.")
+        st.markdown("### 🔴 Jobsora")
+        js_target = st.selectbox("Especialidad Jobsora:", ["Todos", "Ingeniero de RF / Optimización", "Ingeniero Eléctrico", "Ingeniero de Sistemas / Software"], key="js_s")
+        if st.button("🔴 Escanear Jobsora", use_container_width=True):
+            with st.spinner("Consultando Jobsora..."):
+                r = JobsoraScraper().run_search_and_save(categories=None if js_target == "Todos" else [js_target])
+                st.success(f"Jobsora: {r['total_new']} nuevas.")
+                st.rerun()
+
+    with sc_c8:
+        st.markdown("### 📱 FB Grupos Técnicos")
+        st.caption("Fibra Óptica, Electricista, Sistemas, Telecomunicaciones & Instalador.")
         if st.button("📱 Escanear Facebook", use_container_width=True):
-            with st.spinner("Escaneando Facebook..."):
+            with st.spinner("Escaneando grupos técnicos en Facebook..."):
                 r = FacebookScraper().run_scan_and_save()
-                st.success(f"Facebook: {r['new_saved']} nuevas.")
+                st.success(f"Facebook: {r['new_saved']} nuevas vacantes técnicas.")
                 st.rerun()
 
     st.divider()
@@ -819,7 +849,7 @@ with tab3:
     sample_paste = st.text_area(
         "Texto de la publicación:",
         height=130,
-        placeholder="Ejemplo:\nBuscamos Ingeniero de RF 5G para Huawei en CDMX (Híbrido). Sueldo $35,000 libres. Mandar CV al WhatsApp 55 1234 5678 o https://wa.me/525512345678"
+        placeholder="Ejemplo:\nSolicitamos Técnico Instalador de Fibra Óptica FTTH en CDMX. Sueldo $18,000 libres + bonos. Manda WhatsApp al 55 4819 3920 o https://wa.me/525548193920"
     )
 
     if st.button("⚡ Extraer y Guardar Publicación", use_container_width=True):
@@ -859,18 +889,26 @@ with tab4:
 
     with cv_col1:
         st.markdown("#### 👤 Perfil Profesional del Postulante")
-        cand_name = st.text_input("Nombre Completo:", value="Ingeniero Candidato")
+        cand_name = st.text_input("Nombre Completo:", value="Ingeniero / Técnico Candidato")
         cand_phone = st.text_input("Teléfono de Contacto (WhatsApp):", value=getattr(settings, "USER_WHATSAPP_PHONE", os.getenv("USER_WHATSAPP_PHONE", "+5255XXXXXXXX")))
         cand_email = st.text_input("Correo Electrónico:", value=getattr(settings, "OCC_EMAIL", os.getenv("OCC_EMAIL", "correo@ejemplo.com")))
         
-        st.markdown("#### 📌 Especialidades Objetivo")
-        target_roles = getattr(settings, "TARGET_ROLES", ["Ingeniero de RF", "Ingeniero Eléctrico", "Ingeniero de Sistemas"])
+        st.markdown("#### 📌 Especialidades y Roles Objetivo")
+        target_roles = getattr(settings, "TARGET_ROLES", [
+            "Ingeniero de RF / Telecomunicaciones",
+            "Ingeniero Eléctrico / Subestaciones",
+            "Ingeniero de Sistemas / Software",
+            "Técnico Instalador de Fibra Óptica",
+            "Técnico Electricista Industrial",
+            "Técnico en Sistemas y Redes",
+            "Técnico en Telecomunicaciones"
+        ])
         for r in target_roles:
             st.write(f"- 🔹 **{r}**")
 
         st.markdown("#### 💬 Mensaje de Presentación Predeterminado para WhatsApp")
         sample_msg = notifier.generate_whatsapp_message(
-            job_title="Ingeniero de Optimización RF / Telecomunicaciones",
+            job_title="Técnico Instalador / Telecomunicaciones / Ingeniería",
             company="Empresa Contratante",
             candidate_name=cand_name,
             category="Ingeniero de RF / Optimización"
@@ -907,14 +945,14 @@ with tab5:
 
     with exp_col1:
         st.markdown("### 📥 Exportar Base de Datos")
-        st.write("Descarga el listado completo de vacantes de **OCC, LinkedIn, CompuTrabajo, Glassdoor, Jobrapido, JobLeads y Facebook** (incluyendo **Modalidad**, **Teléfono**, **WhatsApp URL** y **Fecha de Postulación**).")
+        st.write("Descarga el listado completo de vacantes de las **8 plataformas laborales** (incluyendo **Modalidad**, **Teléfono**, **WhatsApp URL** y **Fecha de Postulación**).")
 
         excel_path = db.export_to_excel()
         with open(excel_path, "rb") as f:
             st.download_button(
                 label="📊 Descargar Reporte en Excel (.xlsx)",
                 data=f,
-                file_name=f"vacantes_ingenieria_{datetime.now().strftime('%Y%m%d')}.xlsx",
+                file_name=f"vacantes_ingenieria_tecnicos_{datetime.now().strftime('%Y%m%d')}.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True,
                 type="primary"
@@ -925,7 +963,7 @@ with tab5:
             st.download_button(
                 label="📄 Descargar Reporte en CSV",
                 data=f,
-                file_name=f"vacantes_ingenieria_{datetime.now().strftime('%Y%m%d')}.csv",
+                file_name=f"vacantes_ingenieria_tecnicos_{datetime.now().strftime('%Y%m%d')}.csv",
                 mime="text/csv",
                 use_container_width=True
             )
@@ -941,6 +979,7 @@ with tab5:
             gd_mail = st.text_input("Glassdoor Email:", value=getattr(settings, "GLASSDOOR_EMAIL", os.getenv("GLASSDOOR_EMAIL", "")))
             jr_mail = st.text_input("Jobrapido Email:", value=getattr(settings, "JOBRAPIDO_EMAIL", os.getenv("JOBRAPIDO_EMAIL", "")))
             jl_mail = st.text_input("JobLeads Email:", value=getattr(settings, "JOBLEADS_EMAIL", os.getenv("JOBLEADS_EMAIL", "")))
+            js_mail = st.text_input("Jobsora Email:", value=getattr(settings, "JOBSORA_EMAIL", os.getenv("JOBSORA_EMAIL", "")))
             fb_mail = st.text_input("Facebook Email:", value=getattr(settings, "FB_EMAIL", os.getenv("FB_EMAIL", "")))
             wa_ph = st.text_input("WhatsApp Personal:", value=getattr(settings, "USER_WHATSAPP_PHONE", os.getenv("USER_WHATSAPP_PHONE", "")))
             
@@ -951,6 +990,7 @@ with tab5:
                 settings.update_env_variable("GLASSDOOR_EMAIL", gd_mail)
                 settings.update_env_variable("JOBRAPIDO_EMAIL", jr_mail)
                 settings.update_env_variable("JOBLEADS_EMAIL", jl_mail)
+                settings.update_env_variable("JOBSORA_EMAIL", js_mail)
                 settings.update_env_variable("FB_EMAIL", fb_mail)
                 settings.update_env_variable("USER_WHATSAPP_PHONE", wa_ph)
                 st.success("Variables de entorno actualizadas con éxito.")

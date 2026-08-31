@@ -4,10 +4,18 @@
       "keywords": [
         "Ingeniero de RF",
         "Ingeniero RF",
+        "Técnico en Telecomunicaciones",
+        "Técnico Instalador de Fibra",
+        "Técnico Instalador",
+        "Técnico de Campo Telecom",
         "Radiofrecuencia",
         "Drive Test",
         "Optimización RF",
         "Telecomunicaciones",
+        "Fibra Óptica",
+        "FTTH",
+        "Empalmador de Fibra",
+        "Torrero Telecomunicaciones",
         "Ericsson",
         "Huawei",
         "Nokia",
@@ -21,10 +29,7 @@
         "MW",
         "BSS",
         "OSS",
-        "Atoll",
-        "Parámetros RF",
-        "QoS RF",
-        "NPO"
+        "Atoll"
       ],
       "color": "#1E88E5",
       "icon": "📡"
@@ -32,6 +37,9 @@
     "Ingeniero Eléctrico": {
       "keywords": [
         "Ingeniero Eléctrico",
+        "Técnico Electricista",
+        "Técnico Electricista Industrial",
+        "Técnico en Mantenimiento Eléctrico",
         "Ingeniero Electricista",
         "Subestaciones",
         "Media Tensión",
@@ -55,6 +63,9 @@
     "Ingeniero de Sistemas / Software": {
       "keywords": [
         "Ingeniero de Sistemas",
+        "Técnico en Sistemas",
+        "Técnico de Soporte TI",
+        "Técnico en Redes y Cableado",
         "Ingeniero de Software",
         "Desarrollador Software",
         "Python",
@@ -73,10 +84,10 @@
         "TypeScript",
         "React",
         "Node.js",
-        "C#",
-        ".NET",
-        "Java",
-        "Arquitectura de Software"
+        "Cableado Estructurado",
+        "Redes LAN",
+        "MikroTik",
+        "Cisco"
       ],
       "color": "#10B981",
       "icon": "💻"
@@ -91,6 +102,7 @@
     "Querétaro",
     "Puebla",
     "Tijuana",
+    "Mérida",
     "Remoto",
     "Híbrido"
   ]

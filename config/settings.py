@@ -48,6 +48,10 @@ JOBRAPIDO_PASSWORD = os.getenv("JOBRAPIDO_PASSWORD", "")
 JOBLEADS_EMAIL = os.getenv("JOBLEADS_EMAIL", "")
 JOBLEADS_PASSWORD = os.getenv("JOBLEADS_PASSWORD", "")
 
+# Jobsora Credentials
+JOBSORA_EMAIL = os.getenv("JOBSORA_EMAIL", "")
+JOBSORA_PASSWORD = os.getenv("JOBSORA_PASSWORD", "")
+
 # WhatsApp Notification Settings
 USER_WHATSAPP_PHONE = os.getenv("USER_WHATSAPP_PHONE", "")
 WHATSAPP_API_KEY = os.getenv("WHATSAPP_API_KEY", "")
