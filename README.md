@@ -1,24 +1,33 @@
-# 🚀 AutoJob Hunter & Tracker (8 Canales Laborales: LinkedIn, OCC, CompuTrabajo, Glassdoor, Jobrapido, JobLeads, Jobsora & FB)
+# 🚀 AutoJob Hunter & Tracker (8 Canales Laborales & Cotizador de Instalaciones Eléctricas)
 
-Sistema integral de automatización multiplataforma para la **búsqueda, extracción, análisis estadístico y postulación automática** a vacantes de empleo en las 8 plataformas laborales líderes en México (**LinkedIn**, **OCC Mundial**, **CompuTrabajo**, **Glassdoor**, **Jobrapido**, **JobLeads**, **Jobsora**) y redes sociales (**Facebook / Grupos de Empleo Especializados**).
+Sistema integral de automatización multiplataforma para la **búsqueda de empleo, extracción de vacantes y captura de solicitudes de cotizaciones de instalaciones eléctricas** en las 8 plataformas líderes en México (**Facebook**, **LinkedIn**, **OCC Mundial**, **CompuTrabajo**, **Glassdoor**, **Jobrapido**, **JobLeads**, **Jobsora**).
 
-### 🎯 Perfiles de Ingeniería y Técnicos Cubiertos:
-- 📡 **Ingeniería de RF / Optimización / Telecomunicaciones (4G/5G/RAN/MW)**
-- ⚡ **Ingeniería Eléctrica / Media y Alta Tensión / Subestaciones / NOM-001**
-- 💻 **Ingeniería de Sistemas / Software / DevOps / Cloud / Python**
-- 🔧 **Técnico Instalador** (CCTV, Alarmas, Cableado Estructurado, Seguridad Electrónica)
-- ⚡ **Técnico Electricista** (Instalaciones Industriales, Media/Baja Tensión, Tableros)
-- 💻 **Técnico en Sistemas** (Soporte Técnico TI, Mantenimiento PC/Servidores, Redes LAN)
-- 🌐 **Técnico Instalador de Fibra Óptica** (Empalmes por Fusión, OTDR, FTTH, Tendido Aéreo/Subterráneo)
-- 📡 **Técnico en Telecomunicaciones** (Torrero RF, Radiobases, Antenas Celulares, Microondas)
+---
+
+## ⚡ Módulo Especial: Captura de Clientes para Cotizaciones y Presupuestos Eléctricos
+
+Diseñado especialmente para **ingenieros, técnicos y contratistas electricistas** que buscan prospectar trabajos, llamar directamente a clientes/constructores y enviar cotizaciones y presupuestos formales:
+
+- 👤 **Nombre y Cargo del Contacto:** Captura directa de la persona encargada de la obra (*Ing. David Sotomayor, Arq. Roberto Morales, Lic. Claudia Benítez, Sr. Francisco Zavala, Ing. Alejandro Pineda*).
+- 📞 **Teléfono Directo:** Enlace de marcado telefónico inmediato (`tel:+52...`) para llamadas de prospección.
+- 💬 **Generador de Cotizaciones por WhatsApp:** Enlace con mensaje formal precargado para solicitar planos, alcances y agendar visitas técnicas para enviar presupuestos bajo norma NOM-001-SEDE.
+- 💰 **Presupuesto de Mano de Obra:** Rango estimado a cotizar para cada obra o servicio.
+
+### 🛠️ Tipos de Trabajos y Servicios Eléctricos Capturados:
+1. **Canalizaciones y Cableado de Naves Industriales** (Tubería conduit PG, charola, luminarias high-bay).
+2. **Habilitación de Acometidas Trifásicas y Centros de Carga** (Comercial / Residencial / CFE).
+3. **Mantenimiento y Pruebas a Subestaciones y Transformadores** (Megger, aceite dieléctrico, cuchillas).
+4. **Instalaciones Eléctricas para Restaurantes y Locales Comerciales** (Cocinas industriales, tableros, iluminación).
+5. **Corrección de Factor de Potencia y Bancos de Capacitores** (Medición de armónicos, tierras físicas).
 
 ---
 
 ## 📋 Tabla de Contenidos
 
 - [Características Principales](#-características-principales)
+- [Módulo de Cotizaciones e Instalaciones Eléctricas](#-módulo-especial-captura-de-clientes-para-cotizaciones-y-presupuestos-eléctricos)
 - [Plataformas de Empleo Integradas (8 Canales)](#-plataformas-de-empleo-integradas-8-canales)
-- [Búsqueda Especializada en Grupos de Facebook para Técnicos](#-búsqueda-especializada-en-grupos-de-facebook-para-técnicos)
+- [Grupos de Facebook Rastreados](#-grupos-de-facebook-rastreados)
 - [Dashboard de Estadísticas y Postulaciones Diarias](#-dashboard-de-estadísticas-y-postulaciones-diarias)
 - [Arquitectura del Sistema](#-arquitectura-del-sistema)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
@@ -28,7 +37,7 @@ Sistema integral de automatización multiplataforma para la **búsqueda, extracc
 - [Guía de Uso (CLI y Dashboard)](#-guía-de-uso)
 - [Panel de Control Web (Streamlit)](#-panel-de-control-web-streamlit)
 - [Estructura de Datos Extraídos](#-estructura-de-datos-extraídos)
-- [Integración con WhatsApp](#-integración-con-whatsapp)
+- [Plantilla de Mensaje de Cotización](#-plantilla-de-mensaje-de-cotización)
 - [Próximas Mejoras](#-próximas-mejoras)
 
 ---
@@ -36,84 +45,64 @@ Sistema integral de automatización multiplataforma para la **búsqueda, extracc
 ## ✨ Características Principales
 
 ### 1. 🌐 Rastreo y Extracción Multiplataforma (8 Canales)
-Conexión en tiempo real con las principales bolsas de trabajo y redes de México:
-- 💼 **LinkedIn Jobs México:** Extracción en vivo de vacantes corporativas de ingeniería.
+- 📱 **Facebook (Grupos y Obras):** Solicitudes de electricistas, técnicos instaladores de fibra, CCTV, telecomunicaciones y proyectos de obra.
+- 💼 **LinkedIn Jobs México:** Vacantes corporativas de ingeniería en empresas globales.
 - 🌐 **OCC Mundial:** Extracción de ofertas técnicas y postulación con CV.
-- 🟧 **CompuTrabajo:** Captura masiva de empleos técnicos e industriales.
+- 🟧 **CompuTrabajo:** Empleos técnicos, de campo e industriales.
 - 🟢 **Glassdoor México:** Estimaciones salariales, valoraciones de empresa y vacantes Tech.
 - 🌐 **Jobrapido México:** Agregador nacional de ofertas de ingeniería y telecomunicaciones.
 - 🎯 **JobLeads México:** Oportunidades Senior, Lead y de nivel ejecutivo.
-- 🔴 **Jobsora México:** Cobertura integral de vacantes de ingeniería y perfiles técnicos especializados.
-- 📱 **Grupos de Facebook:** Rastreo focalizado en grupos de técnicos instaladores, electricistas, telecomunicaciones y sistemas.
+- 🔴 **Jobsora México:** Cobertura de vacantes técnicas y de ingeniería.
 
-### 2. 📊 Dashboard de Estadísticas y Control Diario de Postulaciones
-- **Monitoreo de Postulaciones Diarias:** Registro cronológico exacto de la fecha y hora (`applied_at`) en que te postulas a cada vacante.
+### 2. 📊 Dashboard de Estadísticas y Control Diario
+- **Monitoreo Diario:** Registro cronológico exacto de la fecha y hora (`applied_at`) en que contactas o postulas a cada vacante/obra.
 - **Métricas de Rendimiento:** KPIs en tiempo real para postulaciones de **Hoy**, **Esta Semana (7 días)**, **Este Mes** y **Total Histórico**.
-- **Tasa de Conversión a Entrevistas:** Cálculo automático del porcentaje de éxito (`% de Éxito`).
-- **Gráfica de Ritmo Diario:** Visualización en barras de las postulaciones acumuladas por día y promedio de ritmo diario.
-- **Desglose Gráfico Multidimensional:** Comparativas por plataforma (8 Canales), por especialidad y por modalidad (*Remoto*, *Híbrido*, *Presencial*).
-- **Historial Completo de Postulaciones:** Tabla interactiva para dar seguimiento a cada vacante aplicada con su estado, fecha, contacto y notas.
+- **Tasa de Conversión:** Porcentaje de éxito entre contactos realizados y entrevistas/cotizaciones enviadas (`% de Éxito`).
+- **Gráfica de Ritmo Diario:** Visualización en barras de la actividad diaria acumulada.
+- **Desglose Multidimensional:** Gráficas comparativas por plataforma (8 Canales), por especialidad y por modalidad (*Remoto*, *Híbrido*, *Presencial*).
+- **Historial Completo:** Tabla interactiva para dar seguimiento a cada contacto con su estado, fecha, teléfono y notas.
 
-### 3. 🎛️ Bolsa de Vacantes con Filtros y Gestión de Estado
+### 3. 🎛️ Bolsa de Vacantes & Cotizaciones con Filtros Avanzados
 - **Filtro por Plataforma:** Selector rápido para filtrar entre las 8 fuentes laborales.
-- **Filtro por Ciudad / Ubicación:** Búsqueda inteligente con resolución de alias locales (*CDMX, Guadalajara/GDL, Monterrey/MTY, Querétaro/Qro, etc.*).
+- **Filtro por Ciudad / Ubicación:** Búsqueda inteligente con resolución de alias locales (*Querétaro/Qro, CDMX, Monterrey/MTY, Guadalajara/GDL, etc.*).
 - **Botón de Aplicar Filtros:** Formulario interactivo con botón primario `🔍 Aplicar Filtros`.
-- **Botones de Estado Sincronizados:** Los botones `⬜ Postularme` y `🎯 Entrevista` inician sin seleccionar por defecto y actualizan la base de datos en tiempo real al hacer clic (`✅ Postulado` o `🟣 En Entrevista`), permitiendo también desmarcarlos con un segundo clic.
-- **Exportación de Datos:** Descarga de reportes completos en **Excel (`.xlsx`)** y **CSV** con columnas para `modality`, `phone`, `whatsapp_url` y `applied_at`.
-
-### 4. 📲 Contacto Directo por WhatsApp
-- **Generador de Enlaces `wa.me`:** Creación automática de enlaces directos al WhatsApp del reclutador con mensaje de presentación profesional adaptado al puesto técnico o de ingeniería.
+- **Botones de Estado Sincronizados:** Los botones `⬜ Postular / Contactar` y `🎯 Cotizar / Entrevista` inician sin seleccionar por defecto y actualizan la base de datos en tiempo real al hacer clic (`✅ En Contacto` o `🟣 En Cotización`), permitiendo también desmarcarlos con un segundo clic.
+- **Exportación de Datos:** Descarga de reportes completos en **Excel (`.xlsx`)** y **CSV** con columnas para `company` (contacto), `phone`, `whatsapp_url`, `modality` y `applied_at`.
 
 ---
 
-## 🌐 Plataformas de Empleo Integradas (8 Canales)
+## 👥 Grupos de Facebook Rastreados
 
-| Plataforma | Módulo | Enfoque Principal |
-| :--- | :--- | :--- |
-| **💼 LinkedIn** | `core/linkedin_scraper.py` | Multinacionales de telecomunicaciones, software y manufactura avanzada |
-| **🌐 OCC Mundial** | `core/occ_bot.py` | Ofertas corporativas y contratación formal en México con subida de CV |
-| **🟧 CompuTrabajo** | `core/computrabajo_scraper.py` | Empleos técnicos, de campo (Drive Test / Planta Externa) e industriales |
-| **🟢 Glassdoor** | `core/glassdoor_scraper.py` | Posiciones con insights de compensación salarial y empresas calificadas |
-| **🌐 Jobrapido** | `core/jobrapido_scraper.py` | Agregador masivo de vacantes de ingeniería a nivel nacional |
-| **🎯 JobLeads** | `core/jobleads_scraper.py` | Puestos ejecutivos, Senior Engineers, Tech Leads y Gerencias Técnicas |
-| **🔴 Jobsora** | `core/jobsora_scraper.py` | Empleos de ingeniería, técnicos en telecomunicaciones, electricidad y redes |
-| **📱 Facebook** | `core/facebook_scraper.py` | Grupos técnicos: Fibra Óptica, Electricistas, CCTV, Sistemas y Torres RF |
-
----
-
-## 👥 Búsqueda Especializada en Grupos de Facebook para Técnicos
-
-El módulo `core/facebook_scraper.py` rastrea activamente publicaciones en las comunidades técnicas de mayor actividad en México:
-
-1. **Fibra Óptica:** *Bolsa de Trabajo Técnicos Instaladores de Fibra Óptica y Telecomunicaciones México* (FTTH, Empalmes por fusión, OTDR).
-2. **Electricistas:** *Técnicos Electricistas e Instalaciones Eléctricas Industriales México* (Media/Baja Tensión, Tableros, Transformadores).
-3. **Sistemas y TI:** *Técnicos en Sistemas, Soporte TI y Redes México* (Soporte técnico, Mantenimiento PC, Cableado Estructurado).
-4. **Torres y Telecom:** *Empleos Técnicos en Telecomunicaciones, Torres y Radiofrecuencia* (Torreros, Antenas RF, Microondas).
+El módulo `core/facebook_scraper.py` monitorea activamente:
+1. **Cotizaciones y Trabajos Eléctricos e Instalaciones México** (Naves industriales, acometidas, tableros).
+2. **Servicios Eléctricos, Subestaciones y Obras Eléctricas CDMX / EdoMex** (Plazas comerciales, CFE, media tensión).
+3. **Obras, Remodelaciones y Contratistas Eléctricos Monterrey & Querétaro** (Mantenimiento de subestaciones, parques industriales).
+4. **Bolsa de Proyectos e Instalaciones Eléctricas Industriales Guadalajara** (Restaurantes, bancos de capacitores, control).
+5. **Bolsa de Trabajo Técnicos Instaladores de Fibra Óptica y Telecomunicaciones México** (FTTH, Empalmes por fusión).
+6. **Técnicos en Sistemas, Soporte TI y Redes México** (Cableado estructurado, racks, redes).
 
 ---
 
 ## 📈 Dashboard de Estadísticas y Postulaciones Diarias
 
-La **Pestaña 1 (📊 Estadísticas de Postulaciones)** ofrece un centro de control analítico:
-
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 🎯 Total Postuladas │ 📅 Postuladas Hoy │ 🗓️ Esta Semana │ 📆 Este Mes │ 🟣 En Entrevista │
-│        14           │         5         │       12       │     14      │  3 (Éxito: 21.4%) │
+│ 🎯 Total Gestionadas │ 📅 Contactadas Hoy │ 🗓️ Esta Semana │ 📆 Este Mes │ 🟣 En Cotización │
+│        14            │         5          │       12       │     14      │  3 (Éxito: 21.4%)│
 └─────────────────────────────────────────────────────────────────────────────────────────────┘
                                                │
                ┌───────────────────────────────┴───────────────────────────────┐
                ▼                                                               ▼
  ┌──────────────────────────────────────────┐    ┌──────────────────────────────────────────┐
- │ 📈 Postulaciones Diarias (Gráfico Tiempo)│    │ 🌐 Desglose de Postulaciones             │
+ │ 📈 Actividad Diaria (Gráfico Tiempo)     │    │ 🌐 Desglose de Oportunidades             │
  │ [Barras por Fecha YYYY-MM-DD]            │    │ - Por Plataforma (8 Canales)             │
- │ Promedio diario: 4.2 postulaciones/día   │    │ - Por Especialidad (RF / Elec / Soft)    │
- └──────────────────────────────────────────┘    │ - Por Modalidad (Remoto / Híbrido / Pres)│
+ │ Promedio diario: 4.2 gestiones/día       │    │ - Por Especialidad (Eléctrica, RF, Soft) │
+ └──────────────────────────────────────────┘    │ - Por Modalidad (Presencial, Híbrido...) │
                                                  └──────────────────────────────────────────┘
                                                │
                                                ▼
  ┌──────────────────────────────────────────────────────────────────────────────────────────┐
- │ 📋 Tabla Detallada de Vacantes Postuladas (Fecha, Empresa, Puesto, Teléfono, WhatsApp,...)│
+ │ 📋 Tabla Detallada de Oportunidades (Fecha, Contacto/Cliente, Puesto, Teléfono, WhatsApp)│
  └──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -130,20 +119,20 @@ La **Pestaña 1 (📊 Estadísticas de Postulaciones)** ofrece un centro de cont
            ┌────────────────────────────┼────────────────────────────┐
            ▼                            ▼                            ▼
  ┌───────────────────┐        ┌───────────────────┐        ┌───────────────────┐
- │   LinkedIn / OCC  │        │ CompuTrabajo / GD │        │JR / JL / JS / FB  │
- │ (core/linkedin...)│        │(core/computrab...)│        │(core/jobsora_sc..)│
+ │   Facebook / FB   │        │   LinkedIn / OCC  │        │CT / GD / JR / JS  │
+ │ (core/facebook...)│        │(core/linkedin...) │        │(core/jobsora_sc..)│
  └─────────┬─────────┘        └─────────┬─────────┘        └─────────┬─────────┘
            │                            │                            │
-  [Postulación + CV]            [Ofertas en Vivo]           [Extracción Datos]
+   [Obras y Contactos]          [Ofertas en Vivo]           [Extracción Datos]
            │                            │                            │
            └────────────────────────────┼────────────────────────────┘
                                         │
                                         ▼
        ┌───────────────────────────────────────────────────────────┐
        │             Base de Datos (SQLite / jobs.db)              │
-       │      - Vacantes (8 Canales Laborales de México)           │
+       │      - Vacantes y Cotizaciones (8 Canales Laborales)      │
        │      - Métricas Diarias (applied_at, status, modality)    │
-       │      - Historial de Entrevistas y Notas de Seguimiento    │
+       │      - Historial de Cotizaciones y Notas de Seguimiento   │
        └────────────────────────────┬──────────────────────────────┘
                                     │
                                     ▼
@@ -174,8 +163,8 @@ app_busca_trabajo/
 │   ├── jobrapido_scraper.py     # Scraper de ofertas en Jobrapido
 │   ├── jobleads_scraper.py      # Scraper de ofertas ejecutivas en JobLeads
 │   ├── jobsora_scraper.py       # Scraper de ofertas en Jobsora
-│   ├── facebook_scraper.py      # Scraper y extractor de grupos técnicos en Facebook
-│   └── notifier_whatsapp.py     # Generador de enlaces y mensajes para WhatsApp
+│   ├── facebook_scraper.py      # Scraper de solicitudes de cotización en Facebook
+│   └── notifier_whatsapp.py     # Generador de enlaces y cotizaciones para WhatsApp
 ├── data/
 │   ├── cv/                      # Almacenamiento de CVs en PDF
 │   ├── exports/                 # Reportes generados en Excel (.xlsx) / CSV
@@ -237,57 +226,14 @@ app_busca_trabajo/
 
 ---
 
-## 🔐 Variables de Entorno (`.env`)
-
-```ini
-# --- Credenciales OCC Mundial ---
-OCC_EMAIL=tu_correo@ejemplo.com
-OCC_PASSWORD=tu_contraseña_occ
-
-# --- Credenciales LinkedIn ---
-LINKEDIN_EMAIL=tu_correo_linkedin@ejemplo.com
-LINKEDIN_PASSWORD=tu_contraseña_linkedin
-
-# --- Credenciales CompuTrabajo ---
-COMPUTRABAJO_EMAIL=tu_correo_computrabajo@ejemplo.com
-COMPUTRABAJO_PASSWORD=tu_contraseña_computrabajo
-
-# --- Credenciales Glassdoor ---
-GLASSDOOR_EMAIL=tu_correo_glassdoor@ejemplo.com
-GLASSDOOR_PASSWORD=tu_contraseña_glassdoor
-
-# --- Credenciales Jobrapido ---
-JOBRAPIDO_EMAIL=tu_correo_jobrapido@ejemplo.com
-JOBRAPIDO_PASSWORD=tu_contraseña_jobrapido
-
-# --- Credenciales JobLeads ---
-JOBLEADS_EMAIL=tu_correo_jobleads@ejemplo.com
-JOBLEADS_PASSWORD=tu_contraseña_jobleads
-
-# --- Credenciales Jobsora ---
-JOBSORA_EMAIL=tu_correo_jobsora@ejemplo.com
-JOBSORA_PASSWORD=tu_contraseña_jobsora
-
-# --- Credenciales Facebook ---
-FB_EMAIL=tu_correo_facebook@ejemplo.com
-FB_PASSWORD=tu_contraseña_facebook
-
-# --- Configuración WhatsApp ---
-USER_WHATSAPP_PHONE=+52XXXXXXXXXX
-WHATSAPP_API_KEY=tu_api_key_opcional
-
-# --- Configuración de Perfil y Archivos ---
-CV_PATH=data/cv/mi_cv.pdf
-TARGET_ROLES="Ingeniero de RF, Ingeniero Eléctrico, Ingeniero de Sistemas, Técnico Instalador, Técnico Electricista, Técnico en Sistemas, Técnico de Fibra Óptica, Técnico en Telecomunicaciones"
-```
-
----
-
 ## 🖥️ Guía de Uso (CLI)
 
 ```bash
 # Iniciar la interfaz web gráfica (Streamlit)
 python main.py
+
+# Escanear solicitudes de electricistas y cotizaciones en Facebook
+python main.py --fb
 
 # Escanear TODAS las 8 plataformas simultáneamente
 python main.py --all
@@ -300,7 +246,6 @@ python main.py --glassdoor      # Glassdoor México (alias: --gd)
 python main.py --jobrapido      # Jobrapido México (alias: --jr)
 python main.py --jobleads       # JobLeads México (alias: --jl)
 python main.py --jobsora        # Jobsora México (alias: --js)
-python main.py --fb             # Facebook (Ingeniería y Grupos Técnicos)
 
 # Ver estadísticas de la base de datos
 python main.py --stats
@@ -314,55 +259,24 @@ python main.py --seed
 
 ---
 
-## 🌐 Panel de Control Web (Streamlit)
+## 💬 Plantilla de Mensaje de Cotización
 
-| Pestaña | Funcionalidades Principales |
-| :--- | :--- |
-| **📊 Estadísticas de Postulaciones** | KPI cards de postulaciones (*Hoy*, *Semana*, *Mes*, *Total*), tasa de conversión a entrevistas, gráfico cronológico de postulaciones diarias, gráficos de desglose por plataforma (8 Canales), especialidad y modalidad, y tabla de vacantes aplicadas. |
-| **💼 Bolsa de Vacantes** | Buscador por texto/técnico, filtro por ciudad/ubicación, selector de plataforma (**LinkedIn, OCC, CompuTrabajo, Glassdoor, Jobrapido, JobLeads, Jobsora, Facebook**), especialidad, estado y modalidad con botón **`🔍 Aplicar Filtros`**. Botones de postulación interactiva `⬜ Postularme` y `🎯 Entrevista`, y enlace directo a WhatsApp. |
-| **🔍 Scraping & Extracción** | Panel de escaneo masivo (8 plataformas con 1 clic) + selectores específicos por portal + escáner de grupos técnicos de Facebook + caja inteligente para pegar y extraer cualquier publicación. |
-| **📄 Mi CV & Perfil** | Gestor de archivo de CV (PDF/Word), vista previa de perfil profesional y editor de plantillas de mensaje para WhatsApp adaptadas para Ingenieros y Técnicos. |
-| **⚙️ Configuración & Exportación** | Descarga en 1 clic de reportes en **Excel (`.xlsx`)** y **CSV** con `modality`, `phone`, `whatsapp_url` y `applied_at`, editor de credenciales `.env` y visor de palabras clave JSON. |
+Al pulsar el botón **"💬 Cotizar por WhatsApp"** en cualquier solicitud de obra, se abre directamente la conversación con una propuesta formal:
 
----
-
-## 📊 Estructura de Datos Extraídos
-
-| Campo | Tipo | Descripción | Ejemplo |
-| :--- | :--- | :--- | :--- |
-| `title` | TEXT | Nombre del puesto | `Técnico Instalador de Fibra Óptica FTTH` |
-| `company` | TEXT | Empresa o contratista | `Totalplay / Megacable Contratista` |
-| `category` | TEXT | Especialidad | `Ingeniero de RF / Optimización` |
-| `source` | TEXT | Plataforma de origen | `Jobsora` / `Facebook` / `LinkedIn` / `OCC` / ... |
-| `location` | TEXT | Ciudad o estado | `Ciudad de México / Guadalajara` |
-| `modality` | TEXT | Modalidad de trabajo | `Presencial` / `Híbrido` / `Remoto` |
-| `salary_raw` | TEXT | Sueldo ofertado | `$18,000 - $24,000 netos mensuales + Bonos` |
-| `phone` | TEXT | Teléfono normalizado | `+525548193920` |
-| `whatsapp_url`| TEXT | Enlace con mensaje predeterminado | `https://wa.me/525548193920?text=...` |
-| `status` | TEXT | Estado del seguimiento | `Pendiente` / `Postulado` / `Entrevista` |
-| `applied_at` | TEXT | Fecha y hora de postulación | `2026-08-30 17:55:00` |
-
----
-
-## 📲 Integración con WhatsApp
-
-Al pulsar el botón **"💬 WhatsApp"** en cualquier vacante con teléfono detectado, se abre directamente la conversación con un saludo profesional y personalizado según la posición:
-
-> *"¡Hola! Buen día. Espero que te encuentres muy bien.*  
-> *Te contacto con respecto a la vacante de **Técnico Instalador de Fibra Óptica** para **Empresa**.*  
-> *Cuento con experiencia en tendido de fibra, empalmes por fusión, manejo de OTDR y certificaciones de trabajo en alturas.*  
-> *Me interesa mucho la posición y postularme formalmente. ¿Sigue disponible? Con gusto te comparto mi CV detallado.*  
-> *¡Muchas gracias!"*
+> *"¡Hola **[Nombre del Contacto]**! Buen día. Espero que se encuentre muy bien.*  
+> *Vi su solicitud en Facebook requiriendo servicio de **[Instalación Eléctrica / Tableros / Subestaciones]** en **[Ubicación]**.*  
+> *Somos especialistas en **instalaciones eléctricas, canalizaciones, tableros, transformadores y mantenimiento industrial/comercial** bajo la norma NOM-001-SEDE.*  
+> *Con gusto podemos hacerle una visita técnica o revisar el alcance de su proyecto para enviarle una **cotización formal y presupuesto detallado** con los mejores tiempos de entrega y garantía.*  
+> *¿Me podría compartir más detalles del trabajo o la dirección exacta para agendar el levantamiento? ¡Quedo a sus órdenes!"*
 
 ---
 
 ## 🔮 Próximas Mejoras
 
-- [ ] Integración con modelos de lenguaje (Gemini / Claude) para análisis de compatibilidad CV vs. Requisitos de la vacante.
-- [ ] Soporte para Indeed México.
-- [ ] Automatización de respuestas mediante WhatsApp Cloud API / Webhooks.
-- [ ] Programador de tareas cron en segundo plano para escaneo periódico nocturno.
+- [ ] Generador automático de presupuestos en PDF con membrete personalizado.
+- [ ] Integración con modelos de lenguaje (Gemini / Claude) para análisis de compatibilidad y generación de memorias de cálculo.
+- [ ] Notificaciones automáticas por WhatsApp Cloud API / Webhooks.
 
 ---
 
-**Desarrollado para automatizar y optimizar la búsqueda de empleo en Ingeniería y Áreas Técnicas.**
+**Desarrollado para automatizar la prospección, cotización y contratación en Ingeniería e Instalaciones Eléctricas.**
