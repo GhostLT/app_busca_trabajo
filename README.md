@@ -4,23 +4,24 @@ Sistema integral de automatización multiplataforma para la **búsqueda de emple
 
 ---
 
-## ⚡ Módulo Especial: Captura de Clientes, Obras y Puestos Eléctricos
+## ⚡ Módulo Especial: Captura de Obras, Clientes y Categorías Eléctricas
 
-Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos y Medio Oficiales** que buscan vacantes de obra, prospectar trabajos, llamar directamente a constructores y enviar cotizaciones y presupuestos formales:
+Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos, Medio Oficiales y Ayudantes Electricistas** que buscan vacantes de obra, prospectar trabajos, llamar directamente a constructores y enviar cotizaciones y presupuestos formales:
 
 - 👷 **Oficial Eléctrico / Oficial Electricista:** Especialistas en doblado de conduit PG (1/2" a 2"), charola portacable, cableado de fuerza y control (calibres 8 a 500 MCM), peinado de tableros de 480V/220V e interpretación de diagramas unifilares.
 - 🔧 **Medio Oficial Eléctrico:** Ayudantes avanzados con experiencia en canalizaciones, jalado de conductores, fijación de cajas, ranurado, ponchado de terminales y apoyo directo al oficial.
-- 👤 **Nombre y Cargo del Contacto:** Captura directa del encargado de la obra (*Ing. Mateo Carvajal, Ing. Sergio Valenzuela, Arq. Luis Fernando Ríos, Ing. David Sotomayor, Arq. Roberto Morales, Lic. Claudia Benítez*).
-- 📞 **Teléfono Directo:** Enlace de marcado telefónico inmediato (`tel:+52...`) para llamadas rápidas.
+- 🧰 **Ayudante Electricista / Ayudante General Eléctrico:** Personal para acarreo de material, guiado de cableado con guía de acero/nylon, colocación de soportería y asistencia en obra.
+- 👤 **Nombre y Cargo del Contacto:** Captura directa del encargado de la obra (*Ing. Mateo Carvajal, Ing. Sergio Valenzuela, Ing. Gerardo Albarrán, Arq. Brenda Salgado, Arq. Luis Fernando Ríos, Ing. David Sotomayor, Arq. Roberto Morales, Lic. Claudia Benítez*).
+- 📞 **Teléfono Directo:** Enlace de marcado telefónico inmediato (`tel:+52...`) para llamadas rápidas de postulación o prospección.
 - 💬 **Generador de Cotizaciones por WhatsApp:** Enlace con mensaje formal precargado para solicitar planos y agendar visitas técnicas para enviar presupuestos bajo norma NOM-001-SEDE.
-- 💰 **Presupuestos y Salarios:** Rangos semanales (*$5,500 - $6,800 libres para Oficiales; $3,800 - $4,800 para Medio Oficiales*) y presupuestos de obra (*$25,000 - $70,000 MXN*).
+- 💰 **Presupuestos y Salarios:** Rangos semanales (*$5,500 - $6,800 para Oficiales; $3,800 - $4,800 para Medio Oficiales; $2,800 - $3,800 para Ayudantes*) y presupuestos de obra (*$25,000 - $70,000 MXN*).
 
 ---
 
 ## 📋 Tabla de Contenidos
 
 - [Características Principales](#-características-principales)
-- [Módulo de Obras, Oficiales y Cotizaciones](#-módulo-especial-captura-de-clientes-obras-y-puestos-eléctricos)
+- [Módulo de Obras, Oficiales y Ayudantes Eléctricos](#-módulo-especial-captura-de-obras-clientes-y-categorías-eléctricas)
 - [Plataformas de Empleo Integradas (8 Canales)](#-plataformas-de-empleo-integradas-8-canales)
 - [Grupos de Facebook Rastreados](#-grupos-de-facebook-rastreados)
 - [Dashboard de Estadísticas y Postulaciones Diarias](#-dashboard-de-estadísticas-y-postulaciones-diarias)
@@ -40,7 +41,7 @@ Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos y
 ## ✨ Características Principales
 
 ### 1. 🌐 Rastreo y Extracción Multiplataforma (8 Canales)
-- 📱 **Facebook (Grupos, Obras y Oficiales):** Solicitudes de Oficiales Eléctricos, Medio Oficiales, electricistas industriales, técnicos instaladores de fibra, CCTV y telecomunicaciones.
+- 📱 **Facebook (Grupos, Obras, Oficiales y Ayudantes):** Solicitudes de Oficiales Eléctricos, Medio Oficiales, Ayudantes Electricistas, técnicos instaladores de fibra, CCTV y telecomunicaciones.
 - 💼 **LinkedIn Jobs México:** Vacantes corporativas de ingeniería en empresas globales.
 - 🌐 **OCC Mundial:** Extracción de ofertas técnicas y postulación con CV.
 - 🟧 **CompuTrabajo:** Empleos técnicos, de campo e industriales.
@@ -59,7 +60,7 @@ Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos y
 
 ### 3. 🎛️ Bolsa de Vacantes & Cotizaciones con Filtros Avanzados
 - **Filtro por Plataforma:** Selector rápido para filtrar entre las 8 fuentes laborales.
-- **Filtro por Ciudad / Ubicación:** Búsqueda inteligente con resolución de alias locales (*Querétaro/Qro, CDMX, Monterrey/MTY, Guadalajara/GDL, etc.*).
+- **Filtro por Ciudad / Ubicación:** Búsqueda inteligente con resolución de alias locales (*Querétaro/Qro, CDMX, Toluca, Monterrey/MTY, Guadalajara/GDL, etc.*).
 - **Botón de Aplicar Filtros:** Formulario interactivo con botón primario `🔍 Aplicar Filtros`.
 - **Botones de Estado Sincronizados:** Los botones `⬜ Postular / Contactar` y `🎯 Cotizar / Entrevista` inician sin seleccionar por defecto y actualizan la base de datos en tiempo real al hacer clic (`✅ En Contacto` o `🟣 En Cotización`), permitiendo también desmarcarlos con un segundo clic.
 - **Exportación de Datos:** Descarga de reportes completos en **Excel (`.xlsx`)** y **CSV** con columnas para `company` (contacto), `phone`, `whatsapp_url`, `modality` y `applied_at`.
@@ -69,7 +70,7 @@ Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos y
 ## 👥 Grupos de Facebook Rastreados
 
 El módulo `core/facebook_scraper.py` monitorea activamente:
-1. **Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México** (Obras industriales, cuadrillas, cableado).
+1. **Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México** (Obras industriales, cuadrillas, cableado, chalupas, tubería).
 2. **Cotizaciones y Trabajos Eléctricos e Instalaciones México** (Naves industriales, acometidas, tableros).
 3. **Servicios Eléctricos, Subestaciones y Obras Eléctricas CDMX / EdoMex** (Plazas comerciales, CFE, media tensión).
 4. **Obras, Remodelaciones y Contratistas Eléctricos Monterrey & Querétaro** (Mantenimiento de subestaciones, parques industriales).
@@ -119,7 +120,7 @@ El módulo `core/facebook_scraper.py` monitorea activamente:
  │ (core/facebook...)│        │(core/linkedin...) │        │(core/jobsora_sc..)│
  └─────────┬─────────┘        └─────────┬─────────┘        └─────────┬─────────┘
            │                            │                            │
-[Oficiales & Cotizaciones]      [Ofertas en Vivo]           [Extracción Datos]
+[Oficiales / Ayudantes]         [Ofertas en Vivo]           [Extracción Datos]
            │                            │                            │
            └────────────────────────────┼────────────────────────────┘
                                         │
@@ -147,7 +148,7 @@ app_busca_trabajo/
 ├── config/
 │   ├── __init__.py
 │   ├── settings.py              # Configuraciones generales, variables .env y rutas
-│   └── keywords.json            # Palabras clave (RF, Eléctrica, Oficial Eléctrico, Medio Oficial, Sistemas)
+│   └── keywords.json            # Palabras clave (RF, Eléctrica, Oficial, Medio Oficial, Ayudante, Sistemas)
 ├── core/
 │   ├── __init__.py
 │   ├── database.py              # SQLite (jobs.db), métricas diarias, filtros y exportaciones
@@ -159,7 +160,7 @@ app_busca_trabajo/
 │   ├── jobrapido_scraper.py     # Scraper de ofertas en Jobrapido
 │   ├── jobleads_scraper.py      # Scraper de ofertas ejecutivas en JobLeads
 │   ├── jobsora_scraper.py       # Scraper de ofertas en Jobsora
-│   ├── facebook_scraper.py      # Scraper de solicitudes, Oficiales Eléctricos y cotizaciones en Facebook
+│   ├── facebook_scraper.py      # Scraper de solicitudes, Oficiales, Ayudantes y cotizaciones en FB
 │   └── notifier_whatsapp.py     # Generador de enlaces y cotizaciones para WhatsApp
 ├── data/
 │   ├── cv/                      # Almacenamiento de CVs en PDF
@@ -228,7 +229,7 @@ app_busca_trabajo/
 # Iniciar la interfaz web gráfica (Streamlit)
 python main.py
 
-# Escanear Oficiales Eléctricos, Medio Oficiales y cotizaciones en Facebook
+# Escanear Oficiales, Ayudantes y cotizaciones en Facebook
 python main.py --fb
 
 # Escanear TODAS las 8 plataformas simultáneamente
@@ -260,9 +261,9 @@ python main.py --seed
 Al pulsar el botón **"💬 Cotizar por WhatsApp"** en cualquier solicitud de obra, se abre directamente la conversación con una propuesta formal:
 
 > *"¡Hola **[Nombre del Contacto]**! Buen día. Espero que se encuentre muy bien.*  
-> *Vi su solicitud en Facebook requiriendo **[Oficial Eléctrico / Medio Oficial / Instalación Eléctrica]** en **[Ubicación]**.*  
+> *Vi su solicitud en Facebook requiriendo **[Oficial Eléctrico / Medio Oficial / Ayudante / Instalación Eléctrica]** en **[Ubicación]**.*  
 > *Somos especialistas en **instalaciones eléctricas, canalizaciones con tubería conduit PG, cableado de fuerza, armado de tableros y subestaciones** bajo la norma NOM-001-SEDE.*  
-> *Con gusto podemos proporcionarle personal calificado o realizar el levantamiento técnico para enviarle una **cotización formal y presupuesto detallado**.*  
+> *Con gusto podemos proporcionarle personal calificado (Oficiales y Ayudantes) o realizar el levantamiento técnico para enviarle una **cotización formal y presupuesto detallado**.*  
 > *¿Me podría compartir más detalles del trabajo o la dirección de la obra? ¡Quedo a sus órdenes!"*
 
 ---
@@ -275,4 +276,4 @@ Al pulsar el botón **"💬 Cotizar por WhatsApp"** en cualquier solicitud de ob
 
 ---
 
-**Desarrollado para automatizar la prospección, cotización y contratación en Ingeniería, Obras y Puestos de Oficial Eléctrico y Medio Oficial.**
+**Desarrollado para automatizar la prospección, cotización y contratación en Ingeniería, Obras y Puestos de Oficial Eléctrico, Medio Oficial y Ayudante.**

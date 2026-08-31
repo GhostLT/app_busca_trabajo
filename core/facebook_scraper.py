@@ -104,6 +104,36 @@ Funciones:
 📲 Mandar mensaje de WhatsApp al 81 8901 9284 con Sergio Valenzuela para integrarse esta semana.""",
                 "category": "Ingeniero Eléctrico"
             },
+            # 3. Ayudante Electricista de Obra (CDMX / Toluca)
+            {
+                "group": "Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México",
+                "contact_name": "Ing. Gerardo Albarrán (Residente)",
+                "text": """⚡ CONTRATACIÓN: AYUDANTE ELECTRICISTA / AYUDANTE GENERAL ELÉCTRICO
+👤 Contacto: Ing. Gerardo Albarrán
+🏢 Empresa: Constructora Electromecánica Metropolitana
+📍 Ubicación: CDMX (Santa Fe) y Toluca, Estado de México
+💵 Sueldo: $2,800 - $3,600 libres por semana ($11,200 - $14,400 mensuales) + Tiempo extra + Seguro Social
+Actividades:
+- Carga y acarreo de materiales (tubería conduit, rollos de cable, cajas chalupas)
+- Jalado y guiado de cableado con guía de acero / nylon
+- Ayudar al oficial en colocación de taquetes, abrazaderas unicanal y soportería
+- Limpieza y orden de áreas de trabajo en obra
+📞 Interesados llamar o enviar WhatsApp al 55 3901 8247 con el Ing. Gerardo Albarrán.""",
+                "category": "Ingeniero Eléctrico"
+            },
+            # 4. Ayudante de Instalaciones Eléctricas (Guadalajara)
+            {
+                "group": "Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México",
+                "contact_name": "Arq. Brenda Salgado (Supervisora)",
+                "text": """🔧 SE SOLICITA AYUDANTE DE ELECTRICISTA
+👤 Contacto: Arq. Brenda Salgado
+🏢 Empresa: Instalaciones y Servicios Tapatíos
+📍 Ubicación: Zapopan / Tlaquepaque, Jalisco
+💰 Pago semanal: $3,000 - $3,800 netos + Bono de puntualidad
+Requisitos: Ganas de aprender el oficio eléctrico, disponibilidad inmediata y manejo básico de pinzas, desarmadores y taladro.
+📲 WhatsApp de contacto: 33 2190 8473 con Brenda Salgado.""",
+                "category": "Ingeniero Eléctrico"
+            },
             # 3. Cuadrilla: Oficiales y Medio Oficiales Electricistas (Querétaro)
             {
                 "group": "Cotizaciones y Trabajos Eléctricos e Instalaciones México",

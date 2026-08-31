@@ -60,7 +60,7 @@ WHATSAPP_API_KEY = os.getenv("WHATSAPP_API_KEY", "")
 CV_PATH = os.getenv("CV_PATH", str(CV_DIR / "mi_cv.pdf"))
 TARGET_ROLES_RAW = os.getenv(
     "TARGET_ROLES",
-    "Ingeniero Eléctrico, Oficial Eléctrico, Medio Oficial Eléctrico, Técnico Electricista, Ingeniero de RF, Ingeniero de Sistemas, Técnico Instalador de Fibra"
+    "Ingeniero Eléctrico, Oficial Eléctrico, Medio Oficial Eléctrico, Ayudante Electricista, Técnico Electricista, Ingeniero de RF, Ingeniero de Sistemas, Técnico Instalador de Fibra, Técnico en Telecomunicaciones"
 )
 TARGET_ROLES = [r.strip() for r in TARGET_ROLES_RAW.split(",") if r.strip()]
 
