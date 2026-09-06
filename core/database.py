@@ -137,9 +137,10 @@ def get_jobs(
     location: Optional[str] = None,
     search_query: Optional[str] = None,
     has_phone_only: bool = False,
+    managed_today: bool = False,
     order_by: str = "id DESC"
 ) -> List[Dict[str, Any]]:
-    """Retrieve jobs matching filters, with flexible platform mapping and city/location filtering."""
+    """Retrieve jobs matching filters, with flexible platform mapping, city/location filtering, and status/today filters."""
     init_db()
     query = "SELECT * FROM jobs WHERE 1=1"
     params: List[Any] = []
@@ -169,9 +170,22 @@ def get_jobs(
             query += " AND source = ?"
             params.append(source)
 
-    if status and status not in ("Todos", "Todas"):
-        query += " AND status = ?"
-        params.append(status)
+    if managed_today or (status and status in ("hoy", "Gestionadas Hoy", "today", "Hoy")):
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        query += " AND status IN ('Postulado', 'Entrevista') AND (SUBSTR(applied_at, 1, 10) = ? OR SUBSTR(updated_at, 1, 10) = ?)"
+        params.extend([today_str, today_str])
+    elif status and status not in ("Todos", "Todas"):
+        if status in ("Postulado", "Postuladas", "postulado", "postuladas"):
+            query += " AND status = 'Postulado'"
+        elif status in ("Entrevista", "En Cotización", "Cotización", "Cotizacion", "En Cotizacion", "En Cotización / Entrevista", "entrevista"):
+            query += " AND status = 'Entrevista'"
+        elif status in ("Pendiente", "Pendientes", "pendiente"):
+            query += " AND status = 'Pendiente'"
+        elif status in ("Descartado", "Descartados", "descartado"):
+            query += " AND status = 'Descartado'"
+        else:
+            query += " AND status = ?"
+            params.append(status)
 
     if modality and modality not in ("Todos", "Todas"):
         query += " AND modality = ?"

@@ -98,23 +98,30 @@
 
                     <hr class="my-3">
 
-                    <h6 class="fw-bold text-uppercase text-muted small mb-2">📊 Resumen de Estado</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold text-uppercase text-muted small mb-0">📊 Resumen de Estado</h6>
+                        <span class="small text-muted" style="font-size: 0.72rem;">(clic para filtrar)</span>
+                    </div>
                     <ul class="list-group list-group-flush small">
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            Postuladas:
-                            <span class="badge bg-success rounded-pill" id="side-kpi-applied">0</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-2 py-1 sidebar-filter-item" onclick="filterByStatusQuick('Postulado')" title="Clic para ver oportunidades Postuladas">
+                            <span>🎯 Postuladas:</span>
+                            <span class="badge bg-primary rounded-pill" id="side-kpi-applied">0</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            Gestionadas Hoy:
-                            <span class="badge bg-primary rounded-pill" id="side-kpi-today">0</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-2 py-1 sidebar-filter-item" onclick="filterByStatusQuick('hoy')" title="Clic para ver oportunidades Gestionadas Hoy">
+                            <span>📅 Gestionadas Hoy:</span>
+                            <span class="badge bg-success rounded-pill" id="side-kpi-today">0</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            En Cotización / Trámite:
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-2 py-1 sidebar-filter-item" onclick="filterByStatusQuick('Entrevista')" title="Clic para ver oportunidades En Cotización / Entrevista">
+                            <span>🟣 En Cotización:</span>
                             <span class="badge bg-info text-dark rounded-pill" id="side-kpi-interview">0</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            Total Base:
-                            <span class="badge bg-secondary rounded-pill" id="side-kpi-total">0</span>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-2 py-1 sidebar-filter-item" onclick="filterByStatusQuick('Pendiente')" title="Clic para ver oportunidades Pendientes">
+                            <span>🟢 Pendientes:</span>
+                            <span class="badge bg-secondary rounded-pill" id="side-kpi-pending">0</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-2 py-1 sidebar-filter-item" onclick="filterByStatusQuick('Todos')" title="Clic para ver Todas las oportunidades">
+                            <span>📋 Total Base:</span>
+                            <span class="badge bg-dark rounded-pill" id="side-kpi-total">215</span>
                         </li>
                     </ul>
 
@@ -182,17 +189,23 @@
                         <!-- Top KPI Row -->
                         <div class="row g-3 mb-4">
                             <div class="col-md">
-                                <div class="kpi-card border-primary border-top border-3">
-                                    <div class="kpi-label">🎯 Total Postuladas</div>
+                                <div class="kpi-card border-primary border-top border-3 kpi-clickable" onclick="filterByStatusQuick('Postulado')" title="Clic para ver oportunidades Postuladas">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="kpi-label">🎯 Total Postuladas</div>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle kpi-click-badge"><i class="bi bi-funnel-fill"></i> Ver lista</span>
+                                    </div>
                                     <div class="kpi-value text-primary" id="kpi-applied">0</div>
-                                    <div class="kpi-sub">Oportunidades gestionadas</div>
+                                    <div class="kpi-sub">Oportunidades gestionadas <i class="bi bi-arrow-right-short"></i></div>
                                 </div>
                             </div>
                             <div class="col-md">
-                                <div class="kpi-card border-success border-top border-3">
-                                    <div class="kpi-label">📅 Gestionadas Hoy</div>
+                                <div class="kpi-card border-success border-top border-3 kpi-clickable" onclick="filterByStatusQuick('hoy')" title="Clic para ver oportunidades Gestionadas Hoy">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="kpi-label">📅 Gestionadas Hoy</div>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle kpi-click-badge"><i class="bi bi-funnel-fill"></i> Ver lista</span>
+                                    </div>
                                     <div class="kpi-value text-success" id="kpi-today">0</div>
-                                    <div class="kpi-sub">Actividad diaria</div>
+                                    <div class="kpi-sub">Actividad diaria <i class="bi bi-arrow-right-short"></i></div>
                                 </div>
                             </div>
                             <div class="col-md">
@@ -210,10 +223,13 @@
                                 </div>
                             </div>
                             <div class="col-md">
-                                <div class="kpi-card border-info border-top border-3">
-                                    <div class="kpi-label">🟣 En Entrevista / Trámite</div>
+                                <div class="kpi-card border-info border-top border-3 kpi-clickable" onclick="filterByStatusQuick('Entrevista')" title="Clic para ver oportunidades En Cotización / Entrevista">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="kpi-label">🟣 En Cotización / Entrevista</div>
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle kpi-click-badge"><i class="bi bi-funnel-fill"></i> Ver lista</span>
+                                    </div>
                                     <div class="kpi-value text-info" id="kpi-interview">0</div>
-                                    <div class="kpi-sub" id="kpi-conversion">Éxito: 0%</div>
+                                    <div class="kpi-sub" id="kpi-conversion">Éxito: 0% <i class="bi bi-arrow-right-short"></i></div>
                                 </div>
                             </div>
                         </div>
@@ -313,8 +329,27 @@
                         </div>
 
                         <!-- Tracked Applications Table -->
-                        <div class="card border-0 shadow-sm rounded-3 p-4">
-                            <h5 class="fw-bold mb-3">📋 Registro Completo de Oportunidades Postuladas y en Cotización</h5>
+                        <div class="card border-0 shadow-sm rounded-3 p-4" id="trackedTableSection">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                                <div>
+                                    <h5 class="fw-bold mb-0">📋 Registro Completo de Oportunidades Postuladas y en Cotización</h5>
+                                    <p class="text-muted small mb-0">Historial y seguimiento de vacantes gestionadas.</p>
+                                </div>
+                                <div class="btn-group btn-group-sm" role="group" id="trackedFilterBtns">
+                                    <button type="button" class="btn btn-outline-primary active" id="btn-tracked-all" onclick="filterTrackedTable('all', this)">
+                                        Todas (<span id="tracked-count-all">0</span>)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" id="btn-tracked-applied" onclick="filterTrackedTable('Postulado', this)">
+                                        🎯 Postuladas (<span id="tracked-count-applied">0</span>)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" id="btn-tracked-today" onclick="filterTrackedTable('hoy', this)">
+                                        📅 Gestionadas Hoy (<span id="tracked-count-today">0</span>)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info text-dark" id="btn-tracked-interview" onclick="filterTrackedTable('Entrevista', this)">
+                                        🟣 En Cotización (<span id="tracked-count-interview">0</span>)
+                                    </button>
+                                </div>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle">
                                     <thead class="table-light">
@@ -352,6 +387,26 @@
 
                         <!-- Filter Form Card -->
                         <div class="card border-0 shadow-sm rounded-3 p-3 mb-4">
+                            <!-- Quick Status Filter Pills -->
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3 p-2 bg-light rounded-3 border">
+                                <span class="small fw-bold text-muted me-1"><i class="bi bi-funnel-fill text-primary me-1"></i>Filtrado rápido:</span>
+                                <button type="button" class="btn btn-sm btn-outline-dark btn-quick-filter active" id="pill-filter-all" data-status="Todos" onclick="selectQuickFilter('Todos')">
+                                    🌐 Todas (<span id="quick-count-all">215</span>)
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary btn-quick-filter" id="pill-filter-applied" data-status="Postulado" onclick="selectQuickFilter('Postulado')">
+                                    🎯 Postuladas (<span id="quick-count-applied">0</span>)
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-success btn-quick-filter" id="pill-filter-today" data-status="hoy" onclick="selectQuickFilter('hoy')">
+                                    📅 Gestionadas Hoy (<span id="quick-count-today">0</span>)
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-info btn-quick-filter text-dark" id="pill-filter-interview" data-status="Entrevista" onclick="selectQuickFilter('Entrevista')">
+                                    🟣 En Cotización / Entrevista (<span id="quick-count-interview">0</span>)
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary btn-quick-filter" id="pill-filter-pending" data-status="Pendiente" onclick="selectQuickFilter('Pendiente')">
+                                    🟢 Pendientes (<span id="quick-count-pending">0</span>)
+                                </button>
+                            </div>
+
                             <form id="jobFilterForm">
                                 <div class="row g-2 mb-2">
                                     <div class="col-md-4">
@@ -393,14 +448,15 @@
                                 </div>
 
                                 <div class="row g-2 align-items-center">
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="form-label small fw-bold">Estado:</label>
-                                        <select id="filterStatus" class="form-select form-select-sm">
-                                            <option value="Todos">Todos</option>
-                                            <option value="Pendiente">Pendiente</option>
-                                            <option value="Postulado">Postulado</option>
-                                            <option value="Entrevista">Entrevista</option>
-                                            <option value="Descartado">Descartado</option>
+                                        <select id="filterStatus" class="form-select form-select-sm" onchange="onStatusDropdownChange(this.value)">
+                                            <option value="Todos">Todos los estados</option>
+                                            <option value="Postulado">🎯 Postuladas</option>
+                                            <option value="hoy">📅 Gestionadas Hoy</option>
+                                            <option value="Entrevista">🟣 En Cotización / Entrevista</option>
+                                            <option value="Pendiente">🟢 Pendientes</option>
+                                            <option value="Descartado">⚪ Descartados</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2">

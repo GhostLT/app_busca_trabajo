@@ -76,12 +76,38 @@ async function loadStats() {
         const sideApplied = document.getElementById("side-kpi-applied");
         const sideToday = document.getElementById("side-kpi-today");
         const sideInterview = document.getElementById("side-kpi-interview");
+        const sidePending = document.getElementById("side-kpi-pending");
         const sideTotal = document.getElementById("side-kpi-total");
 
         if (sideApplied) sideApplied.textContent = appStats.applied_count;
         if (sideToday) sideToday.textContent = appStats.today_count;
         if (sideInterview) sideInterview.textContent = appStats.interview_count;
+        if (sidePending) sidePending.textContent = genStats.pending_count || 0;
         if (sideTotal) sideTotal.textContent = genStats.total_jobs || 215;
+
+        // Update Quick Filter Pill Counts in Tab 2
+        const qcAll = document.getElementById("quick-count-all");
+        const qcApp = document.getElementById("quick-count-applied");
+        const qcToday = document.getElementById("quick-count-today");
+        const qcInt = document.getElementById("quick-count-interview");
+        const qcPen = document.getElementById("quick-count-pending");
+
+        if (qcAll) qcAll.textContent = genStats.total_jobs || 215;
+        if (qcApp) qcApp.textContent = appStats.applied_count;
+        if (qcToday) qcToday.textContent = appStats.today_count;
+        if (qcInt) qcInt.textContent = appStats.interview_count;
+        if (qcPen) qcPen.textContent = genStats.pending_count || 0;
+
+        // Update Tracked Applications Table Counts in Tab 1
+        const tcAll = document.getElementById("tracked-count-all");
+        const tcApp = document.getElementById("tracked-count-applied");
+        const tcToday = document.getElementById("tracked-count-today");
+        const tcInt = document.getElementById("tracked-count-interview");
+
+        if (tcAll) tcAll.textContent = appStats.total_active_applied;
+        if (tcApp) tcApp.textContent = appStats.applied_count;
+        if (tcToday) tcToday.textContent = appStats.today_count;
+        if (tcInt) tcInt.textContent = appStats.interview_count;
 
         // Render Platform Ranking
         const bySource = genStats.by_source || {};
@@ -95,7 +121,7 @@ async function loadStats() {
         renderModalityChart(genStats.by_modality || appStats.applied_by_modality || {});
 
         // Render Tracked Applications Table
-        renderTrackedTable();
+        renderTrackedTable('refresh');
 
     } catch (err) {
         console.error("Error loading stats:", err);
@@ -333,26 +359,45 @@ function renderModalityChart(modData) {
     });
 }
 
-async function renderTrackedTable() {
+let trackedApplicationsCache = [];
+
+async function renderTrackedTable(filter = 'all') {
     const tbody = document.getElementById("trackedTableBody");
     if (!tbody) return;
 
     try {
-        const [resApp, resInt] = await Promise.all([
-            fetch("/api/jobs?status=Postulado"),
-            fetch("/api/jobs?status=Entrevista")
-        ]);
-        const dataApp = await resApp.json();
-        const dataInt = await resInt.json();
+        if (!trackedApplicationsCache.length || filter === 'refresh') {
+            const [resApp, resInt] = await Promise.all([
+                fetch("/api/jobs?status=Postulado"),
+                fetch("/api/jobs?status=Entrevista")
+            ]);
+            const dataApp = await resApp.json();
+            const dataInt = await resInt.json();
+            trackedApplicationsCache = [...(dataApp.jobs || []), ...(dataInt.jobs || [])];
+        }
 
-        const tracked = [...(dataApp.jobs || []), ...(dataInt.jobs || [])];
+        const todayStr = new Date().toISOString().substring(0, 10);
+        let filtered = trackedApplicationsCache;
 
-        if (!tracked.length) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No hay vacantes o cotizaciones en seguimiento todavía.</td></tr>`;
+        if (filter === 'Postulado') {
+            filtered = trackedApplicationsCache.filter(j => j.status === 'Postulado');
+        } else if (filter === 'Entrevista') {
+            filtered = trackedApplicationsCache.filter(j => j.status === 'Entrevista');
+        } else if (filter === 'hoy') {
+            filtered = trackedApplicationsCache.filter(j => {
+                const appDay = j.applied_at ? j.applied_at.substring(0, 10) : '';
+                const updDay = j.updated_at ? j.updated_at.substring(0, 10) : '';
+                return appDay === todayStr || updDay === todayStr;
+            });
+        }
+
+        if (!filtered.length) {
+            const label = filter === 'Postulado' ? 'postuladas' : filter === 'Entrevista' ? 'en cotización' : filter === 'hoy' ? 'gestionadas hoy' : 'en seguimiento';
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No hay oportunidades ${label} todavía.</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = tracked.map(j => `
+        tbody.innerHTML = filtered.map(j => `
             <tr>
                 <td><small class="text-muted">${j.applied_at ? j.applied_at.substring(0, 16) : 'N/D'}</small></td>
                 <td><strong>${escapeHtml(j.title)}</strong></td>
@@ -360,8 +405,8 @@ async function renderTrackedTable() {
                 <td><span class="badge bg-light text-dark border">${escapeHtml(j.source || 'OCC')}</span></td>
                 <td>${j.phone ? `<a href="tel:${j.phone}" class="text-decoration-none">📞 ${escapeHtml(j.phone)}</a>` : '<span class="text-muted">N/D</span>'}</td>
                 <td>
-                    <span class="badge ${j.status === 'Entrevista' ? 'bg-info text-dark' : 'bg-success'}">
-                        ${escapeHtml(j.status)}
+                    <span class="badge ${j.status === 'Entrevista' ? 'bg-info text-dark' : 'bg-primary'}">
+                        ${escapeHtml(j.status === 'Entrevista' ? '🟣 En Cotización' : '🎯 Postulado')}
                     </span>
                 </td>
                 <td>${j.whatsapp_url ? `<a href="${j.whatsapp_url}" target="_blank" class="btn btn-sm btn-outline-success"><i class="bi bi-whatsapp"></i> Chat</a>` : '-'}</td>
@@ -370,6 +415,93 @@ async function renderTrackedTable() {
     } catch (e) {
         console.error("Error loading tracked jobs:", e);
     }
+}
+
+function filterTrackedTable(filter, btn) {
+    if (btn) {
+        document.querySelectorAll("#trackedFilterBtns .btn").forEach(b => {
+            b.classList.remove("active", "btn-primary", "btn-success", "btn-info");
+            if (b.id === 'btn-tracked-today') b.classList.add("btn-outline-success");
+            else if (b.id === 'btn-tracked-interview') b.classList.add("btn-outline-info");
+            else b.classList.add("btn-outline-primary");
+        });
+        btn.classList.add("active");
+        if (btn.id === 'btn-tracked-today') {
+            btn.classList.remove("btn-outline-success");
+            btn.classList.add("btn-success");
+        } else if (btn.id === 'btn-tracked-interview') {
+            btn.classList.remove("btn-outline-info");
+            btn.classList.add("btn-info");
+        } else {
+            btn.classList.remove("btn-outline-primary");
+            btn.classList.add("btn-primary");
+        }
+    }
+    renderTrackedTable(filter);
+}
+
+// -------------------------------------------------------------
+// FILTERING SHORTCUTS & INTERACTION
+// -------------------------------------------------------------
+function filterByStatusQuick(status) {
+    // 1. Switch active pill tab to Tab 2 (Bolsa de Vacantes)
+    const tabBtn = document.getElementById("tab-jobs-btn");
+    if (tabBtn) {
+        const tab = bootstrap.Tab.getInstance(tabBtn) || new bootstrap.Tab(tabBtn);
+        tab.show();
+    }
+
+    // 2. Select quick filter and reload jobs
+    selectQuickFilter(status);
+
+    // 3. Smooth scroll down to the filtered results
+    setTimeout(() => {
+        const target = document.getElementById("jobFilterForm") || document.getElementById("jobsContainer");
+        if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }, 150);
+
+    // 4. Synchronize tracked table in Tab 1 if applicable
+    if (status === 'Postulado' || status === 'hoy' || status === 'Entrevista') {
+        filterTrackedTable(status);
+    }
+}
+
+function selectQuickFilter(status) {
+    // 1. Sync dropdown
+    const statusDropdown = document.getElementById("filterStatus");
+    if (statusDropdown) {
+        statusDropdown.value = status;
+    }
+
+    // 2. Update pill buttons active classes and styles
+    document.querySelectorAll(".btn-quick-filter").forEach(btn => {
+        const btnStatus = btn.getAttribute("data-status");
+        if (btnStatus === status) {
+            btn.classList.add("active");
+            btn.classList.remove("btn-outline-dark", "btn-outline-primary", "btn-outline-success", "btn-outline-info", "btn-outline-secondary");
+            if (status === 'Todos') btn.classList.add("btn-dark");
+            else if (status === 'Postulado') btn.classList.add("btn-primary");
+            else if (status === 'hoy') btn.classList.add("btn-success");
+            else if (status === 'Entrevista') btn.classList.add("btn-info");
+            else if (status === 'Pendiente') btn.classList.add("btn-secondary");
+        } else {
+            btn.classList.remove("active", "btn-dark", "btn-primary", "btn-success", "btn-info", "btn-secondary");
+            if (btnStatus === 'Todos') btn.classList.add("btn-outline-dark");
+            else if (btnStatus === 'Postulado') btn.classList.add("btn-outline-primary");
+            else if (btnStatus === 'hoy') btn.classList.add("btn-outline-success");
+            else if (btnStatus === 'Entrevista') btn.classList.add("btn-outline-info");
+            else if (btnStatus === 'Pendiente') btn.classList.add("btn-outline-secondary");
+        }
+    });
+
+    // 3. Load jobs with new filter
+    loadJobs();
+}
+
+function onStatusDropdownChange(status) {
+    selectQuickFilter(status);
 }
 
 
@@ -401,9 +533,14 @@ async function loadJobs() {
     if (location.trim()) params.append("location", location.trim());
     if (category !== "Todas") params.append("category", category);
     if (source !== "Todas") params.append("source", source);
-    if (status !== "Todos") params.append("status", status);
     if (modality !== "Todas") params.append("modality", modality);
     if (hasPhoneOnly) params.append("has_phone_only", "true");
+
+    if (status === "hoy" || status === "Gestionadas Hoy") {
+        params.append("managed_today", "true");
+    } else if (status !== "Todos") {
+        params.append("status", status);
+    }
 
     try {
         const res = await fetch(`/api/jobs?${params.toString()}`);
@@ -413,17 +550,38 @@ async function loadJobs() {
         const jobs = data.jobs || [];
         if (countEl) countEl.textContent = jobs.length;
 
+        // Label for active filter badge
+        const activeFilterLabel = status === 'Postulado' ? '🎯 Oportunidades Postuladas' :
+                                  status === 'hoy' ? '📅 Gestionadas Hoy' :
+                                  status === 'Entrevista' ? '🟣 En Cotización / Entrevista' :
+                                  status === 'Pendiente' ? '🟢 Oportunidades Pendientes' :
+                                  status === 'Descartado' ? '⚪ Oportunidades Descartadas' : '';
+
+        let filterBanner = "";
+        if (activeFilterLabel) {
+            filterBanner = `
+                <div class="alert alert-primary py-2 px-3 mb-3 d-flex justify-content-between align-items-center rounded-3 border-0 bg-primary-subtle text-primary shadow-sm">
+                    <div>
+                        <i class="bi bi-funnel-fill me-1"></i> Filtro activo: <strong>${activeFilterLabel}</strong> &nbsp;•&nbsp; <span>${jobs.length} encontradas</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick="selectQuickFilter('Todos')">
+                        <i class="bi bi-x-circle me-1"></i> Mostrar todas
+                    </button>
+                </div>
+            `;
+        }
+
         if (jobs.length === 0) {
-            container.innerHTML = `
+            container.innerHTML = filterBanner + `
                 <div class="alert alert-info py-4 text-center">
                     <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
-                    No se encontraron oportunidades con los criterios de búsqueda actuales.
+                    No se encontraron oportunidades con los criterios de búsqueda seleccionados.
                 </div>
             `;
             return;
         }
 
-        container.innerHTML = jobs.map(j => renderJobCard(j)).join("");
+        container.innerHTML = filterBanner + jobs.map(j => renderJobCard(j)).join("");
 
     } catch (err) {
         console.error("Error loading jobs:", err);
@@ -992,10 +1150,9 @@ function setupEventListeners() {
             if (document.getElementById("filterCity")) document.getElementById("filterCity").value = "";
             if (document.getElementById("filterCategory")) document.getElementById("filterCategory").value = "Todas";
             if (document.getElementById("filterSource")) document.getElementById("filterSource").value = "Todas";
-            if (document.getElementById("filterStatus")) document.getElementById("filterStatus").value = "Todos";
             if (document.getElementById("filterModality")) document.getElementById("filterModality").value = "Todas";
             if (document.getElementById("filterPhoneOnly")) document.getElementById("filterPhoneOnly").checked = false;
-            loadJobs();
+            selectQuickFilter('Todos');
         });
     }
 

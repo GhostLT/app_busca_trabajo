@@ -23,6 +23,7 @@ Cuenta con una **interfaz web moderna desarrollada 100% en HTML5, CSS3, JavaScri
 - [Especialidades Técnicas y de Ingeniería (8 Áreas)](#-especialidades-técnicas-y-de-ingeniería-8-áreas)
 - [Panel de Control Web (HTML5, CSS3, JS & Bootstrap 5)](#-panel-de-control-web-html5-css3-js--bootstrap-5)
 - [Ranking y Distribución de Oportunidades Reales (215 Vacantes)](#-ranking-y-distribución-de-oportunidades-reales-215-vacantes)
+- [Filtrado Interactivo por Estado (Postuladas, Gestionadas Hoy, En Cotización)](#-filtrado-interactivo-por-estado-postuladas-gestionadas-hoy-en-cotización)
 - [Bot Interactivo de WhatsApp](#-módulo-especial-bot-interactivo-de-whatsapp-control-total-desde-tu-celular)
 - [Módulo de Obras, Oficiales y Ayudantes Eléctricos](#-módulo-especial-captura-de-obras-clientes-y-categorías-eléctricas)
 - [Plataformas de Empleo Integradas (8 Canales)](#-plataformas-de-empleo-integradas-8-canales)
@@ -87,7 +88,11 @@ El sistema clasifica automáticamente cada vacante y solicitud en una de las 8 e
 La interfaz gráfica reemplaza por completo a Streamlit y opera mediante un servidor Flask integrado. Se divide en 6 pestañas operativas:
 
 ### 1. 📊 Estadísticas de Postulaciones y Rendimiento
-- **Tarjetas KPI en tiempo real:** Total de postulaciones/cotizaciones, gestionadas hoy, última semana, mes en curso y total en trámite/entrevista con porcentaje de conversión.
+- **Tarjetas KPI Interactivas y Filtrables en tiempo real:**
+  - `🎯 Total Postuladas`, `📅 Gestionadas Hoy` y `🟣 En Cotización / Entrevista` cuentan con interacción dinámica: **al hacer clic sobre cualquiera de ellas, se activa automáticamente el filtro correspondiente y muestra de inmediato la lista de oportunidades**.
+  - Indicador visual hover y badge *"Ver lista"* en cada tarjeta interactiva.
+- **Resumen de Estado Lateral (Sidebar) Interactivo:**
+  - Enlaces directos en la barra lateral para filtrar con un clic: `🎯 Postuladas`, `📅 Gestionadas Hoy`, `🟣 En Cotización`, `🟢 Pendientes` o `📋 Total Base (215)`.
 - **🏆 Ranking de Oportunidades Reales por Plataforma (215 vacantes):**
   - Panel visual de ranking interactivo con barras de progreso porcentuales calculadas en tiempo real.
   - Destacado con corona de oro para la plataforma líder (OCC Mundial con 104 vacantes, 48.4%).
@@ -98,15 +103,20 @@ La interfaz gráfica reemplaza por completo a Streamlit y opera mediante un serv
   - Desglose por Plataforma con colores oficiales de cada marca.
   - Desglose por Especialidad (las 8 áreas IT y de Ingeniería).
   - Desglose por Modalidad (Presencial, Híbrido, Remoto).
-- **Registro Detallado de Seguimiento:** Tabla con todas las oportunidades marcadas como *Postulado* o *En Cotización / Entrevista*, con acceso directo a llamada y chat de WhatsApp.
+- **Registro Detallado de Seguimiento con Filtros:**
+  - Botones de filtrado rápido en la cabecera de la tabla: `[ Todas ]`, `[ 🎯 Postuladas ]`, `[ 📅 Gestionadas Hoy ]` y `[ 🟣 En Cotización ]` con contadores en tiempo real.
+  - Historial detallado con fecha, empresa, contacto, teléfono, estado y chat de WhatsApp.
 
 ### 2. 💼 Bolsa de Vacantes & Cotizaciones de Instalaciones
+- **Barra de Filtrado Rápido (Quick Filter Pills):**
+  - Botones de acceso directo con contadores automáticos para filtrar en un clic: `🌐 Todas (215)`, `🎯 Postuladas`, `📅 Gestionadas Hoy`, `🟣 En Cotización / Entrevista` y `🟢 Pendientes`.
+  - **Banner de Filtro Activo:** Muestra claramente qué estado está filtrado, el número de resultados encontrados y un botón rápido para restablecer la vista.
 - **Filtros Avanzados:**
+  - Selector de Estado sincronizado (`Todos los estados`, `🎯 Postuladas`, `📅 Gestionadas Hoy`, `🟣 En Cotización / Entrevista`, `🟢 Pendientes`, `⚪ Descartados`) que ejecuta la búsqueda automáticamente al cambiar la selección.
   - Búsqueda por texto (puesto, nombre de cliente, palabras clave).
   - Ubicación geográfica (Ciudad de México, Querétaro, Monterrey, Guadalajara, etc.).
   - Selector de Especialidad.
   - Selector de Plataforma origen (las 8 fuentes integradas).
-  - Selector de Estado (Todos, Pendiente, Postulado, Entrevista, Descartado).
   - Modalidad de trabajo.
   - Casilla de verificación *"Solo con Teléfono / WhatsApp"*.
 - **Tarjetas de Oportunidades:**
@@ -170,6 +180,37 @@ El sistema procesa, consolida y visualiza en tiempo real las **215 oportunidades
    - Las 19 vacantes restantes de CompuTrabajo, Jobrapido, Glassdoor, JobLeads y Jobsora proporcionan oportunidades de nicho con filtros salariales específicos y puestos de supervisión técnica.
 4. **Visualización en Tiempo Real en el Panel:**
    - La interfaz muestra barras de progreso porcentuales calculadas dinámicamente, tarjetas con colores de identidad corporativa para cada bolsa, tabla con enlaces de filtrado directo y un widget permanente en el sidebar para tener siempre a la vista el rendimiento de cada plataforma.
+
+---
+
+## 🔍 Filtrado Interactivo por Estado (Postuladas, Gestionadas Hoy, En Cotización)
+
+El sistema integra un mecanismo de **filtrado interactivo bidireccional y reactivo** que permite acceder a las listas filtradas de oportunidades con un solo clic desde múltiples puntos de la interfaz:
+
+### 🎯 Puntos de Acceso para Filtrado Inmediato:
+1. **Tarjetas KPI del Dashboard Principal (Pestaña 1):**
+   - **`🎯 Total Postuladas`:** Al hacer clic en la tarjeta, navega automáticamente a la Bolsa de Vacantes (Pestaña 2) y despliega la lista filtrada de oportunidades con estado `Postulado`.
+   - **`📅 Gestionadas Hoy`:** Al pulsar la tarjeta, filtra de forma inmediata las oportunidades cuya postulación, cotización o actualización se realizó durante la fecha actual (`applied_at` o `updated_at` = hoy).
+   - **`🟣 En Cotización / Entrevista`:** Al hacer clic, muestra todas las oportunidades con presupuestos presentados o trámites de entrevista activos (`status = 'Entrevista'`).
+2. **Barra de Filtrado Rápido (Quick Filter Pills) en el Explorador (Pestaña 2):**
+   - Botones estilizados tipo *pill* con contadores en tiempo real ubicados en la cabecera de la bolsa de trabajo:
+     - `[ 🌐 Todas (215) ]`: Restablece el listado completo de la base de datos.
+     - `[ 🎯 Postuladas ]`: Filtra vacantes contactadas y postuladas.
+     - `[ 📅 Gestionadas Hoy ]`: Filtra la actividad registrada durante el día de hoy.
+     - `[ 🟣 En Cotización / Entrevista ]`: Filtra cotizaciones formales y procesos de entrevista.
+     - `[ 🟢 Pendientes ]`: Muestra oportunidades nuevas por revisar y gestionar.
+3. **Resumen de Estado en la Barra Lateral (Sidebar):**
+   - Todos los elementos del bloque *"📊 Resumen de Estado"* son interactivos, cuentan con efectos hover y badges dinámicos para disparar el filtrado desde cualquier pestaña.
+4. **Selector Desplegable de Estado en Formulario:**
+   - El selector `<select id="filterStatus">` cuenta con opciones enriquecidas (`🎯 Postuladas`, `📅 Gestionadas Hoy`, `🟣 En Cotización / Entrevista`, `🟢 Pendientes`) y sincronización automática bidireccional con las pills y la API.
+5. **Tabla de Historial de Seguimiento (Pestaña 1):**
+   - Incorpora su propia barra de filtros: `[ Todas ]`, `[ 🎯 Postuladas ]`, `[ 📅 Gestionadas Hoy ]` y `[ 🟣 En Cotización ]` con contadores dinámicos para auditar gestiones sin cambiar de vista.
+
+### 💡 Banner de Filtro Activo:
+- Al seleccionar cualquier estado, aparece sobre las tarjetas un banner resaltado en azul suave indicando el filtro activo, la cantidad de oportunidades encontradas y un botón rápido para **Mostrar todas**.
+
+### 🔌 Soporte en Backend y API REST:
+- El endpoint `GET /api/jobs` soporta el parámetro `managed_today=true` y reconoce alias como `status=hoy`, realizando consultas SQL optimizadas sobre las marcas temporales `applied_at` y `updated_at` sin alterar los filtros de especialidad o ubicación.
 
 ---
 

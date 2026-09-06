@@ -82,6 +82,7 @@ def list_jobs():
         location = request.args.get("location")
         search_query = request.args.get("search_query")
         has_phone_only = request.args.get("has_phone_only", "false").lower() in ("true", "1", "yes")
+        managed_today = request.args.get("managed_today", "false").lower() in ("true", "1", "yes") or (status in ("hoy", "Gestionadas Hoy", "today", "Hoy"))
 
         jobs = db.get_jobs(
             category=category if category and category != "Todas" else None,
@@ -91,6 +92,7 @@ def list_jobs():
             location=location if location and location.strip() else None,
             search_query=search_query if search_query and search_query.strip() else None,
             has_phone_only=has_phone_only,
+            managed_today=managed_today,
             order_by="id DESC"
         )
 
