@@ -335,13 +335,23 @@ function renderJobCard(job) {
                         (job.title + " " + (job.description || "")).toLowerCase().includes("presupuesto");
 
     // Category Badge
-    let catBadge = `<span class="badge badge-general">⚙️ ${escapeHtml(job.category)}</span>`;
+    let catBadge = `<span class="badge badge-general">💼 ${escapeHtml(job.category)}</span>`;
     if (job.category.includes("RF")) {
         catBadge = `<span class="badge badge-rf">📡 ${escapeHtml(job.category)}</span>`;
     } else if (job.category.includes("Eléctric")) {
         catBadge = `<span class="badge badge-electric">⚡ ${escapeHtml(job.category)}</span>`;
     } else if (job.category.includes("Sistemas") || job.category.includes("Software")) {
         catBadge = `<span class="badge badge-software">💻 ${escapeHtml(job.category)}</span>`;
+    } else if (job.category.includes("Performance")) {
+        catBadge = `<span class="badge badge-performance">📈 ${escapeHtml(job.category)}</span>`;
+    } else if (job.category.includes("NOC")) {
+        catBadge = `<span class="badge badge-noc">🖥️ ${escapeHtml(job.category)}</span>`;
+    } else if (job.category.includes("Web")) {
+        catBadge = `<span class="badge badge-web">🌐 ${escapeHtml(job.category)}</span>`;
+    } else if (job.category.includes("Backend")) {
+        catBadge = `<span class="badge badge-backend">⚙️ ${escapeHtml(job.category)}</span>`;
+    } else if (job.category.includes("Frontend")) {
+        catBadge = `<span class="badge badge-frontend">🎨 ${escapeHtml(job.category)}</span>`;
     }
 
     // Source Badge

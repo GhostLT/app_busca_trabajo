@@ -52,7 +52,12 @@ class JobsoraScraper:
             "tecnico en sistemas",
             "desarrollador python",
             "tecnico instalador fibra"
-        ]
+        ],
+        "Ingeniero Performance": ["ingeniero performance", "analista performance red"],
+        "Ingeniero NOC": ["ingeniero noc", "operador noc"],
+        "Desarrollador Web": ["desarrollador web", "programador web"],
+        "Desarrollador Backend": ["desarrollador backend", "backend developer"],
+        "Desarrollador Frontend": ["desarrollador frontend", "frontend developer"]
     }
 
     def __init__(self):

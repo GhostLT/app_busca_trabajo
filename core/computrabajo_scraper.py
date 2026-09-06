@@ -52,6 +52,31 @@ class CompuTrabajoScraper:
             "desarrollador-python",
             "ingeniero-de-software",
             "devops-engineer"
+        ],
+        "Ingeniero Performance": [
+            "ingeniero-performance",
+            "performance-engineer",
+            "optimizacion-de-redes"
+        ],
+        "Ingeniero NOC": [
+            "ingeniero-noc",
+            "noc-engineer",
+            "monitoreo-de-red"
+        ],
+        "Desarrollador Web": [
+            "desarrollador-web",
+            "programador-web",
+            "web-developer"
+        ],
+        "Desarrollador Backend": [
+            "desarrollador-backend",
+            "backend-developer",
+            "python-backend"
+        ],
+        "Desarrollador Frontend": [
+            "desarrollador-frontend",
+            "frontend-developer",
+            "react-developer"
         ]
     }
 

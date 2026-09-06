@@ -72,6 +72,46 @@ body {
     border-radius: 20px;
 }
 
+.badge-performance {
+    background-color: #E0F2FE;
+    color: #0369A1;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.badge-noc {
+    background-color: #EDE9FE;
+    color: #6D28D9;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.badge-web {
+    background-color: #FCE7F3;
+    color: #BE185D;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.badge-backend {
+    background-color: #EEF2FF;
+    color: #4338CA;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.badge-frontend {
+    background-color: #CCFBF1;
+    color: #0F766E;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
 .badge-general {
     background-color: #F1F5F9;
     color: #475569;

@@ -52,7 +52,12 @@ class JobrapidoScraper:
             "desarrollador python",
             "ingeniero de sistemas",
             "devops engineer"
-        ]
+        ],
+        "Ingeniero Performance": ["ingeniero performance", "performance engineer"],
+        "Ingeniero NOC": ["ingeniero noc", "noc telecomunicaciones"],
+        "Desarrollador Web": ["desarrollador web", "programador web"],
+        "Desarrollador Backend": ["desarrollador backend", "backend developer python"],
+        "Desarrollador Frontend": ["desarrollador frontend", "frontend developer react"]
     }
 
     def __init__(self):

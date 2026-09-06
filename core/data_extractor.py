@@ -1,4 +1,4 @@
-﻿import re
+import re
 import urllib.parse
 from typing import Dict, Any, Tuple, Optional, List
 from config.settings import get_keywords
@@ -159,7 +159,7 @@ def extract_location_and_modality(text: str) -> Tuple[str, str]:
 
 def classify_category(text: str, title: str = "") -> str:
     """
-    Classify job into one of the 3 key engineering specialties based on keyword hits.
+    Classify job into one of the 8 key engineering and development specialties based on keyword hits.
     """
     combined = f"{title} {text}".lower()
     keywords_config = get_keywords().get("categories", {})
@@ -172,17 +172,27 @@ def classify_category(text: str, title: str = "") -> str:
         for kw in keywords_list:
             kw_lower = kw.lower()
             if kw_lower in title.lower():
-                score += 3
+                score += len(kw_lower) * 2
             if kw_lower in combined:
-                score += 1
+                score += len(kw_lower)
         scores[category] = score
 
     if not scores or max(scores.values()) == 0:
-        if any(term in combined for term in ["rf", "radiofrecuencia", "drive test", "ran", "ericsson", "huawei", "telecom"]):
+        if any(term in combined for term in ["performance", "jmeter", "loadrunner", "rendimiento", "capacidad de red"]):
+            return "Ingeniero Performance"
+        elif any(term in combined for term in ["noc", "centro de operaciones", "monitoring", "zabbix", "prtg", "solarwinds"]):
+            return "Ingeniero NOC"
+        elif any(term in combined for term in ["backend", "django", "fastapi", "flask", "node.js", "express", "spring boot", "golang"]):
+            return "Desarrollador Backend"
+        elif any(term in combined for term in ["frontend", "react", "vue", "angular", "next.js", "svelte"]):
+            return "Desarrollador Frontend"
+        elif any(term in combined for term in ["desarrollador web", "web developer", "programador web", "sitios web", "wordpress", "php"]):
+            return "Desarrollador Web"
+        elif any(term in combined for term in ["rf", "radiofrecuencia", "drive test", "ran", "ericsson", "huawei", "telecom"]):
             return "Ingeniero de RF / Optimización"
         elif any(term in combined for term in ["eléctrico", "electrico", "subestacion", "media tension", "potencia"]):
             return "Ingeniero Eléctrico"
-        elif any(term in combined for term in ["software", "sistemas", "python", "backend", "frontend", "devops", "cloud", "programador"]):
+        elif any(term in combined for term in ["software", "sistemas", "python", "devops", "cloud", "programador"]):
             return "Ingeniero de Sistemas / Software"
         return "Ingeniero de RF / Optimización"
 

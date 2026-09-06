@@ -1,4 +1,4 @@
-﻿import time
+import time
 import random
 import requests
 from bs4 import BeautifulSoup
@@ -254,7 +254,12 @@ class OCCBot:
             target_categories = [
                 "Ingeniero de RF / Optimización",
                 "Ingeniero Eléctrico",
-                "Ingeniero de Sistemas / Software"
+                "Ingeniero de Sistemas / Software",
+                "Ingeniero Performance",
+                "Ingeniero NOC",
+                "Desarrollador Web",
+                "Desarrollador Backend",
+                "Desarrollador Frontend"
             ]
         else:
             target_categories = categories

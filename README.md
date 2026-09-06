@@ -1,8 +1,37 @@
-# 🚀 AutoJob Hunter & Tracker (8 Canales Laborales, Frontend Nativo Bootstrap 5 & Bot de WhatsApp)
+# 🚀 AutoJob Hunter & Tracker (8 Canales Laborales, 8 Especialidades IT/Ingeniería, Frontend Nativo Bootstrap 5 & Bot de WhatsApp)
 
-Sistema integral de automatización multiplataforma para la **búsqueda de empleo, extracción de vacantes, captura de solicitudes de cotizaciones eléctricas y control total remoto desde tu WhatsApp** en las 8 plataformas líderes en México (**Facebook**, **LinkedIn**, **OCC Mundial**, **CompuTrabajo**, **Glassdoor**, **Jobrapido**, **JobLeads**, **Jobsora**).
+Sistema integral de automatización multiplataforma para la **búsqueda de empleo, extracción de vacantes, captura de solicitudes de cotizaciones y control total remoto desde tu WhatsApp** en las 8 plataformas líderes en México (**Facebook**, **LinkedIn**, **OCC Mundial**, **CompuTrabajo**, **Glassdoor**, **Jobrapido**, **JobLeads**, **Jobsora**).
+
+Soporta **8 especialidades técnicas y de ingeniería**:
+1. 📡 **Ingeniero de RF / Optimización**
+2. ⚡ **Ingeniero Eléctrico** (incluyendo Oficial Eléctrico, Medio Oficial y Ayudante Electricista)
+3. 💻 **Ingeniero de Sistemas / Software**
+4. 📈 **Ingeniero Performance**
+5. 🖥️ **Ingeniero NOC**
+6. 🌐 **Desarrollador Web**
+7. ⚙️ **Desarrollador Backend**
+8. 🎨 **Desarrollador Frontend**
 
 Cuenta con una **interfaz web moderna desarrollada 100% en HTML5, CSS3, JavaScript puro (Vanilla JS) y Bootstrap 5**, respaldada por una API REST en Flask, **eliminando cualquier dependencia de Streamlit** para un rendimiento ligero, flexible e integrable.
+
+---
+
+## 📋 Tabla de Contenidos
+
+- [Características Principales](#-características-principales)
+- [Arquitectura del Sistema](#️-arquitectura-del-sistema)
+- [Especialidades Técnicas y de Ingeniería (8 Áreas)](#-especialidades-técnicas-y-de-ingeniería-8-áreas)
+- [Panel de Control Web (HTML5, CSS3, JS & Bootstrap 5)](#-panel-de-control-web-html5-css3-js--bootstrap-5)
+- [Bot Interactivo de WhatsApp](#-módulo-especial-bot-interactivo-de-whatsapp-control-total-desde-tu-celular)
+- [Módulo de Obras, Oficiales y Ayudantes Eléctricos](#-módulo-especial-captura-de-obras-clientes-y-categorías-eléctricas)
+- [Plataformas de Empleo Integradas (8 Canales)](#-plataformas-de-empleo-integradas-8-canales)
+- [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Requisitos Previos](#-requisitos-previos)
+- [Instalación y Puesta en Marcha](#-instalación-y-puesta-en-marcha)
+- [Endpoints de la API REST](#-endpoints-de-la-api-rest)
+- [Guía de Uso por Terminal (CLI)](#-guía-de-uso-por-terminal-cli)
+- [Configuración de Webhook de WhatsApp](#-configuración-de-webhook-de-whatsapp)
+- [Plantilla de Mensaje de Cotización](#-plantilla-de-mensaje-de-cotización)
 
 ---
 
@@ -34,20 +63,20 @@ Cuenta con una **interfaz web moderna desarrollada 100% en HTML5, CSS3, JavaScri
 
 ---
 
-## 📋 Tabla de Contenidos
+## 🎯 Especialidades Técnicas y de Ingeniería (8 Áreas)
 
-- [Características Principales](#-características-principales)
-- [Panel de Control Web (HTML5, CSS3, JS & Bootstrap 5)](#-panel-de-control-web-html5-css3-js--bootstrap-5)
-- [Bot Interactivo de WhatsApp](#-módulo-especial-bot-interactivo-de-whatsapp-control-total-desde-tu-celular)
-- [Módulo de Obras, Oficiales y Ayudantes Eléctricos](#-módulo-especial-captura-de-obras-clientes-y-categorías-eléctricas)
-- [Plataformas de Empleo Integradas (8 Canales)](#-plataformas-de-empleo-integradas-8-canales)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Requisitos Previos](#-requisitos-previos)
-- [Instalación y Puesta en Marcha](#-instalación-y-puesta-en-marcha)
-- [Endpoints de la API REST](#-endpoints-de-la-api-rest)
-- [Guía de Uso por Terminal (CLI)](#-guía-de-uso-por-terminal-cli)
-- [Configuración de Webhook de WhatsApp](#-configuración-de-webhook-de-whatsapp)
-- [Plantilla de Mensaje de Cotización](#-plantilla-de-mensaje-de-cotización)
+El sistema clasifica automáticamente cada vacante y solicitud en una de las 8 especialidades configuradas en `config/keywords.json`, integrando badges visuales, filtros dedicados en la interfaz y palabras clave específicas en cada scraper:
+
+| Especialidad | Icono & Badge | Tecnologías y Palabras Clave Principales | Ámbito de Aplicación |
+| :--- | :---: | :--- | :--- |
+| **Ingeniero de RF / Optimización** | 📡 `badge-rf` | Radiofrecuencia, Drive Test, Optimización RF, Telecomunicaciones, Fibra Óptica, FTTH, RAN, 4G LTE, 5G NR, Site Survey, Antenas, Microondas, Atoll, Ericsson, Huawei, Nokia. | Redes celulares, telecomunicaciones móviles, planta externa e inalámbrica. |
+| **Ingeniero Eléctrico** | ⚡ `badge-electric` | Subestaciones, Media Tensión, Alta Tensión, Baja Tensión, Cuadros Eléctricos, Transformadores, NOM-001-SEDE, Protecciones Eléctricas, Plantas de Emergencia, Oficial Eléctrico, Medio Oficial, Ayudante Electricista. | Obras electromecánicas, instalaciones industriales, comerciales y residenciales. |
+| **Ingeniero de Sistemas / Software** | 💻 `badge-software` | Soporte TI, Redes LAN, Cableado Estructurado, Cisco, MikroTik, DevOps, Cloud (AWS, Azure), Docker, Kubernetes, SQL, PostgreSQL, Python, Linux SysAdmin. | Infraestructura de TI corporativa, redes empresariales y desarrollo general. |
+| **Ingeniero Performance** | 📈 `badge-performance` | JMeter, LoadRunner, K6, Locust, Rendimiento de Red, Capacidad de Red (Capacity Planning), Pruebas de Carga y Estrés, KPIs de Red, Latencia, Throughput, QoE, QoS. | Optimización del rendimiento de aplicaciones de alta concurrencia y tráfico de red. |
+| **Ingeniero NOC** | 🖥️ `badge-noc` | Monitoreo 24/7, Centro de Operaciones de Red (NOC), Zabbix, PRTG, SolarWinds, Nagios, Grafana, Datadog, Gestión de Alarmas e Incidentes, ITIL, Troubleshooting L1/L2. | Supervisión continua de redes de telecomunicaciones, servidores y enlaces de datos. |
+| **Desarrollador Web** | 🌐 `badge-web` | HTML5, CSS3, JavaScript, TypeScript, Bootstrap, Tailwind CSS, PHP, WordPress, Sitios Web Responsivos, Aplicaciones Web, SASS, UI/UX Web, SEO Técnico. | Construcción y mantenimiento de sitios, portales y aplicaciones web completas. |
+| **Desarrollador Backend** | ⚙️ `badge-backend` | Python (FastAPI, Django, Flask), Node.js (Express, NestJS), Java (Spring Boot), Go (Golang), C# (.NET Core), APIs RESTful, GraphQL, Microservicios, PostgreSQL, Redis, RabbitMQ. | Lógica de negocio del lado del servidor, arquitectura de microservicios y bases de datos. |
+| **Desarrollador Frontend** | 🎨 `badge-frontend` | React, Vue.js, Angular, Next.js, Nuxt, Svelte, TypeScript, JavaScript moderno (ES6+), HTML5 Semántico, CSS Grid / Flexbox, Redux, Zustand, Pinia, Core Web Vitals. | Creación de interfaces de usuario interactivas, responsivas y componentes SPA modernos. |
 
 ---
 
@@ -60,7 +89,7 @@ La interfaz gráfica reemplaza por completo a Streamlit y opera mediante un serv
 - **Gráfico de Historial Diario (Chart.js):** Cantidad de gestiones registradas por día calendario con tabla de resumen lateral y cálculo de promedio diario.
 - **Gráficos de Desglose:**
   - Desglose por Plataforma (OCC, LinkedIn, CompuTrabajo, Facebook, etc.).
-  - Desglose por Especialidad (Eléctrica, RF / Telecomunicaciones, Sistemas / Software).
+  - Desglose por Especialidad (RF / Telecomunicaciones, Eléctrica, Sistemas / Software, Performance, NOC, Desarrollador Web, Backend, Frontend).
   - Desglose por Modalidad (Presencial, Híbrido, Remoto).
 - **Registro Detallado de Seguimiento:** Tabla con todas las oportunidades marcadas como *Postulado* o *En Cotización / Entrevista*, con acceso directo a llamada y chat de WhatsApp.
 

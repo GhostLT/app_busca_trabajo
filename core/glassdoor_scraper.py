@@ -50,7 +50,12 @@ class GlassdoorScraper:
             "ingeniero-de-software",
             "desarrollador-python",
             "devops-engineer"
-        ]
+        ],
+        "Ingeniero Performance": ["ingeniero-performance", "performance-engineer"],
+        "Ingeniero NOC": ["ingeniero-noc", "noc-engineer"],
+        "Desarrollador Web": ["desarrollador-web", "web-developer"],
+        "Desarrollador Backend": ["desarrollador-backend", "backend-developer"],
+        "Desarrollador Frontend": ["desarrollador-frontend", "frontend-developer"]
     }
 
     def __init__(self):

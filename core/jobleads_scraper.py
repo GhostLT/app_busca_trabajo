@@ -52,7 +52,12 @@ class JobLeadsScraper:
             "Python Backend Lead",
             "DevOps Architect",
             "Cloud Infrastructure Engineer"
-        ]
+        ],
+        "Ingeniero Performance": ["Performance Engineering Lead", "Network Performance Manager"],
+        "Ingeniero NOC": ["NOC Manager", "Senior NOC Engineer"],
+        "Desarrollador Web": ["Senior Web Developer", "Web Development Lead"],
+        "Desarrollador Backend": ["Senior Backend Developer", "Backend Lead"],
+        "Desarrollador Frontend": ["Senior Frontend Developer", "Frontend Architect"]
     }
 
     def __init__(self):

@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -218,13 +218,23 @@ class LinkedInScraper:
             target_categories = [
                 ("Ingeniero de RF / Optimización", "Ingeniero RF"),
                 ("Ingeniero Eléctrico", "Ingeniero Electrico"),
-                ("Ingeniero de Sistemas / Software", "Ingeniero de Software")
+                ("Ingeniero de Sistemas / Software", "Ingeniero de Software"),
+                ("Ingeniero Performance", "Ingeniero Performance"),
+                ("Ingeniero NOC", "Ingeniero NOC"),
+                ("Desarrollador Web", "Desarrollador Web"),
+                ("Desarrollador Backend", "Desarrollador Backend"),
+                ("Desarrollador Frontend", "Desarrollador Frontend")
             ]
         else:
             cat_map = {
                 "Ingeniero de RF / Optimización": "Ingeniero RF",
                 "Ingeniero Eléctrico": "Ingeniero Electrico",
-                "Ingeniero de Sistemas / Software": "Ingeniero de Software"
+                "Ingeniero de Sistemas / Software": "Ingeniero de Software",
+                "Ingeniero Performance": "Ingeniero Performance",
+                "Ingeniero NOC": "Ingeniero NOC",
+                "Desarrollador Web": "Desarrollador Web",
+                "Desarrollador Backend": "Desarrollador Backend",
+                "Desarrollador Frontend": "Desarrollador Frontend"
             }
             target_categories = [(c, cat_map.get(c, c)) for c in categories]
 

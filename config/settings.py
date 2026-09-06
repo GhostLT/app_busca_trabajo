@@ -67,7 +67,7 @@ WHATSAPP_WEBHOOK_PORT = int(os.getenv("WHATSAPP_WEBHOOK_PORT", "5000"))
 CV_PATH = os.getenv("CV_PATH", str(CV_DIR / "mi_cv.pdf"))
 TARGET_ROLES_RAW = os.getenv(
     "TARGET_ROLES",
-    "Ingeniero Eléctrico, Oficial Eléctrico, Medio Oficial Eléctrico, Ayudante Electricista, Técnico Electricista, Ingeniero de RF, Ingeniero de Sistemas, Técnico Instalador de Fibra, Técnico en Telecomunicaciones"
+    "Ingeniero Eléctrico, Oficial Eléctrico, Medio Oficial Eléctrico, Ayudante Electricista, Técnico Electricista, Ingeniero de RF, Ingeniero de Sistemas, Ingeniero Performance, Ingeniero NOC, Desarrollador Web, Desarrollador Backend, Desarrollador Frontend, Técnico Instalador de Fibra, Técnico en Telecomunicaciones"
 )
 TARGET_ROLES = [r.strip() for r in TARGET_ROLES_RAW.split(",") if r.strip()]
 
