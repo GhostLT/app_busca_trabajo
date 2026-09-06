@@ -15,5 +15,5 @@ python-dotenv>=1.0.1
 twilio>=9.0.0
 pywhatkit>=5.4
 
-# Interfaz Visual (Dashboard)
-streamlit>=1.32.0
+# Interfaz Visual y Servidor Web (HTML5, CSS3, JS & Bootstrap 5)
+flask>=3.0.0

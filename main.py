@@ -158,17 +158,18 @@ def run_chat_console():
             print("\nSaliendo...")
             break
 
-def launch_ui():
-    print("\n[+] Iniciando interfaz gráfica Streamlit...")
-    app_path = BASE_DIR / "ui" / "app.py"
-    subprocess.run(["streamlit", "run", str(app_path)])
+def launch_ui(port: int = 8000, host: str = "127.0.0.1", open_browser: bool = True):
+    print(f"\n[+] Iniciando interfaz gráfica web moderna (HTML5, CSS3, JS & Bootstrap 5) en http://{host}:{port}...")
+    from ui.server import start_server
+    start_server(host=host, port=port, open_browser=open_browser)
 
 def main():
     print(BANNER)
     db.init_db()
 
     parser = argparse.ArgumentParser(description="AutoJob Hunter & Tracker CLI")
-    parser.add_argument("--ui", action="store_true", help="Iniciar el Dashboard visual de Streamlit (por defecto)")
+    parser.add_argument("--ui", action="store_true", help="Iniciar la interfaz web moderna (HTML5, CSS3, JS & Bootstrap 5) (por defecto)")
+    parser.add_argument("--ui-port", type=int, default=8000, help="Puerto para la interfaz web (default 8000)")
     parser.add_argument("--bot", "--webhook", action="store_true", help="Iniciar el Servidor Webhook de WhatsApp Bot")
     parser.add_argument("--port", type=int, default=5000, help="Puerto para el servidor Webhook de WhatsApp (default 5000)")
     parser.add_argument("--chat", action="store_true", help="Consola interactiva en terminal para probar comandos de WhatsApp")
@@ -218,7 +219,7 @@ def main():
         print(f"[OK] Se cargaron {added} vacantes de prueba.")
         print_stats()
     else:
-        launch_ui()
+        launch_ui(port=args.ui_port)
 
 if __name__ == "__main__":
     main()

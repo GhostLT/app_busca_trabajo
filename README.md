@@ -76,7 +76,7 @@ Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos, 
 - [Instalación y Puesta en Marcha](#-instalación-y-puesta-en-marcha)
 - [Configuración de Webhook de WhatsApp](#-configuración-de-webhook-de-whatsapp)
 - [Guía de Uso (CLI, WhatsApp y Dashboard)](#-guía-de-uso)
-- [Panel de Control Web (Streamlit)](#-panel-de-control-web-streamlit)
+- [Panel de Control Web (HTML5, CSS3, JS & Bootstrap 5)](#-panel-de-control-web-html5-css3-js--bootstrap-5)
 - [Estructura de Datos Extraídos](#-estructura-de-datos-extraídos)
 - [Plantilla de Mensaje de Cotización](#-plantilla-de-mensaje-de-cotización)
 
@@ -214,7 +214,7 @@ app_busca_trabajo/
 ## 🖥️ Guía de Uso (CLI)
 
 ```bash
-# Iniciar la interfaz web gráfica (Streamlit)
+# Iniciar la interfaz web moderna (HTML5, CSS3, JS & Bootstrap 5)
 python main.py
 
 # Iniciar la Consola Interactiva para probar comandos de WhatsApp en tu terminal
