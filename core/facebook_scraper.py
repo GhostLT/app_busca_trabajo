@@ -2,20 +2,33 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
+import os
 import time
 import random
+import re
 from typing import List, Dict, Any, Optional
 from datetime import datetime
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 import core.database as db
 import core.data_extractor as extractor
 import core.notifier_whatsapp as notifier
+from config.settings import FB_EMAIL, FB_PASSWORD, DATA_DIR
+
 
 class FacebookScraper:
     """
-    Scraper, feed monitor, and text extractor for Facebook job posts and groups
-    specializing in engineering, technician positions, Oficiales Eléctricos,
-    Medio Oficiales, and direct client/contractor requests for electrical installations and quotations.
+    Automated real scraper, browser navigator, and text extractor for Facebook:
+    - Logs into the user's Facebook account (or uses saved session profile in data/fb_profile).
+    - Discovers all groups the user has joined (https://www.facebook.com/groups/joins/).
+    - Scrapes posts from each group to find real job openings, contractor requests, and quotations.
+    - Extracts position title, contact/company, phone numbers, WhatsApp links, and salaries.
+    - Saves all opportunities to jobs.db and provides structured lists.
     """
     TARGET_GROUPS = [
         "Cotizaciones y Trabajos Eléctricos e Instalaciones México",
@@ -29,6 +42,317 @@ class FacebookScraper:
         "Técnicos Electricistas e Instalaciones Eléctricas Industriales México",
         "Técnicos en Sistemas, Soporte TI y Redes México"
     ]
+
+    def __init__(self, email: Optional[str] = None, password: Optional[str] = None, profile_dir: Optional[str] = None):
+        self.email = email or FB_EMAIL
+        self.password = password or FB_PASSWORD
+        self.profile_dir = Path(profile_dir) if profile_dir else (DATA_DIR / "fb_profile")
+        self.profile_dir.mkdir(parents=True, exist_ok=True)
+
+    def get_driver(self, headless: bool = False) -> webdriver.Chrome:
+        """
+        Configure and launch Chrome WebDriver with dedicated Facebook profile
+        so login sessions, cookies, and tokens persist between executions.
+        """
+        options = Options()
+        if headless:
+            options.add_argument("--headless=new")
+
+        profile_path = str(self.profile_dir.resolve())
+        options.add_argument(f"--user-data-dir={profile_path}")
+        options.add_argument("--disable-notifications")
+        options.add_argument("--disable-popup-blocking")
+        options.add_argument("--start-maximized")
+        options.add_argument("--lang=es-MX")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
+
+        driver = webdriver.Chrome(options=options)
+        return driver
+
+    def is_logged_in(self, driver: webdriver.Chrome) -> bool:
+        """
+        Determine if the user is authenticated in Facebook.
+        """
+        try:
+            curr = driver.current_url.lower()
+            if "login" in curr or "checkpoint" in curr or "recover" in curr:
+                return False
+
+            # Check if login input fields are present
+            email_inputs = driver.find_elements(By.NAME, "email")
+            pass_inputs = driver.find_elements(By.NAME, "pass")
+            if email_inputs or pass_inputs:
+                return False
+
+            # Check if feed, navigation, or profile element exists
+            nav_indicators = driver.find_elements(
+                By.CSS_SELECTOR,
+                "div[role='navigation'], div[role='feed'], svg[aria-label*='perfil'], a[href*='/me'], svg[aria-label*='Cuenta']"
+            )
+            return len(nav_indicators) > 0 or "facebook.com/groups" in curr or "facebook.com" in curr
+        except Exception:
+            return False
+
+    def login(self, driver: webdriver.Chrome, wait_timeout: int = 90) -> bool:
+        """
+        Ensure Facebook is logged in. Attempts automatic login if credentials exist in .env,
+        or allows interactive login/2FA in the opened visible browser window.
+        """
+        print("[Facebook] Navegando a Facebook para verificar sesión...")
+        driver.get("https://www.facebook.com")
+        time.sleep(4)
+
+        if self.is_logged_in(driver):
+            print("✅ [Facebook] Sesión activa verificada.")
+            return True
+
+        # Check if real credentials exist in .env
+        is_real_creds = (
+            self.email and "ejemplo.com" not in self.email and
+            self.password and "contraseña" not in self.password
+        )
+
+        if is_real_creds:
+            print(f"[Facebook] Intentando autenticación automática con cuenta: {self.email}...")
+            try:
+                email_box = driver.find_element(By.NAME, "email")
+                email_box.clear()
+                email_box.send_keys(self.email)
+                time.sleep(1)
+
+                pass_box = driver.find_element(By.NAME, "pass")
+                pass_box.clear()
+                pass_box.send_keys(self.password)
+                time.sleep(1)
+
+                login_btn = driver.find_element(By.NAME, "login")
+                login_btn.click()
+                time.sleep(6)
+            except Exception as e:
+                print(f"[Facebook] Error al enviar formulario de login: {e}")
+
+            if self.is_logged_in(driver):
+                print("✅ [Facebook] Inicio de sesión automático completado con éxito.")
+                return True
+
+        # Interactive login wait
+        print("=" * 70)
+        print("⚠️  [Facebook] ATENCIÓN: Se requiere iniciar sesión en Facebook.")
+        print("    Por favor ingresa tu correo y contraseña (y código 2FA si aplica)")
+        print("    en la ventana de Google Chrome que se abrió en tu pantalla.")
+        print(f"    El sistema esperará hasta {wait_timeout} segundos para detectar tu sesión...")
+        print("=" * 70)
+
+        start_time = time.time()
+        while time.time() - start_time < wait_timeout:
+            time.sleep(3)
+            if self.is_logged_in(driver):
+                print("✅ [Facebook] ¡Sesión iniciada con éxito! Continuando con la extracción...")
+                return True
+
+        print("❌ [Facebook] Tiempo de espera agotado sin inicio de sesión confirmado.")
+        return False
+
+    def get_my_groups(self, driver: webdriver.Chrome) -> List[Dict[str, str]]:
+        """
+        Extract the complete list of groups the user belongs to from https://www.facebook.com/groups/joins/.
+        """
+        print("[Facebook] Obteniendo lista de grupos a los que perteneces (https://www.facebook.com/groups/joins/)...")
+        driver.get("https://www.facebook.com/groups/joins/")
+        time.sleep(5)
+
+        # Scroll down smoothly to load all joined groups
+        for _ in range(4):
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(2)
+
+        groups: List[Dict[str, str]] = []
+        seen_urls = set()
+
+        # Find all link elements
+        links = driver.find_elements(By.TAG_NAME, "a")
+        for link in links:
+            try:
+                href = link.get_attribute("href") or ""
+                if "/groups/" in href:
+                    clean_url = href.split("?")[0].rstrip("/")
+                    if clean_url in seen_urls:
+                        continue
+
+                    # Ignore administrative or system Facebook group paths
+                    ignore_slugs = ["/groups/feed", "/groups/joins", "/groups/discover", "/groups/create", "/groups/categories"]
+                    if any(clean_url.endswith(slug) or slug in clean_url for slug in ignore_slugs):
+                        continue
+
+                    # Extract group display name
+                    name = link.text.strip()
+                    if not name:
+                        name = link.get_attribute("title") or link.get_attribute("aria-label") or ""
+
+                    # Clean badges or secondary subtitles
+                    if "\n" in name:
+                        name = name.split("\n")[0].strip()
+
+                    name_clean = name.strip()
+                    if len(name_clean) >= 3 and not name_clean.lower().startswith("ver más") and not name_clean.lower().startswith("unirse"):
+                        seen_urls.add(clean_url)
+                        group_id = clean_url.split("/groups/")[-1].replace("/", "")
+                        groups.append({
+                            "name": name_clean,
+                            "url": clean_url,
+                            "id": group_id
+                        })
+            except Exception:
+                continue
+
+        print(f"✅ [Facebook] Se detectaron {len(groups)} grupos en tu cuenta.")
+        return groups
+
+    def scrape_group_posts(
+        self,
+        driver: webdriver.Chrome,
+        group_url: str,
+        group_name: str,
+        max_scrolls: int = 4
+    ) -> List[Dict[str, Any]]:
+        """
+        Enter a specific Facebook group, scroll its feed, and extract real job opportunities and contacts.
+        """
+        print(f"[Facebook] Escaneando publicaciones en: '{group_name}' ({group_url})...")
+        driver.get(group_url)
+        time.sleep(4)
+
+        for _ in range(max_scrolls):
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(2.5)
+
+        extracted_jobs: List[Dict[str, Any]] = []
+        seen_hashes = set()
+
+        # Target post elements
+        post_elements = driver.find_elements(By.CSS_SELECTOR, "div[role='article'], div[role='feed'] > div, div.x1y1aw1k")
+
+        for elem in post_elements:
+            try:
+                text = elem.text.strip()
+                if not text or len(text) < 30:
+                    continue
+
+                h = hash(text[:120])
+                if h in seen_hashes:
+                    continue
+                seen_hashes.add(h)
+
+                lower_text = text.lower()
+                # Keywords indicating a hiring request, job opening, or quotation opportunity
+                hiring_keywords = [
+                    "solicito", "se busca", "vacante", "contrataci", "urgente",
+                    "oficial", "ayudante", "electricista", "instalaci", "cotiza",
+                    "presupuesto", "obra", "sueldo", "pago", "ingeniero", "técnico",
+                    "tecnico", "telecom", "fibra", "sistemas", "redes", "mantenimiento",
+                    "interesados", "manda whatsapp", "comunicarse", "envia cv"
+                ]
+
+                if not any(k in lower_text for k in hiring_keywords):
+                    continue
+
+                # Parse post with smart extractor
+                parsed = extractor.parse_job_post(
+                    text=text,
+                    source="Facebook",
+                    company=group_name
+                )
+
+                # Locate post link if available
+                post_links = elem.find_elements(By.CSS_SELECTOR, "a[href*='/posts/'], a[href*='/permalink/'], a[href*='multi_permalinks']")
+                if post_links:
+                    parsed["url"] = post_links[0].get_attribute("href") or group_url
+                else:
+                    parsed["url"] = group_url
+
+                # Save to local database
+                job_id, is_new = db.add_job(parsed)
+                saved_job = db.get_job_by_id(job_id)
+
+                if saved_job:
+                    extracted_jobs.append(saved_job)
+            except Exception:
+                continue
+
+        print(f"  -> Encontradas {len(extracted_jobs)} oportunidades en '{group_name}'.")
+        return extracted_jobs
+
+    def run_live_account_extraction(
+        self,
+        max_groups: int = 15,
+        max_posts_per_group: int = 10,
+        headless: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Full end-to-end execution:
+        1. Opens browser with persistent session.
+        2. Verifies / performs login.
+        3. Retrieves the user's groups.
+        4. Extracts jobs and contacts from each group.
+        5. Saves to database and returns organized report.
+        """
+        driver = None
+        try:
+            driver = self.get_driver(headless=headless)
+            logged_in = self.login(driver)
+
+            if not logged_in:
+                return {
+                    "success": False,
+                    "error": "No se pudo iniciar sesión en Facebook. Por favor ejecuta el escaneo nuevamente e inicia sesión en la ventana del navegador.",
+                    "groups": [],
+                    "jobs": [],
+                    "jobs_by_group": {}
+                }
+
+            groups = self.get_my_groups(driver)
+            all_jobs: List[Dict[str, Any]] = []
+            jobs_by_group: Dict[str, List[Dict[str, Any]]] = {}
+
+            # Process user groups
+            target_groups = groups[:max_groups]
+            for g in target_groups:
+                jobs = self.scrape_group_posts(
+                    driver=driver,
+                    group_url=g["url"],
+                    group_name=g["name"],
+                    max_scrolls=3
+                )
+                jobs_by_group[g["name"]] = jobs
+                all_jobs.extend(jobs)
+
+            return {
+                "success": True,
+                "total_groups": len(groups),
+                "groups": groups,
+                "scanned_groups_count": len(target_groups),
+                "total_jobs_found": len(all_jobs),
+                "jobs": all_jobs,
+                "jobs_by_group": jobs_by_group,
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "groups": [],
+                "jobs": [],
+                "jobs_by_group": {}
+            }
+        finally:
+            if driver:
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
 
     def parse_and_save_post(
         self,
@@ -62,229 +386,35 @@ class FacebookScraper:
             "notification": notification
         }
 
-    def get_simulated_group_feed(self, category: Optional[str] = None) -> List[Dict[str, Any]]:
-        """
-        Generate realistic engineering, technician, Oficial Eléctrico, Medio Oficial,
-        and direct electrical installation/quotation leads with explicit contact names and phone numbers.
-        """
-        feed = [
-            # 1. Oficial Eléctrico de Obra Industrial (CDMX / EdoMex)
-            {
-                "group": "Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México",
-                "contact_name": "Ing. Mateo Carvajal (Residente de Obra)",
-                "text": """⚡ SOLICITO URGENTE: OFICIAL ELÉCTRICO INDUSTRIAL
-👤 Contacto: Ing. Mateo Carvajal (Supervisión Eléctrica)
-🏢 Empresa: Instalaciones y Montajes Eléctricos del Valle
-📍 Ubicación: Naucalpan / Tlalnepantla, Estado de México
-💵 Sueldo: $5,500 - $6,800 libres semanales ($22,000 - $27,000 mensuales) + Horas extras pagadas + IMSS
-Requisitos y actividades:
-- Doblado y roscado de tubería conduit PG de 1/2" a 2" con dobladora hidráulica y manual
-- Cableado de alimentadores principales y centros de carga trifásicos 480V/220V
-- Peinado y conexión de tableros de distribución según planos eléctricos
-- Interpretación de diagramas unifilares y cuadros de cargas
-- Manejo de herramienta propia y equipo de seguridad (EPP)
-📞 Interesados comunicarse por llamada o WhatsApp al 55 4190 8273 con el Ing. Mateo Carvajal para contratación inmediata.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 2. Medio Oficial Eléctrico (Monterrey)
-            {
-                "group": "Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México",
-                "contact_name": "Ing. Sergio Valenzuela (Jefe de Cuadrilla)",
-                "text": """🔧 SE BUSCA: MEDIO OFICIAL ELÉCTRICO / AYUDANTE AVANZADO
-👤 Contacto: Ing. Sergio Valenzuela
-🏢 Empresa: Proyectos Eléctricos e Industriales del Norte
-📍 Ubicación: Monterrey / García, Nuevo León (Parque Industrial)
-💰 Pago: $3,800 - $4,800 netos por semana ($15,200 - $19,200 mensuales) + Prestaciones de ley
-Funciones:
-- Apoyo directo al Oficial Eléctrico en tendido de tubería y charola tipo malla
-- Jalado de cableado de fuerza y control calibres 10, 8 y 6 AWG
-- Ranurado, fijación de cajas de registro y canalizaciones
-- Ponchado de terminales de ojo y zapatas mecánicas
-- Conocimiento básico de código de colores y uso de multímetro
-📲 Mandar mensaje de WhatsApp al 81 8901 9284 con Sergio Valenzuela para integrarse esta semana.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 3. Ayudante Electricista de Obra (CDMX / Toluca)
-            {
-                "group": "Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México",
-                "contact_name": "Ing. Gerardo Albarrán (Residente)",
-                "text": """⚡ CONTRATACIÓN: AYUDANTE ELECTRICISTA / AYUDANTE GENERAL ELÉCTRICO
-👤 Contacto: Ing. Gerardo Albarrán
-🏢 Empresa: Constructora Electromecánica Metropolitana
-📍 Ubicación: CDMX (Santa Fe) y Toluca, Estado de México
-💵 Sueldo: $2,800 - $3,600 libres por semana ($11,200 - $14,400 mensuales) + Tiempo extra + Seguro Social
-Actividades:
-- Carga y acarreo de materiales (tubería conduit, rollos de cable, cajas chalupas)
-- Jalado y guiado de cableado con guía de acero / nylon
-- Ayudar al oficial en colocación de taquetes, abrazaderas unicanal y soportería
-- Limpieza y orden de áreas de trabajo en obra
-📞 Interesados llamar o enviar WhatsApp al 55 3901 8247 con el Ing. Gerardo Albarrán.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 4. Ayudante de Instalaciones Eléctricas (Guadalajara)
-            {
-                "group": "Oficiales Electricistas, Medio Oficiales y Ayudantes Eléctricos México",
-                "contact_name": "Arq. Brenda Salgado (Supervisora)",
-                "text": """🔧 SE SOLICITA AYUDANTE DE ELECTRICISTA
-👤 Contacto: Arq. Brenda Salgado
-🏢 Empresa: Instalaciones y Servicios Tapatíos
-📍 Ubicación: Zapopan / Tlaquepaque, Jalisco
-💰 Pago semanal: $3,000 - $3,800 netos + Bono de puntualidad
-Requisitos: Ganas de aprender el oficio eléctrico, disponibilidad inmediata y manejo básico de pinzas, desarmadores y taladro.
-📲 WhatsApp de contacto: 33 2190 8473 con Brenda Salgado.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 3. Cuadrilla: Oficiales y Medio Oficiales Electricistas (Querétaro)
-            {
-                "group": "Cotizaciones y Trabajos Eléctricos e Instalaciones México",
-                "contact_name": "Arq. Luis Fernando Ríos (Contratista General)",
-                "text": """⚡ REQUERIMOS CUADRILLA ELÉCTRICA: OFICIALES Y MEDIO OFICIALES
-👤 Contacto: Arq. Luis Fernando Ríos
-🏢 Proyecto: Ampliación de Nave Industrial y Líneas de Ensamble
-📍 Ubicación: Parque Industrial Bernardo Quintana, Querétaro
-💵 Sueldos:
-- Oficial Eléctrico: $6,000 semanales libres
-- Medio Oficial: $4,200 semanales libres
-Alcance del proyecto:
-- Instalación de ducto cuadrado, charola tipo escalera y tubería conduit pared gruesa
-- Conexión de transformador seco de 150 kVA y tableros derivados
-- Bajadas eléctricas para maquinaria CNC
-📞 Llamadas o WhatsApp al 442 901 8374 con el Arq. Luis Fernando Ríos para entrevista y presupuesto.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 4. Cotización: Cableado de Nave Industrial y Alumbrado LED (Querétaro)
-            {
-                "group": "Cotizaciones y Trabajos Eléctricos e Instalaciones México",
-                "contact_name": "Ing. David Sotomayor (Constructora Bajío)",
-                "text": """⚡ SOLICITO COTIZACIÓN URGENTE PARA INSTALACIÓN ELÉCTRICA INDUSTRIAL
-👤 Contacto: Ing. David Sotomayor (Superintendente de Obras)
-🏢 Empresa: Constructora & Desarrollos Industriales del Bajío
-📍 Ubicación: Parque Industrial El Marqués, Querétaro
-💰 Presupuesto estimado de mano de obra: $45,000 - $70,000 MXN + IVA
-📋 Alcance del trabajo:
-- Tendido de canalización en tubería conduit PG de 1" y 2" (aprox. 350 metros lineales)
-- Cableado de fuerza y control calibre 8, 10 y 12 AWG
-- Instalación y conexión de 45 luminarias LED tipo campana high-bay
-- Balanceo de cargas y peinado de tablero general de 42 circuitos (trifásico 220V)
-📲 Favor de comunicarse o mandar WhatsApp al 442 819 2039 con el Ing. David Sotomayor para agendar visita a la nave y enviar cotización formal.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 5. Cotización: Acometida Eléctrica y Centro de Carga Comercial (CDMX)
-            {
-                "group": "Servicios Eléctricos, Subestaciones y Obras Eléctricas CDMX / EdoMex",
-                "contact_name": "Arq. Roberto Morales (Plaza Comercial)",
-                "text": """🔌 BUSCAMOS ELECTRICISTA CON CÉDULA PARA INSTALACIÓN COMERCIAL
-👤 Contacto: Arq. Roberto Morales (Administración de Plaza)
-🏢 Cliente: Plaza Comercial Insurgentes Sur
-📍 Ubicación: Benito Juárez / Coyoacán, CDMX
-💵 Presupuesto a cotizar: $25,000 - $38,000 MXN libres
-Descripción:
-- Habilitación de nueva acometida trifásica para 3 locales comerciales nuevos
-- Suministro e instalación de centro de carga QOD-12 y pastillas termomagnéticas Square D
-- Balanceo de fases y sistema de tierra física con varilla copperweld certificada
-📞 Llamadas o WhatsApp directo al 55 4180 9283 con el Arq. Roberto Morales para enviar presupuesto y cotización.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 6. Cotización: Mantenimiento y Pruebas a Subestación 500kVA (Monterrey)
-            {
-                "group": "Obras, Remodelaciones y Contratistas Eléctricos Monterrey & Querétaro",
-                "contact_name": "Lic. Claudia Benítez (Gerente de Mantenimiento)",
-                "text": """⚡ SE SOLICITA CONTRATISTA / TÉCNICO ELECTRICISTA ESPECIALIZADO
-👤 Contacto: Lic. Claudia Benítez (Gerencia de Mantenimiento)
-🏢 Planta: Manufacturas y Troqueles del Norte S.A.
-📍 Ubicación: Apodaca / San Nicolás de los Garza, Nuevo León
-💰 Presupuesto de servicio: $35,000 - $55,000 MXN
-Trabajo a cotizar:
-- Mantenimiento preventivo anual a subestación eléctrica compacta de 500 kVA
-- Pruebas físico-químicas a aceite dieléctrico y aislamiento Megger
-📲 Contactar al WhatsApp +52 81 8902 4719 con la Lic. Claudia Benítez para solicitar bases y cotizar.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 7. Cotización: Instalación Eléctrica para Restaurante (Guadalajara)
-            {
-                "group": "Bolsa de Proyectos e Instalaciones Eléctricas Industriales Guadalajara",
-                "contact_name": "Sr. Francisco Zavala (Contratista de Interiores)",
-                "text": """🛠️ REQUIERO ELECTRICISTA O EQUIPO DE INSTALADORES ELÉCTRICOS
-👤 Contacto: Sr. Francisco Zavala (Contratista General)
-🏢 Proyecto: Remodelación y Apertura Restaurante Gourmet
-📍 Ubicación: Zona Providencia / Zapopan, Guadalajara, Jalisco
-💵 Presupuesto de mano de obra: $30,000 - $48,000 MXN
-Requerimientos:
-- Instalación eléctrica completa de cocina industrial y tablero de 24 polos
-- Pastillas GFCI e iluminación arquitectónica
-📞 Comunicarse por llamada o WhatsApp al 33 1902 8374 con Francisco Zavala para entrega de planos y cotización.""",
-                "category": "Ingeniero Eléctrico"
-            },
-            # 8. Técnico Instalador de Fibra Óptica
-            {
-                "group": "Bolsa de Trabajo Técnicos Instaladores de Fibra Óptica y Telecomunicaciones México",
-                "contact_name": "Lic. Mariana Valdés (Coordinadora RH)",
-                "text": """🚨 ¡CONTRATACIÓN INMEDIATA PARA PROYECTO FTTH!
-👤 Contacto: Lic. Mariana Valdés
-📌 Puesto: TÉCNICO INSTALADOR DE FIBRA ÓPTICA Y EMPALMADOR
-🏢 Contratista Autorizado Totalplay / Megacable
-📍 Ubicación: Ciudad de México y Área Metropolitana
-💰 Sueldo: $16,000 - $24,000 netos mensuales + Bono por mufa instalada
-📲 Manda mensaje por WhatsApp al 55 4819 3920 con Mariana Valdés.""",
-                "category": "Ingeniero de RF / Optimización"
-            },
-            # 9. Técnico en Sistemas y Soporte TI
-            {
-                "group": "Técnicos en Sistemas, Soporte TI y Redes México",
-                "contact_name": "Ing. Fernando Castro (Líder Soporte)",
-                "text": """💻 VACANTE: TÉCNICO EN SISTEMAS Y SOPORTE DE SITIO
-👤 Contacto: Ing. Fernando Castro
-🏢 Empresa: Soluciones Corporativas IT México
-📍 Ubicación: Guadalajara, Jalisco (Zona Zapopan / Híbrido)
-💰 Sueldo: $15,000 a $20,000 netos al mes + Vales
-📩 Postúlate enviando WhatsApp al 33 2910 4829 con el Ing. Fernando Castro.""",
-                "category": "Ingeniero de Sistemas / Software"
-            },
-            # 10. Técnico en Telecomunicaciones y Torres RF
-            {
-                "group": "Empleos Técnicos en Telecomunicaciones, Torres y Radiofrecuencia",
-                "contact_name": "Ing. Víctor Almonte (Operaciones)",
-                "text": """📡 SE BUSCA: TÉCNICO EN TELECOMUNICACIONES / TORRERO DE RADIOFRECUENCIA
-👤 Contacto: Ing. Víctor Almonte
-🏢 Empresa: Infraestructura Celular del Norte
-📍 Base: Monterrey, N.L.
-💵 Ofrecemos: $20,000 a $28,000 mensuales libres + Viáticos
-📲 Enviar WhatsApp al +52 81 2940 8173 con Víctor Almonte.""",
-                "category": "Ingeniero de RF / Optimización"
-            }
-        ]
-
-        if category and category != "Todos":
-            return [f for f in feed if f.get("category") == category]
-        return feed
-
     def run_scan_and_save(self, category: Optional[str] = None) -> Dict[str, Any]:
         """
-        Scan feeds, parse jobs, electrical installation quotation requests, Oficiales Eléctricos,
-        and technician leads, and save all new postings into database.
+        High-level runner invoked by CLI or API.
+        Attempts live account extraction if session/credentials available,
+        or provides structured extraction.
         """
-        feed = self.get_simulated_group_feed(category)
-        total_found = len(feed)
-        new_saved = 0
+        res = self.run_live_account_extraction(max_groups=10, headless=False)
+        if res.get("success"):
+            return {
+                "success": True,
+                "total_found": res["total_jobs_found"],
+                "new_saved": res["total_jobs_found"],
+                "groups": res["groups"],
+                "jobs_by_group": res["jobs_by_group"],
+                "timestamp": res["timestamp"]
+            }
+        return res
 
-        for post in feed:
-            res = self.parse_and_save_post(
-                post_text=post["text"],
-                group_name=post["group"],
-                contact_name=post.get("contact_name")
-            )
-            if res.get("is_new"):
-                new_saved += 1
-
-        return {
-            "success": True,
-            "total_found": total_found,
-            "new_saved": new_saved,
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
 
 if __name__ == "__main__":
     scraper = FacebookScraper()
-    print("Escaneando grupos de Facebook (Oficiales Eléctricos, Medio Oficiales, Cotizaciones y Técnicos)...")
-    res = scraper.run_scan_and_save()
-    print(f"Escaneo finalizado. Total encontradas: {res['total_found']}, Nuevas guardadas: {res['new_saved']}")
+    print("Iniciando conexión con cuenta de Facebook y escaneo de grupos...")
+    result = scraper.run_live_account_extraction(max_groups=10, headless=False)
+    if result.get("success"):
+        print(f"\n[OK] Se encontraron {result['total_groups']} grupos en la cuenta.")
+        print(f"[OK] Total de vacantes y cotizaciones extraídas: {result['total_jobs_found']}")
+        for g_name, j_list in result.get("jobs_by_group", {}).items():
+            print(f"\n--- {g_name} ({len(j_list)} vacantes) ---")
+            for j in j_list:
+                print(f"  • {j.get('title')} | Contacto: {j.get('company')} | Tel: {j.get('phone')} | WhatsApp: {j.get('whatsapp_url')}")
+    else:
+        print(f"[ERROR] {result.get('error')}")

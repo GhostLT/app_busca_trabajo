@@ -251,7 +251,7 @@ Orientado a la prospección comercial de proyectos eléctricos e instalaciones:
 
 | Plataforma | Módulo | Enfoque Principal |
 | :--- | :--- | :--- |
-| **📱 Facebook** | `core/facebook_scraper.py` | Solicitudes de electricistas, Oficiales, Ayudantes, obras y presupuestos |
+| **📱 Facebook** | `core/facebook_scraper.py` | Automatización con Selenium y sesión persistente: extrae tus grupos (`/groups/joins/`), vacantes, Oficiales, Ayudantes y cotizaciones con contacto directo |
 | **💼 LinkedIn** | `core/linkedin_scraper.py` | Multinacionales de telecomunicaciones, software y manufactura avanzada |
 | **🌐 OCC Mundial** | `core/occ_bot.py` | Ofertas corporativas y contratación formal en México con subida de CV |
 | **🟧 CompuTrabajo** | `core/computrabajo_scraper.py` | Empleos técnicos, de campo (Drive Test / Planta Externa) e industriales |
@@ -412,7 +412,7 @@ python main.py --chat
 # 4. Iniciar el Servidor Webhook de WhatsApp
 python main.py --bot --port 5000
 
-# 5. Escanear solicitudes de electricistas y cotizaciones en Facebook
+# 5. Escanear tus grupos de Facebook, vacantes y solicitudes de cotizaciones (Selenium interactivo)
 python main.py --fb
 
 # 6. Escanear vacantes en LinkedIn

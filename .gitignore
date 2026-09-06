@@ -33,6 +33,8 @@ data/cv/*
 !data/cv/.gitkeep
 data/exports/*
 !data/exports/.gitkeep
+data/fb_profile/
+data/*_profile/
 
 # IDEs
 .vscode/
