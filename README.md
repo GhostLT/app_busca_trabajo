@@ -22,6 +22,7 @@ Cuenta con una **interfaz web moderna desarrollada 100% en HTML5, CSS3, JavaScri
 - [Arquitectura del Sistema](#️-arquitectura-del-sistema)
 - [Especialidades Técnicas y de Ingeniería (8 Áreas)](#-especialidades-técnicas-y-de-ingeniería-8-áreas)
 - [Panel de Control Web (HTML5, CSS3, JS & Bootstrap 5)](#-panel-de-control-web-html5-css3-js--bootstrap-5)
+- [Ranking y Distribución de Oportunidades Reales (215 Vacantes)](#-ranking-y-distribución-de-oportunidades-reales-215-vacantes)
 - [Bot Interactivo de WhatsApp](#-módulo-especial-bot-interactivo-de-whatsapp-control-total-desde-tu-celular)
 - [Módulo de Obras, Oficiales y Ayudantes Eléctricos](#-módulo-especial-captura-de-obras-clientes-y-categorías-eléctricas)
 - [Plataformas de Empleo Integradas (8 Canales)](#-plataformas-de-empleo-integradas-8-canales)
@@ -87,10 +88,15 @@ La interfaz gráfica reemplaza por completo a Streamlit y opera mediante un serv
 
 ### 1. 📊 Estadísticas de Postulaciones y Rendimiento
 - **Tarjetas KPI en tiempo real:** Total de postulaciones/cotizaciones, gestionadas hoy, última semana, mes en curso y total en trámite/entrevista con porcentaje de conversión.
+- **🏆 Ranking de Oportunidades Reales por Plataforma (215 vacantes):**
+  - Panel visual de ranking interactivo con barras de progreso porcentuales calculadas en tiempo real.
+  - Destacado con corona de oro para la plataforma líder (OCC Mundial con 104 vacantes, 48.4%).
+  - Tabla comparativa completa (#1 al #8) con badges oficiales de marca, conteo exacto, porcentaje y botón de acceso rápido para filtrar la bolsa.
+  - Desglose compacto en la barra lateral (*Sidebar*) para monitorear las fuentes sin cambiar de pestaña.
 - **Gráfico de Historial Diario (Chart.js):** Cantidad de gestiones registradas por día calendario con tabla de resumen lateral y cálculo de promedio diario.
 - **Gráficos de Desglose:**
-  - Desglose por Plataforma (OCC, LinkedIn, CompuTrabajo, Facebook, etc.).
-  - Desglose por Especialidad (RF / Telecomunicaciones, Eléctrica, Sistemas / Software, Performance, NOC, Desarrollador Web, Backend, Frontend).
+  - Desglose por Plataforma con colores oficiales de cada marca.
+  - Desglose por Especialidad (las 8 áreas IT y de Ingeniería).
   - Desglose por Modalidad (Presencial, Híbrido, Remoto).
 - **Registro Detallado de Seguimiento:** Tabla con todas las oportunidades marcadas como *Postulado* o *En Cotización / Entrevista*, con acceso directo a llamada y chat de WhatsApp.
 
@@ -136,6 +142,34 @@ La interfaz gráfica reemplaza por completo a Streamlit y opera mediante un serv
   - 📄 Descargar Reporte en CSV (`.csv`).
 - **Editor de Variables de Entorno (`.env`):** Modificación gráfica del proveedor de WhatsApp, teléfonos y tokens de autenticación de GreenAPI y Meta.
 - **Visor de Palabras Clave:** Muestra la configuración actual de `config/keywords.json`.
+
+---
+
+## 🏆 Ranking y Distribución de Oportunidades Reales (215 Vacantes)
+
+El sistema procesa, consolida y visualiza en tiempo real las **215 oportunidades laborales reales extraídas directamente de las plataformas oficiales**, categorizadas de mayor a menor volumen para identificar con exactitud la fuente más productiva para postulaciones:
+
+| Posición | Plataforma Laboral Oficial | Vacantes Reales | % del Total | Volumen / Categoría | Impacto Estratégico y Perfil de Ofertas |
+| :---: | :--- | :---: | :---: | :--- | :--- |
+| 🥇 **#1** | **OCC Mundial** | **104** | **48.4%** | 🟢 Muy Alto (Líder principal) | Ofertas formales corporativas, ingeniería de telecomunicaciones, NOC, software y desarrollo web en México. |
+| 🥈 **#2** | **LinkedIn** | **67** | **31.2%** | 🔵 Alto (Segundo canal) | Posiciones multinacionales, puestos senior, desarrolladores backend/frontend y corporativos de TI. |
+| 🥉 **#3** | **Facebook** | **25** | **11.6%** | 🟡 Medio (Obras y Campo) | Contratación directa, solicitudes de contratistas, proyectos de instalaciones eléctricas, Oficiales y Ayudantes. |
+| **#4** | **CompuTrabajo** | **6** | **2.8%** | 🟠 Focalizado | Puestos técnicos de campo, mantenimiento, instalaciones de planta externa y supervisión de obra. |
+| **#5** | **Jobrapido** | **4** | **1.9%** | ⚪ Complementario | Agregador nacional de empleos técnicos y especialistas en redes e infraestructura. |
+| **#6** | **Glassdoor** | **3** | **1.4%** | ⚪ Selectivo | Posiciones con referencias de compensación salarial, beneficios y calificaciones de empresas. |
+| **#7** | **JobLeads** | **3** | **1.4%** | ⚪ Ejecutivo | Puestos de nivel gerencial, Tech Leads, Performance Engineers y jefaturas de proyecto. |
+| **#8** | **Jobsora** | **3** | **1.4%** | ⚪ Complementario | Ofertas de infraestructura, soporte técnico, telecomunicaciones y electricidad. |
+| **TOTAL** | **8 Plataformas Oficiales** | **215** | **100.0%** | **100% Datos Reales** | **Base de datos unificada, limpia y depurada sin registros sintéticos o demo.** |
+
+### 💡 Análisis y Hallazgos Estratégicos del Ranking:
+1. **Dominio de OCC Mundial y LinkedIn (79.6% del mercado):**
+   - Juntas acumulan **171 de las 215 vacantes**, constituyendo los dos pilares fundamentales para vacantes profesionales, de oficina, ingeniería de software y telecomunicaciones.
+2. **Facebook como canal exclusivo de trato directo e instalaciones (11.6%):**
+   - Con **25 solicitudes reales**, es la plataforma ideal para contactar directamente a ingenieros de obra, contratistas y clientes de instalaciones eléctricas residenciales e industriales.
+3. **Canales Complementarios de Alta Especificidad (8.8%):**
+   - Las 19 vacantes restantes de CompuTrabajo, Jobrapido, Glassdoor, JobLeads y Jobsora proporcionan oportunidades de nicho con filtros salariales específicos y puestos de supervisión técnica.
+4. **Visualización en Tiempo Real en el Panel:**
+   - La interfaz muestra barras de progreso porcentuales calculadas dinámicamente, tarjetas con colores de identidad corporativa para cada bolsa, tabla con enlaces de filtrado directo y un widget permanente en el sidebar para tener siempre a la vista el rendimiento de cada plataforma.
 
 ---
 

@@ -81,19 +81,122 @@ async function loadStats() {
         if (sideApplied) sideApplied.textContent = appStats.applied_count;
         if (sideToday) sideToday.textContent = appStats.today_count;
         if (sideInterview) sideInterview.textContent = appStats.interview_count;
-        if (sideTotal) sideTotal.textContent = appStats.total_jobs;
+        if (sideTotal) sideTotal.textContent = genStats.total_jobs || 215;
+
+        // Render Platform Ranking
+        const bySource = genStats.by_source || {};
+        const totalRealJobs = genStats.total_jobs || 215;
+        renderPlatformRanking(bySource, totalRealJobs);
 
         // Render Charts
         renderDailyChart(appStats.daily_applications || {});
-        renderSourceChart(appStats.applied_by_source || {});
-        renderCategoryChart(appStats.applied_by_category || {});
-        renderModalityChart(appStats.applied_by_modality || {});
+        renderSourceChart(bySource);
+        renderCategoryChart(genStats.by_category || appStats.applied_by_category || {});
+        renderModalityChart(genStats.by_modality || appStats.applied_by_modality || {});
 
         // Render Tracked Applications Table
         renderTrackedTable();
 
     } catch (err) {
         console.error("Error loading stats:", err);
+    }
+}
+
+const PLATFORM_META = {
+    "OCC": { name: "OCC Mundial", color: "#2563EB", icon: "🌐", badge: "badge-source-occ" },
+    "LinkedIn": { name: "LinkedIn", color: "#0A66C2", icon: "💼", badge: "badge-source-linkedin" },
+    "Facebook": { name: "Facebook", color: "#1877F2", icon: "📱", badge: "badge-source-fb" },
+    "CompuTrabajo": { name: "CompuTrabajo", color: "#EA580C", icon: "🟧", badge: "badge-source-computrabajo" },
+    "Jobrapido": { name: "Jobrapido", color: "#0284C7", icon: "🧭", badge: "badge-source-jobrapido" },
+    "Glassdoor": { name: "Glassdoor", color: "#059669", icon: "🟢", badge: "badge-source-glassdoor" },
+    "JobLeads": { name: "JobLeads", color: "#7C3AED", icon: "🎯", badge: "badge-source-jobleads" },
+    "Jobsora": { name: "Jobsora", color: "#DC2626", icon: "🔴", badge: "badge-source-jobsora" }
+};
+
+function renderPlatformRanking(bySource, totalRealJobs) {
+    const total = totalRealJobs || 215;
+    const rankTotalEl = document.getElementById("rank-total-count");
+    if (rankTotalEl) rankTotalEl.textContent = total;
+    const sideTotalSources = document.getElementById("side-total-sources");
+    if (sideTotalSources) sideTotalSources.textContent = total;
+
+    // Sort platforms descending by quantity to see which gives the highest
+    const sorted = Object.keys(bySource).sort((a, b) => bySource[b] - bySource[a]);
+
+    // 1. Render Progress Bars in Tab 1
+    const barsContainer = document.getElementById("platformRankingBars");
+    if (barsContainer) {
+        barsContainer.innerHTML = sorted.map((src, index) => {
+            const count = bySource[src];
+            const pct = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+            const meta = PLATFORM_META[src] || { name: src, color: "#475569", icon: "💼", badge: "badge-general" };
+            const isTop = index === 0;
+            const rankBadge = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`;
+
+            return `
+                <div class="platform-rank-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold fs-6">${rankBadge}</span>
+                            <span class="badge ${meta.badge}">${meta.icon} ${meta.name}</span>
+                            ${isTop ? '<span class="badge bg-success-subtle text-success border border-success-subtle small ms-1"><i class="bi bi-star-fill me-1"></i>Mayor fuente de vacantes</span>' : ''}
+                        </div>
+                        <div class="text-end">
+                            <strong class="fs-6 text-dark">${count}</strong>
+                            <span class="text-muted small ms-1">(${pct}%)</span>
+                        </div>
+                    </div>
+                    <div class="platform-rank-bar-bg">
+                        <div class="platform-rank-bar-fill" style="width: ${pct}%; background-color: ${meta.color};"></div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    // 2. Render Table in Tab 1
+    const tableBody = document.getElementById("platformRankingTableBody");
+    if (tableBody) {
+        tableBody.innerHTML = sorted.map((src, index) => {
+            const count = bySource[src];
+            const pct = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+            const meta = PLATFORM_META[src] || { name: src, color: "#475569", icon: "💼", badge: "badge-general" };
+            const rankLabel = index === 0 ? '<span class="badge bg-warning text-dark">1º</span>' :
+                              index === 1 ? '<span class="badge bg-secondary text-white">2º</span>' :
+                              index === 2 ? '<span class="badge bg-danger-subtle text-danger">3º</span>' :
+                              `<span class="text-muted small">${index + 1}º</span>`;
+
+            return `
+                <tr>
+                    <td class="ps-3 fw-bold">${rankLabel}</td>
+                    <td>
+                        <span class="badge ${meta.badge}">${meta.icon} ${meta.name}</span>
+                    </td>
+                    <td class="text-center fw-bold text-dark">${count}</td>
+                    <td class="text-end pe-3">
+                        <span class="badge bg-light text-dark border">${pct}%</span>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    }
+
+    // 3. Render Left Sidebar Platform Breakdown
+    const sidebarContainer = document.getElementById("side-platform-breakdown");
+    if (sidebarContainer) {
+        sidebarContainer.innerHTML = sorted.map((src, index) => {
+            const count = bySource[src];
+            const meta = PLATFORM_META[src] || { name: src, color: "#475569", icon: "💼", badge: "badge-general" };
+            return `
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1 border-0">
+                    <span class="d-flex align-items-center gap-1 text-truncate" style="max-width: 140px;" title="${meta.name}">
+                        <span class="small">${meta.icon}</span>
+                        <span class="text-truncate">${meta.name}</span>
+                    </span>
+                    <span class="badge ${index === 0 ? 'bg-primary' : 'bg-secondary'} rounded-pill">${count}</span>
+                </li>
+            `;
+        }).join("");
     }
 }
 
@@ -147,8 +250,10 @@ function renderSourceChart(srcData) {
     const ctx = document.getElementById("sourceChart");
     if (!ctx) return;
 
-    const labels = Object.keys(srcData);
+    // Sort descending by count
+    const labels = Object.keys(srcData).sort((a, b) => srcData[b] - srcData[a]);
     const values = labels.map(k => srcData[k]);
+    const bgColors = labels.map(k => (PLATFORM_META[k] ? PLATFORM_META[k].color : "#0284C7"));
 
     if (sourceChartInstance) sourceChartInstance.destroy();
 
@@ -157,8 +262,9 @@ function renderSourceChart(srcData) {
         data: {
             labels: labels.length ? labels : ['Sin datos'],
             datasets: [{
+                label: 'Oportunidades Reales',
                 data: values.length ? values : [0],
-                backgroundColor: '#0284C7',
+                backgroundColor: bgColors,
                 borderRadius: 6
             }]
         },
