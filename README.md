@@ -29,6 +29,7 @@ Cuenta con una **interfaz web moderna desarrollada 100% en HTML5, CSS3, JavaScri
 - [Requisitos Previos](#-requisitos-previos)
 - [Instalación y Puesta en Marcha](#-instalación-y-puesta-en-marcha)
 - [Endpoints de la API REST](#-endpoints-de-la-api-rest)
+- [Depuración Total de Datos Demo y Política 100% Fuentes Reales](#️-depuración-total-de-datos-demo-y-política-100-fuentes-reales)
 - [Guía de Uso por Terminal (CLI)](#-guía-de-uso-por-terminal-cli)
 - [Configuración de Webhook de WhatsApp](#-configuración-de-webhook-de-whatsapp)
 - [Plantilla de Mensaje de Cotización](#-plantilla-de-mensaje-de-cotización)
@@ -300,9 +301,26 @@ El servidor Flask en `ui/server.py` expone las siguientes rutas y servicios JSON
 | `GET` | `/api/settings` | Obtiene el estado de los ajustes `.env` y palabras clave |
 | `POST` | `/api/settings` | Actualiza y persiste configuraciones en `.env` |
 
-> **Nota sobre Datos Reales:** Se han eliminado por completo las opciones de datos de prueba o demostración (`Cargar Demo` / `seed`). Toda la información almacenada y procesada proviene exclusivamente de ofertas y solicitudes genuinas obtenidas mediante los 8 scrapers de plataformas laborales y el extractor inteligente de publicaciones.
-
 ---
+
+## 🛡️ Depuración Total de Datos Demo y Política 100% Fuentes Reales
+
+Para garantizar la máxima confiabilidad operativa y profesionalismo en el seguimiento de vacantes y cotizaciones, **se eliminaron definitivamente todos los mecanismos de datos sintéticos o de prueba (`Cargar Demo` / `seed`)**:
+
+1. **Eliminación de Módulos y Código de Prueba:**
+   - **Backend (`core/database.py`):** Removida la función `seed_sample_jobs()` y la lista estática de vacantes demo.
+   - **API REST (`ui/server.py`):** Eliminado el endpoint `POST /api/jobs/seed`.
+   - **Frontend UI (`ui/templates/index.html`):** Removidos los botones *"Cargar Demo"* del navbar superior y *"Cargar Vacantes Demo"* del panel lateral de acciones rápidas.
+   - **Lógica JavaScript (`ui/static/js/app.js`):** Eliminada la función `seedSampleJobs()`.
+   - **Lanzador CLI (`main.py`):** Retirado el parámetro de ejecución `--seed`.
+
+2. **Limpieza Completa de la Base de Datos (`data/jobs.db`):**
+   - Se purgaron todos los registros artificiales existentes.
+   - La base de datos opera con **100% datos genuinos** provenientes exclusivamente de las 8 plataformas integradas (**OCC**, **LinkedIn**, **Facebook**, **CompuTrabajo**, **Jobrapido**, **Glassdoor**, **JobLeads**, **Jobsora**) y del extractor inteligente de publicaciones.
+
+3. **Optimización Responsiva y Ajuste Visual del Menú Lateral:**
+   - Se rediseñaron los botones de escaneo rápido del panel lateral con la clase `.sidebar-scraper-btn` y la subclase `.btn-scraper-ct`.
+   - Se corrigió el desbordamiento de la etiqueta **CompuTrabajo** ajustando el ancho de columnas del grid (`col-lg-3 col-xl-3`), espaciado tipográfico (`letter-spacing: -0.4px`), recorte semántico con elipsis (`text-truncate`) y texto descriptivo en tooltip (`title="CompuTrabajo"`), logrando un ajuste milimétrico dentro del marco del botón.
 
 ## 🖥️ Guía de Uso por Terminal (CLI)
 
