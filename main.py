@@ -184,7 +184,6 @@ def main():
     parser.add_argument("--all", action="store_true", help="Ejecutar escaneo en TODAS las plataformas simultáneamente")
     parser.add_argument("--stats", action="store_true", help="Ver estadísticas de la base de datos")
     parser.add_argument("--export", action="store_true", help="Exportar vacantes a Excel y CSV")
-    parser.add_argument("--seed", action="store_true", help="Cargar vacantes de ejemplo en la base de datos")
 
     args = parser.parse_args()
 
@@ -214,10 +213,6 @@ def main():
         print_stats()
     elif args.export:
         run_export()
-    elif args.seed:
-        added = db.seed_sample_jobs()
-        print(f"[OK] Se cargaron {added} vacantes de prueba.")
-        print_stats()
     else:
         launch_ui(port=args.ui_port)
 

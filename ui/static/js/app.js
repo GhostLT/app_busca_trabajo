@@ -865,26 +865,6 @@ async function saveSettings() {
     }
 }
 
-async function seedSampleJobs() {
-    showSpinner("Cargando vacantes y cotizaciones de demostración...");
-    try {
-        const res = await fetch("/api/jobs/seed", { method: "POST" });
-        const data = await res.json();
-        hideSpinner();
-
-        if (data.success) {
-            showToast(`Se verificaron y cargaron ${data.added} vacantes demo.`);
-            loadJobs();
-            loadStats();
-        } else {
-            showToast(data.error || "Error al cargar demo", "error");
-        }
-    } catch (e) {
-        hideSpinner();
-        showToast("Error al conectar con el servidor", "error");
-    }
-}
-
 
 // -------------------------------------------------------------
 // EVENT LISTENERS & HELPERS

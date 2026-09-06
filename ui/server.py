@@ -161,14 +161,6 @@ def delete_job(job_id: int):
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-@app.route("/api/jobs/seed", methods=["POST"])
-def seed_jobs():
-    try:
-        added = db.seed_sample_jobs()
-        return jsonify({"success": True, "added": added})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
 
 # -------------------------------------------------------------
 # API: WhatsApp Simulator

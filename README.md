@@ -288,7 +288,6 @@ El servidor Flask en `ui/server.py` expone las siguientes rutas y servicios JSON
 | `POST` | `/api/jobs/<id>/status` | Actualiza el estado de postulación (`Postulado`, `Entrevista`, `Pendiente`, `Descartado`) |
 | `POST` | `/api/jobs/<id>/notes` | Guarda o actualiza notas de seguimiento |
 | `DELETE` | `/api/jobs/<id>` | Elimina una vacante de la base de datos |
-| `POST` | `/api/jobs/seed` | Carga el conjunto de vacantes de prueba / demo |
 | `POST` | `/api/whatsapp/simulate` | Envía un comando al motor de WhatsApp Bot y devuelve su respuesta |
 | `POST` | `/api/scrapers/run` | Ejecuta scrapers (`all` o individuales: `fb`, `linkedin`, `occ`, etc.) |
 | `POST` | `/api/extract` | Extrae automáticamente entidades de un texto pegado y guarda en BD |
@@ -300,6 +299,8 @@ El servidor Flask en `ui/server.py` expone las siguientes rutas y servicios JSON
 | `GET` | `/api/export/csv` | Genera y descarga reporte en formato `.csv` |
 | `GET` | `/api/settings` | Obtiene el estado de los ajustes `.env` y palabras clave |
 | `POST` | `/api/settings` | Actualiza y persiste configuraciones en `.env` |
+
+> **Nota sobre Datos Reales:** Se han eliminado por completo las opciones de datos de prueba o demostración (`Cargar Demo` / `seed`). Toda la información almacenada y procesada proviene exclusivamente de ofertas y solicitudes genuinas obtenidas mediante los 8 scrapers de plataformas laborales y el extractor inteligente de publicaciones.
 
 ---
 
@@ -338,9 +339,6 @@ python main.py --stats
 
 # 11. Exportar datos a Excel y CSV
 python main.py --export
-
-# 12. Cargar vacantes demo en la base de datos
-python main.py --seed
 ```
 
 ---
