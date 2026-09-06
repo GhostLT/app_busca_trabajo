@@ -1,37 +1,117 @@
-# 🚀 AutoJob Hunter & Tracker (8 Canales Laborales & Bot Interactivo de WhatsApp)
+# 🚀 AutoJob Hunter & Tracker (8 Canales Laborales, Frontend Nativo Bootstrap 5 & Bot de WhatsApp)
 
 Sistema integral de automatización multiplataforma para la **búsqueda de empleo, extracción de vacantes, captura de solicitudes de cotizaciones eléctricas y control total remoto desde tu WhatsApp** en las 8 plataformas líderes en México (**Facebook**, **LinkedIn**, **OCC Mundial**, **CompuTrabajo**, **Glassdoor**, **Jobrapido**, **JobLeads**, **Jobsora**).
 
+Cuenta con una **interfaz web moderna desarrollada 100% en HTML5, CSS3, JavaScript puro (Vanilla JS) y Bootstrap 5**, respaldada por una API REST en Flask, **eliminando cualquier dependencia de Streamlit** para un rendimiento ligero, flexible e integrable.
+
 ---
 
-## 📱 Módulo Especial: Bot Interactivo de WhatsApp (Control Total desde tu Celular)
-
-Gestiona toda tu búsqueda y cotizaciones directamente desde un chat de WhatsApp sin necesidad de abrir la computadora:
+## 🏗️ Arquitectura del Sistema
 
 ```
-                  ┌────────────────────────────────────────┐
-                  │          Tu WhatsApp Personal          │
-                  │   [ !cotizaciones / !contacto 15 ]     │
-                  └───────────────────┬────────────────────┘
-                                      │
-                                      ▼
-                  ┌────────────────────────────────────────┐
-                  │    Servidor Webhook (FastAPI/HTTP)     │
-                  │      (core/whatsapp_server.py)         │
-                  └───────────────────┬────────────────────┘
-                                      │
-                                      ▼
-                  ┌────────────────────────────────────────┐
-                  │       Motor WhatsAppBot (NLP)          │
-                  │        (core/whatsapp_bot.py)          │
-                  └──────────────┬──────────────────┬──────┘
-                                 │                  │
-                                 ▼                  ▼
-                    [Base de Datos SQLite]    [Scrapers en Vivo]
-                    [ Métricas / Estados ]    [ Facebook / OCC ]
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                            FRONTEND NATIVO (HTML5 + CSS3 + JS)                              │
+│             [ Bootstrap 5.3.3 ]  •  [ Bootstrap Icons ]  •  [ Chart.js 4.4.2 ]              │
+│      - 📊 Estadísticas Interactivas          - 🔍 Centro de Scraping y Extractor           │
+│      - 💼 Explorador de Vacantes / Filtros   - 📄 Perfil, CV y Plantillas en un clic       │
+│      - 📱 Simulador de Chat WhatsApp en vivo - ⚙️ Configuración (.env) y Exportación Excel  │
+└──────────────────────────────────────────────┬──────────────────────────────────────────────┘
+                                               │ Fetch / AJAX (JSON)
+                                               ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                SERVIDOR WEB & API REST                                      │
+│                                    (ui/server.py - Flask)                                   │
+│   Endpoints: /api/stats • /api/jobs • /api/whatsapp/simulate • /api/scrapers • /api/export  │
+└──────────────┬───────────────────────────────┬───────────────────────────────┬──────────────┘
+               │                               │                               │
+               ▼                               ▼                               ▼
+┌──────────────────────────────┐ ┌──────────────────────────────┐ ┌──────────────────────────────┐
+│       BASE DE DATOS          │ │     8 SCRAPERS LABORALES     │ │    WHATSAPP BOT & WEBHOOK    │
+│      (core/database.py)      │ │        (core/*_scraper)      │ │   (core/whatsapp_server.py)  │
+│ SQLite Local (data/jobs.db)  │ │ FB, LinkedIn, OCC, CT, etc.  │ │ GreenAPI, Meta, Twilio, etc. │
+└──────────────────────────────┘ └──────────────────────────────┘ └──────────────────────────────┘
 ```
 
-### 📋 Comandos Disponibles en WhatsApp:
+---
+
+## 📋 Tabla de Contenidos
+
+- [Características Principales](#-características-principales)
+- [Panel de Control Web (HTML5, CSS3, JS & Bootstrap 5)](#-panel-de-control-web-html5-css3-js--bootstrap-5)
+- [Bot Interactivo de WhatsApp](#-módulo-especial-bot-interactivo-de-whatsapp-control-total-desde-tu-celular)
+- [Módulo de Obras, Oficiales y Ayudantes Eléctricos](#-módulo-especial-captura-de-obras-clientes-y-categorías-eléctricas)
+- [Plataformas de Empleo Integradas (8 Canales)](#-plataformas-de-empleo-integradas-8-canales)
+- [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Requisitos Previos](#-requisitos-previos)
+- [Instalación y Puesta en Marcha](#-instalación-y-puesta-en-marcha)
+- [Endpoints de la API REST](#-endpoints-de-la-api-rest)
+- [Guía de Uso por Terminal (CLI)](#-guía-de-uso-por-terminal-cli)
+- [Configuración de Webhook de WhatsApp](#-configuración-de-webhook-de-whatsapp)
+- [Plantilla de Mensaje de Cotización](#-plantilla-de-mensaje-de-cotización)
+
+---
+
+## 🌐 Panel de Control Web (HTML5, CSS3, JS & Bootstrap 5)
+
+La interfaz gráfica reemplaza por completo a Streamlit y opera mediante un servidor Flask integrado. Se divide en 6 pestañas operativas:
+
+### 1. 📊 Estadísticas de Postulaciones y Rendimiento
+- **Tarjetas KPI en tiempo real:** Total de postulaciones/cotizaciones, gestionadas hoy, última semana, mes en curso y total en trámite/entrevista con porcentaje de conversión.
+- **Gráfico de Historial Diario (Chart.js):** Cantidad de gestiones registradas por día calendario con tabla de resumen lateral y cálculo de promedio diario.
+- **Gráficos de Desglose:**
+  - Desglose por Plataforma (OCC, LinkedIn, CompuTrabajo, Facebook, etc.).
+  - Desglose por Especialidad (Eléctrica, RF / Telecomunicaciones, Sistemas / Software).
+  - Desglose por Modalidad (Presencial, Híbrido, Remoto).
+- **Registro Detallado de Seguimiento:** Tabla con todas las oportunidades marcadas como *Postulado* o *En Cotización / Entrevista*, con acceso directo a llamada y chat de WhatsApp.
+
+### 2. 💼 Bolsa de Vacantes & Cotizaciones de Instalaciones
+- **Filtros Avanzados:**
+  - Búsqueda por texto (puesto, nombre de cliente, palabras clave).
+  - Ubicación geográfica (Ciudad de México, Querétaro, Monterrey, Guadalajara, etc.).
+  - Selector de Especialidad.
+  - Selector de Plataforma origen (las 8 fuentes integradas).
+  - Selector de Estado (Todos, Pendiente, Postulado, Entrevista, Descartado).
+  - Modalidad de trabajo.
+  - Casilla de verificación *"Solo con Teléfono / WhatsApp"*.
+- **Tarjetas de Oportunidades:**
+  - Badges semánticos por área, fuente, sueldo/presupuesto y modalidad.
+  - Nombre del cliente o contacto directo resaltado.
+  - Botón **"💬 WhatsApp Directo"** con mensaje pre-redactado a través de `wa.me`.
+  - Botón **"📞 Llamar"** (`tel:`) o enlace original.
+  - Botón de cambio de estado: alterna con un clic entre **Pendiente**, **Postulado** y **En Cotización**.
+  - Botón de descarte inmediato con eliminación en base de datos.
+  - **Ficha Técnica Colapsable (Acordeón):** Información de contacto, desglose del requerimiento y campo para registrar notas y bitácora de seguimiento.
+
+### 3. 📱 WhatsApp Bot & Control Remoto
+- **Simulador Interactivo en Vivo:** Permite probar cualquier comando (`!resumen`, `!cotizaciones`, `!vacantes`, etc.) recibiendo la respuesta renderizada en una **burbuja de chat visual de WhatsApp**.
+- **Botones de Acceso Rápido:** Ejecución con un solo clic de los comandos más frecuentes.
+- **Guía de Comandos:** Tabla con la sintaxis y ejemplos de cada comando disponible.
+- **Instrucciones de Despliegue:** Pasos detallados para conectar con Ngrok y proveedores oficiales (GreenAPI, Meta Cloud API, UltraMsg, Twilio).
+
+### 4. 🔍 Centro de Scraping, Extracción y Captura de Obras
+- **Botón Global:** Dispara el escaneo concurrente de las 8 plataformas con un solo clic.
+- **Módulos Individuales por Plataforma:** Cada bolsa cuenta con su propia tarjeta, selector de categoría objetivo y botón de escaneo independiente.
+- **Extractor Inteligente (Smart Paste):** Área de texto para pegar publicaciones o mensajes de WhatsApp sueltos; el parser procesa y extrae automáticamente el puesto, contacto, teléfono directo, sueldo y genera el enlace a WhatsApp guardándolo en la base de datos.
+
+### 5. 📄 Mi CV & Plantillas de Cotización
+- **Formulario de Perfil:** Configura el nombre del contratista/ingeniero, teléfono personal y correo electrónico.
+- **Plantillas con Copia Rápida en un Clic:**
+  - *Plantilla 1:* Mensaje formal de presentación para vacantes técnicas y de ingeniería.
+  - *Plantilla 2:* Propuesta formal de cotización y presupuesto para obras e instalaciones eléctricas industriales y residenciales.
+- **Gestor de CV en PDF:** Subida de currículum o portafolio de proyectos (PDF/DOCX), visualización de estado, peso del archivo y descarga directa.
+
+### 6. ⚙️ Configuración & Exportación
+- **Exportación de Datos:** Descarga de la base de datos completa con dos botones directos:
+  - 📊 Descargar Reporte en Excel (`.xlsx`).
+  - 📄 Descargar Reporte en CSV (`.csv`).
+- **Editor de Variables de Entorno (`.env`):** Modificación gráfica del proveedor de WhatsApp, teléfonos y tokens de autenticación de GreenAPI y Meta.
+- **Visor de Palabras Clave:** Muestra la configuración actual de `config/keywords.json`.
+
+---
+
+## 📱 Módulo Especial: Bot Interactivo de WhatsApp (Control Remoto)
+
+Permite controlar todo el sistema desde tu celular mediante mensajes de WhatsApp:
 
 | Comando | Descripción | Ejemplo de Uso |
 | :--- | :--- | :--- |
@@ -51,34 +131,14 @@ Gestiona toda tu búsqueda y cotizaciones directamente desde un chat de WhatsApp
 
 ## ⚡ Módulo Especial: Captura de Obras, Clientes y Categorías Eléctricas
 
-Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos, Medio Oficiales y Ayudantes Electricistas** que buscan vacantes de obra, prospectar trabajos, llamar directamente a constructores y enviar cotizaciones y presupuestos formales:
+Orientado a la prospección comercial de proyectos eléctricos e instalaciones:
 
-- 👷 **Oficial Eléctrico / Oficial Electricista:** Especialistas en doblado de conduit PG (1/2" a 2"), charola portacable, cableado de fuerza y control (calibres 8 a 500 MCM), peinado de tableros de 480V/220V e interpretación de diagramas unifilares.
-- 🔧 **Medio Oficial Eléctrico:** Ayudantes avanzados con experiencia en canalizaciones, jalado de conductores, fijación de cajas, ranurado, ponchado de terminales y apoyo directo al oficial.
-- 🧰 **Ayudante Electricista / Ayudante General Eléctrico:** Personal para acarreo de material, guiado de cableado con guía de acero/nylon, colocación de soportería y asistencia en obra.
-- 👤 **Nombre y Cargo del Contacto:** Captura directa del encargado de la obra (*Ing. Mateo Carvajal, Ing. Sergio Valenzuela, Ing. Gerardo Albarrán, Arq. Brenda Salgado, Arq. Luis Fernando Ríos, Ing. David Sotomayor, Arq. Roberto Morales, Lic. Claudia Benítez*).
-- 📞 **Teléfono Directo:** Enlace de marcado telefónico inmediato (`tel:+52...`) para llamadas rápidas de postulación o prospección.
-- 💬 **Generador de Cotizaciones por WhatsApp:** Enlace con mensaje formal precargado para solicitar planos y agendar visitas técnicas para enviar presupuestos bajo norma NOM-001-SEDE.
-
----
-
-## 📋 Tabla de Contenidos
-
-- [Características Principales](#-características-principales)
-- [Bot Interactivo de WhatsApp](#-módulo-especial-bot-interactivo-de-whatsapp-control-total-desde-tu-celular)
-- [Módulo de Obras, Oficiales y Ayudantes Eléctricos](#-módulo-especial-captura-de-obras-clientes-y-categorías-eléctricas)
-- [Plataformas de Empleo Integradas (8 Canales)](#-plataformas-de-empleo-integradas-8-canales)
-- [Grupos de Facebook Rastreados](#-grupos-de-facebook-rastreados)
-- [Dashboard de Estadísticas y Postulaciones Diarias](#-dashboard-de-estadísticas-y-postulaciones-diarias)
-- [Arquitectura del Sistema](#-arquitectura-del-sistema)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Requisitos Previos](#-requisitos-previos)
-- [Instalación y Puesta en Marcha](#-instalación-y-puesta-en-marcha)
-- [Configuración de Webhook de WhatsApp](#-configuración-de-webhook-de-whatsapp)
-- [Guía de Uso (CLI, WhatsApp y Dashboard)](#-guía-de-uso)
-- [Panel de Control Web (HTML5, CSS3, JS & Bootstrap 5)](#-panel-de-control-web-html5-css3-js--bootstrap-5)
-- [Estructura de Datos Extraídos](#-estructura-de-datos-extraídos)
-- [Plantilla de Mensaje de Cotización](#-plantilla-de-mensaje-de-cotización)
+- 👷 **Oficial Eléctrico / Oficial Electricista:** Doblado de conduit PG (1/2" a 2"), charola portacable, cableado de fuerza y control, peinado de tableros de 480V/220V e interpretación de diagramas unifilares.
+- 🔧 **Medio Oficial Eléctrico:** Canalizaciones, jalado de conductores, fijación de cajas, ranurado y ponchado de terminales.
+- 🧰 **Ayudante Electricista:** Acarreo de material, guiado con guía de acero/nylon, soportería y apoyo en obra.
+- 👤 **Identificación de Contactos:** Detección de nombres y cargos de ingenieros de obra, arquitectos y contratistas.
+- 📞 **Llamada Telefónica Inmediata:** Marcado rápido con enlaces `tel:+52...`.
+- 💬 **Generador de Enlaces Directos `wa.me`:** Abre WhatsApp con el mensaje formal estructurado para presupuestos bajo la norma NOM-001-SEDE.
 
 ---
 
@@ -94,26 +154,6 @@ Diseñado especialmente para **ingenieros, contratistas, Oficiales Eléctricos, 
 | **🌐 Jobrapido** | `core/jobrapido_scraper.py` | Agregador masivo de vacantes de ingeniería a nivel nacional |
 | **🎯 JobLeads** | `core/jobleads_scraper.py` | Puestos ejecutivos, Senior Engineers, Tech Leads y Gerencias Técnicas |
 | **🔴 Jobsora** | `core/jobsora_scraper.py` | Empleos de ingeniería, técnicos en telecomunicaciones, electricidad y redes |
-
----
-
-## 📈 Dashboard de Estadísticas y Postulaciones Diarias
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 🎯 Total Gestionadas │ 📅 Contactadas Hoy │ 🗓️ Esta Semana │ 📆 Este Mes │ 🟣 En Cotización │
-│        14            │         5          │       12       │     14      │  3 (Éxito: 21.4%)│
-└─────────────────────────────────────────────────────────────────────────────────────────────┘
-                                               │
-               ┌───────────────────────────────┴───────────────────────────────┐
-               ▼                                                               ▼
- ┌──────────────────────────────────────────┐    ┌──────────────────────────────────────────┐
- │ 📈 Actividad Diaria (Gráfico Tiempo)     │    │ 🌐 Desglose de Oportunidades             │
- │ [Barras por Fecha YYYY-MM-DD]            │    │ - Por Plataforma (8 Canales)             │
- │ Promedio diario: 4.2 gestiones/día       │    │ - Por Especialidad (Eléctrica, RF, Soft) │
- └──────────────────────────────────────────┘    │ - Por Modalidad (Presencial, Híbrido...) │
-                                                 └──────────────────────────────────────────┘
-```
 
 ---
 
@@ -146,10 +186,18 @@ app_busca_trabajo/
 │   └── jobs.db                  # Base de datos local SQLite con índices
 ├── ui/
 │   ├── __init__.py
-│   └── app.py                   # Dashboard interactivo con 6 pestañas en Streamlit
+│   ├── app.py                   # Punto de entrada de la interfaz web
+│   ├── server.py                # Servidor Flask y API REST del frontend
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── styles.css       # Estilos personalizados, badges y burbuja WhatsApp
+│   │   └── js/
+│   │       └── app.js           # Lógica JavaScript pura (AJAX, Chart.js, interactividad)
+│   └── templates/
+│       └── index.html           # Dashboard responsivo en HTML5 con Bootstrap 5
 ├── main.py                      # Lanzador unificado por línea de comandos (CLI)
 ├── .env.example                 # Plantilla de variables de entorno
-├── requirements.txt             # Dependencias de Python
+├── requirements.txt             # Dependencias de Python (Flask, Pandas, Selenium, etc.)
 └── README.md                    # Documentación técnica completa
 ```
 
@@ -157,9 +205,9 @@ app_busca_trabajo/
 
 ## ⚙️ Requisitos Previos
 
-- **Python 3.10+** (probado y 100% compatible con Python 3.14 en Windows/Linux/macOS).
+- **Python 3.10+** (probado y 100% compatible con Python 3.12 y Python 3.14 en Windows, Linux y macOS).
 - Navegador web moderno (Chrome, Edge, Firefox, Brave).
-- Conexión a Internet.
+- Conexión a Internet para la descarga de dependencias y ejecución de scrapers.
 
 ---
 
@@ -171,7 +219,7 @@ app_busca_trabajo/
    cd app_busca_trabajo
    ```
 
-2. **Crear y activar entorno virtual:**
+2. **Crear y activar entorno virtual (opcional pero recomendado):**
    ```bash
    python -m venv venv
    # En Windows:
@@ -190,6 +238,82 @@ app_busca_trabajo/
    cp .env.example .env
    ```
 
+5. **Iniciar la aplicación:**
+   ```bash
+   python main.py
+   ```
+   *Se abrirá automáticamente tu navegador en `http://127.0.0.1:8000` con el panel interactivo.*
+
+---
+
+## 🔌 Endpoints de la API REST
+
+El servidor Flask en `ui/server.py` expone las siguientes rutas y servicios JSON:
+
+| Método | Ruta | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/` | Renderiza el frontend nativo en Bootstrap 5 (`index.html`) |
+| `GET` | `/api/stats` | Devuelve estadísticas globales y métricas de postulaciones |
+| `GET` | `/api/jobs` | Consulta vacantes con filtros (`search_query`, `location`, `category`, `source`, `status`, `modality`, `has_phone_only`) |
+| `GET` | `/api/jobs/<id>` | Obtiene los detalles de una vacante por ID |
+| `POST` | `/api/jobs/<id>/status` | Actualiza el estado de postulación (`Postulado`, `Entrevista`, `Pendiente`, `Descartado`) |
+| `POST` | `/api/jobs/<id>/notes` | Guarda o actualiza notas de seguimiento |
+| `DELETE` | `/api/jobs/<id>` | Elimina una vacante de la base de datos |
+| `POST` | `/api/jobs/seed` | Carga el conjunto de vacantes de prueba / demo |
+| `POST` | `/api/whatsapp/simulate` | Envía un comando al motor de WhatsApp Bot y devuelve su respuesta |
+| `POST` | `/api/scrapers/run` | Ejecuta scrapers (`all` o individuales: `fb`, `linkedin`, `occ`, etc.) |
+| `POST` | `/api/extract` | Extrae automáticamente entidades de un texto pegado y guarda en BD |
+| `GET` | `/api/profile` | Obtiene los datos del perfil, estado del CV y plantillas de mensaje |
+| `POST` | `/api/profile` | Guarda los cambios en nombre, teléfono y correo del perfil |
+| `POST` | `/api/cv/upload` | Sube archivo de currículum en PDF o DOCX |
+| `GET` | `/api/cv/download` | Descarga el archivo de CV actual |
+| `GET` | `/api/export/excel` | Genera y descarga reporte en formato `.xlsx` |
+| `GET` | `/api/export/csv` | Genera y descarga reporte en formato `.csv` |
+| `GET` | `/api/settings` | Obtiene el estado de los ajustes `.env` y palabras clave |
+| `POST` | `/api/settings` | Actualiza y persiste configuraciones en `.env` |
+
+---
+
+## 🖥️ Guía de Uso por Terminal (CLI)
+
+```bash
+# 1. Iniciar la interfaz gráfica web (HTML5, CSS3, JS & Bootstrap 5) en puerto predeterminado (8000)
+python main.py
+
+# 2. Iniciar la interfaz en un puerto personalizado
+python main.py --ui --ui-port 8080
+
+# 3. Iniciar la Consola Interactiva de comandos de WhatsApp en terminal
+python main.py --chat
+
+# 4. Iniciar el Servidor Webhook de WhatsApp
+python main.py --bot --port 5000
+
+# 5. Escanear solicitudes de electricistas y cotizaciones en Facebook
+python main.py --fb
+
+# 6. Escanear vacantes en LinkedIn
+python main.py --linkedin
+
+# 7. Escanear vacantes en OCC Mundial
+python main.py --occ
+
+# 8. Escanear vacantes en CompuTrabajo
+python main.py --computrabajo
+
+# 9. Escanear TODAS las 8 plataformas simultáneamente
+python main.py --all
+
+# 10. Ver estadísticas actuales en consola
+python main.py --stats
+
+# 11. Exportar datos a Excel y CSV
+python main.py --export
+
+# 12. Cargar vacantes demo en la base de datos
+python main.py --seed
+```
+
 ---
 
 ## 📲 Configuración de Webhook de WhatsApp
@@ -199,42 +323,15 @@ app_busca_trabajo/
    python main.py --bot --port 5000
    ```
 
-2. **Exponer el puerto local con Ngrok (gratuito):**
+2. **Exponer el puerto local con Ngrok:**
    ```bash
    ngrok http 5000
    ```
 
-3. **Configurar tu URL de Webhook en tu proveedor (GreenAPI, Twilio o Meta Cloud API):**
-   - URL: `https://tu-subdominio.ngrok-free.app/whatsapp/webhook`
+3. **Configurar la URL en tu proveedor (GreenAPI, Meta Cloud API o Twilio):**
+   - URL de webhook: `https://tu-subdominio.ngrok-free.app/whatsapp/webhook`
 
-4. **¡Listo!** Escribe `!ayuda` o `!cotizaciones` desde tu WhatsApp para interactuar.
-
----
-
-## 🖥️ Guía de Uso (CLI)
-
-```bash
-# Iniciar la interfaz web moderna (HTML5, CSS3, JS & Bootstrap 5)
-python main.py
-
-# Iniciar la Consola Interactiva para probar comandos de WhatsApp en tu terminal
-python main.py --chat
-
-# Iniciar el Servidor Webhook de WhatsApp
-python main.py --bot --port 5000
-
-# Escanear solicitudes de electricistas y cotizaciones en Facebook
-python main.py --fb
-
-# Escanear TODAS las 8 plataformas simultáneamente
-python main.py --all
-
-# Ver estadísticas de la base de datos
-python main.py --stats
-
-# Exportar reporte a Excel (.xlsx) y CSV
-python main.py --export
-```
+4. **Interactuar desde WhatsApp:** Envía `!ayuda`, `!cotizaciones` o `!resumen` a tu línea para gestionar las ofertas.
 
 ---
 
