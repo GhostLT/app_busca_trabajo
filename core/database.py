@@ -55,6 +55,21 @@ def init_db():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs (status)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_source ON jobs (source)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_applied_at ON jobs (applied_at)")
+
+        # Automatic alignment for Oficial Eléctrico and Medio Oficial
+        cursor.execute("""
+            UPDATE jobs 
+            SET category = 'Oficial Eléctrico' 
+            WHERE (LOWER(title) LIKE '%oficial eléctrico%' OR LOWER(title) LIKE '%oficial electrico%' OR LOWER(title) LIKE '%oficial electricista%' OR LOWER(title) LIKE '%oficiales%')
+              AND LOWER(title) NOT LIKE '%medio oficial%'
+              AND category = 'Ingeniero Eléctrico'
+        """)
+        cursor.execute("""
+            UPDATE jobs 
+            SET category = 'Medio Oficial' 
+            WHERE (LOWER(title) LIKE '%medio oficial%' OR LOWER(title) LIKE '%medio-oficial%')
+              AND category = 'Ingeniero Eléctrico'
+        """)
         conn.commit()
 
 def add_job(job_data: Dict[str, Any]) -> Tuple[int, bool]:
@@ -146,8 +161,14 @@ def get_jobs(
     params: List[Any] = []
 
     if category and category not in ("Todos", "Todas", "Todas las especialidades"):
-        query += " AND category = ?"
-        params.append(category)
+        cat_clean = category.strip().lower()
+        if cat_clean in ("oficial eléctrico", "oficial electrico", "oficial electricista", "👷 oficial eléctrico", "👷 oficial electrico"):
+            query += " AND (category IN ('Oficial Eléctrico', 'Oficial Electricista') OR ((LOWER(title) LIKE '%oficial%' OR LOWER(description) LIKE '%oficial eléctrico%' OR LOWER(description) LIKE '%oficial electrico%' OR LOWER(description) LIKE '%oficial electricista%') AND LOWER(title) NOT LIKE '%medio oficial%' AND category != 'Medio Oficial')) AND LOWER(title) NOT LIKE '%ayudante%'"
+        elif cat_clean in ("medio oficial", "medio oficial eléctrico", "medio oficial electrico", "🔧 medio oficial"):
+            query += " AND (category IN ('Medio Oficial', 'Medio Oficial Eléctrico') OR LOWER(title) LIKE '%medio oficial%' OR LOWER(description) LIKE '%medio oficial%')"
+        else:
+            query += " AND category = ?"
+            params.append(category)
 
     if source and source not in ("Todos", "Todas", "Todas las plataformas"):
         if source in ("LinkedIn", "linkedin", "💼 LinkedIn"):

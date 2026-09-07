@@ -37,19 +37,6 @@
     "Ingeniero Eléctrico": {
       "keywords": [
         "Ingeniero Eléctrico",
-        "Oficial Eléctrico",
-        "Oficial Electricista",
-        "Medio Oficial Eléctrico",
-        "Medio Oficial Electricista",
-        "Medio Oficial",
-        "Oficial de Instalaciones Eléctricas",
-        "Ayudante Electricista",
-        "Ayudante de Electricista",
-        "Ayudante General Eléctrico",
-        "Ayudante de Instalaciones Eléctricas",
-        "Técnico Electricista",
-        "Técnico Electricista Industrial",
-        "Técnico en Mantenimiento Eléctrico",
         "Ingeniero Electricista",
         "Subestaciones",
         "Media Tensión",
@@ -71,6 +58,33 @@
       ],
       "color": "#F59E0B",
       "icon": "⚡"
+    },
+    "Oficial Eléctrico": {
+      "keywords": [
+        "Oficial Eléctrico",
+        "Oficial Electricista",
+        "Oficial de Instalaciones Eléctricas",
+        "Oficial Eléctrico Industrial",
+        "Oficiales Eléctricos",
+        "Oficial Electricidad",
+        "Oficial de Obra Eléctrica",
+        "Oficial Tubero Eléctrico"
+      ],
+      "color": "#D97706",
+      "icon": "👷"
+    },
+    "Medio Oficial": {
+      "keywords": [
+        "Medio Oficial Eléctrico",
+        "Medio Oficial Electricista",
+        "Medio Oficial",
+        "Medio Oficial de Instalaciones",
+        "Medio Oficial Electricidad",
+        "Medio Oficial / Ayudante Avanzado",
+        "Medios Oficiales"
+      ],
+      "color": "#B45309",
+      "icon": "🔧"
     },
     "Ingeniero de Sistemas / Software": {
       "keywords": [

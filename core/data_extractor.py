@@ -178,7 +178,11 @@ def classify_category(text: str, title: str = "") -> str:
         scores[category] = score
 
     if not scores or max(scores.values()) == 0:
-        if any(term in combined for term in ["performance", "jmeter", "loadrunner", "rendimiento", "capacidad de red"]):
+        if any(term in combined for term in ["medio oficial", "medio-oficial"]):
+            return "Medio Oficial"
+        elif any(term in combined for term in ["oficial eléctrico", "oficial electrico", "oficial electricista", "oficial de instalaciones"]):
+            return "Oficial Eléctrico"
+        elif any(term in combined for term in ["performance", "jmeter", "loadrunner", "rendimiento", "capacidad de red"]):
             return "Ingeniero Performance"
         elif any(term in combined for term in ["noc", "centro de operaciones", "monitoring", "zabbix", "prtg", "solarwinds"]):
             return "Ingeniero NOC"

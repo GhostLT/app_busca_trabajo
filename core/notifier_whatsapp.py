@@ -14,6 +14,8 @@ def generate_whatsapp_message(
     """
     if category and "RF" in category:
         pitch = "Cuento con experiencia en ingeniería de RF, optimización RAN (4G/5G), Drive Test, fibra óptica y herramientas de medición."
+    elif category and ("Oficial" in category or "Medio Oficial" in category):
+        pitch = "Cuento con sólida experiencia en instalaciones y obra eléctrica, canalizaciones conduit, cableado, tableros y cumplimiento de normas de seguridad."
     elif category and "Eléctric" in category:
         pitch = "Cuento con experiencia en proyectos e instalaciones eléctricas residenciales e industriales, media y baja tensión, tableros y cumplimiento de NOM-001-SEDE."
     elif category and ("Sistemas" in category or "Software" in category):

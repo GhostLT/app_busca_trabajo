@@ -89,6 +89,22 @@ body {
     border-radius: 20px;
 }
 
+.badge-oficial {
+    background-color: #FED7AA;
+    color: #C2410C;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.badge-medio-oficial {
+    background-color: #FFEDD5;
+    color: #9A3412;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
 .badge-software {
     background-color: #D1FAE5;
     color: #047857;
