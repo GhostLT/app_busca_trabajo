@@ -180,6 +180,8 @@ def classify_category(text: str, title: str = "") -> str:
     if not scores or max(scores.values()) == 0:
         if any(term in combined for term in ["medio oficial", "medio-oficial"]):
             return "Medio Oficial"
+        elif any(term in combined for term in ["ayudante electricista", "ayudante eléctrico", "ayudante electrico", "ayudante general eléctrico", "ayudante de electricista"]):
+            return "Ayudante Eléctrico"
         elif any(term in combined for term in ["oficial eléctrico", "oficial electrico", "oficial electricista", "oficial de instalaciones"]):
             return "Oficial Eléctrico"
         elif any(term in combined for term in ["performance", "jmeter", "loadrunner", "rendimiento", "capacidad de red"]):

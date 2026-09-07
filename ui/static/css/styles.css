@@ -105,6 +105,14 @@ body {
     border-radius: 20px;
 }
 
+.badge-ayudante {
+    background-color: #FFEDD5;
+    color: #EA580C;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
 .badge-software {
     background-color: #D1FAE5;
     color: #047857;

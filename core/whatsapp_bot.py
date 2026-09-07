@@ -145,7 +145,7 @@ Escribe cualquier comando para comenzar. ¡Éxito en tus proyectos! 💼"""
     def _cmd_quotations(self, filter_str: str = "") -> str:
         """List electrical installation and official leads with direct contact actions."""
         all_jobs = db.get_jobs(order_by="id DESC")
-        jobs = [j for j in all_jobs if j.get("category") in ("Ingeniero Eléctrico", "Oficial Eléctrico", "Medio Oficial")]
+        jobs = [j for j in all_jobs if j.get("category") in ("Ingeniero Eléctrico", "Oficial Eléctrico", "Medio Oficial", "Ayudante Eléctrico")]
         
         # Filter leads that have phones or are quote/installation leads
         quote_leads = [

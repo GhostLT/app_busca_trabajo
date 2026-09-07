@@ -2,17 +2,18 @@
 
 Sistema integral de automatización multiplataforma para la **búsqueda de empleo, extracción de vacantes, captura de solicitudes de cotizaciones y control total remoto desde tu WhatsApp** en las 8 plataformas líderes en México (**Facebook**, **LinkedIn**, **OCC Mundial**, **CompuTrabajo**, **Glassdoor**, **Jobrapido**, **JobLeads**, **Jobsora**).
 
-Soporta **10 especialidades y categorías técnicas de ingeniería y obra**:
+Soporta **11 especialidades y categorías técnicas de ingeniería y obra**:
 1. 👷 **Oficial Eléctrico** (Instalaciones industriales, tubería conduit, cableado, tableros)
 2. 🔧 **Medio Oficial** (Apoyo avanzado de obra, ranurado, canalizaciones, cableado)
-3. ⚡ **Ingeniero Eléctrico** (Subestaciones, Media y Alta Tensión, proyectos bajo NOM-001-SEDE)
-4. 📡 **Ingeniero de RF / Optimización**
-5. 💻 **Ingeniero de Sistemas / Software**
-6. 📈 **Ingeniero Performance**
-7. 🖥️ **Ingeniero NOC**
-8. 🌐 **Desarrollador Web**
-9. ⚙️ **Desarrollador Backend**
-10. 🎨 **Desarrollador Frontend**
+3. 🧰 **Ayudante Eléctrico** (Acarreo, jalado de cable, apoyo en obra, fijación de soportes)
+4. ⚡ **Ingeniero Eléctrico** (Subestaciones, Media y Alta Tensión, proyectos bajo NOM-001-SEDE)
+5. 📡 **Ingeniero de RF / Optimización**
+6. 💻 **Ingeniero de Sistemas / Software**
+7. 📈 **Ingeniero Performance**
+8. 🖥️ **Ingeniero NOC**
+9. 🌐 **Desarrollador Web**
+10. ⚙️ **Desarrollador Backend**
+11. 🎨 **Desarrollador Frontend**
 
 Cuenta con una **interfaz web moderna desarrollada 100% en HTML5, CSS3, JavaScript puro (Vanilla JS) y Bootstrap 5**, respaldada por una API REST en Flask, **eliminando cualquier dependencia de Streamlit** para un rendimiento ligero, flexible e integrable.
 
@@ -22,7 +23,7 @@ Cuenta con una **interfaz web moderna desarrollada 100% en HTML5, CSS3, JavaScri
 
 - [Características Principales](#-características-principales)
 - [Arquitectura del Sistema](#️-arquitectura-del-sistema)
-- [Especialidades Técnicas y de Ingeniería (10 Especialidades y Categorías)](#-especialidades-técnicas-y-de-ingeniería-10-especialidades-y-categorías)
+- [Especialidades Técnicas y de Ingeniería (11 Especialidades y Categorías)](#-especialidades-técnicas-y-de-ingeniería-11-especialidades-y-categorías)
 - [Panel de Control Web (HTML5, CSS3, JS & Bootstrap 5)](#-panel-de-control-web-html5-css3-js--bootstrap-5)
 - [Ranking y Distribución de Oportunidades Reales (215 Vacantes)](#-ranking-y-distribución-de-oportunidades-reales-215-vacantes)
 - [Filtrado Interactivo por Estado (Postuladas, Gestionadas Hoy, En Cotización)](#-filtrado-interactivo-por-estado-postuladas-gestionadas-hoy-en-cotización)
@@ -68,7 +69,7 @@ Cuenta con una **interfaz web moderna desarrollada 100% en HTML5, CSS3, JavaScri
 
 ---
 
-## 🎯 Especialidades Técnicas y de Ingeniería (10 Especialidades y Categorías)
+## 🎯 Especialidades Técnicas y de Ingeniería (11 Especialidades y Categorías)
 
 El sistema clasifica automáticamente cada vacante y solicitud en las especialidades configuradas en `config/keywords.json`, integrando badges visuales, filtros dedicados en la interfaz y palabras clave específicas en cada scraper:
 
@@ -76,6 +77,7 @@ El sistema clasifica automáticamente cada vacante y solicitud en las especialid
 | :--- | :---: | :--- | :--- |
 | **Oficial Eléctrico** | 👷 `badge-oficial` | Oficial Eléctrico, Oficial Electricista, Oficial Industrial, Doblado de Conduit PG, Charolas Portacables, Tableros de Control, Cableado de Fuerza y Control. | Ejecución técnica en obra, montaje de canalizaciones, conexionado y supervisión de cuadrillas. |
 | **Medio Oficial** | 🔧 `badge-medio-oficial` | Medio Oficial Eléctrico, Medio Oficial Electricista, Ranurado, Fijación de Cajas, Jalado de Conductores, Ponchado de Terminales, Ayudante Avanzado. | Asistencia técnica especializada en campo, habilitación de canalizaciones y cableado. |
+| **Ayudante Eléctrico** | 🧰 `badge-ayudante` | Ayudante Electricista, Ayudante General Eléctrico, Jalado de Cable, Ranurado, Acarreo de Materiales, Soportería, Apoyo en Obra. | Labores de apoyo general en obra eléctrica, tendido y guiado de conductores. |
 | **Ingeniero Eléctrico** | ⚡ `badge-electric` | Subestaciones, Media Tensión, Alta Tensión, Baja Tensión, Cuadros Eléctricos, Transformadores, NOM-001-SEDE, Protecciones Eléctricas, Plantas de Emergencia. | Obras electromecánicas, diseño e ingeniería de potencia, proyectos industriales y comerciales. |
 | **Ingeniero de RF / Optimización** | 📡 `badge-rf` | Radiofrecuencia, Drive Test, Optimización RF, Telecomunicaciones, Fibra Óptica, FTTH, RAN, 4G LTE, 5G NR, Site Survey, Antenas, Microondas, Atoll, Ericsson, Huawei, Nokia. | Redes celulares, telecomunicaciones móviles, planta externa e inalámbrica. |
 | **Ingeniero de Sistemas / Software** | 💻 `badge-software` | Soporte TI, Redes LAN, Cableado Estructurado, Cisco, MikroTik, DevOps, Cloud (AWS, Azure), Docker, Kubernetes, SQL, PostgreSQL, Python, Linux SysAdmin. | Infraestructura de TI corporativa, redes empresariales y desarrollo general. |
@@ -119,7 +121,7 @@ La interfaz gráfica reemplaza por completo a Streamlit y opera mediante un serv
   - Selector de Estado sincronizado (`Todos los estados`, `🎯 Postuladas`, `📅 Gestionadas Hoy`, `🟣 En Cotización / Entrevista`, `🟢 Pendientes`, `⚪ Descartados`) que ejecuta la búsqueda automáticamente al cambiar la selección.
   - Búsqueda por texto (puesto, nombre de cliente, palabras clave).
   - Ubicación geográfica (Ciudad de México, Querétaro, Monterrey, Guadalajara, etc.).
-  - **Selector de Especialidad:** Filtro dedicado para las 10 especialidades, incluyendo opciones específicas para **👷 Oficial Eléctrico**, **🔧 Medio Oficial**, **⚡ Ingeniero Eléctrico**, **📡 Ingeniero de RF / Optimización**, etc., con matching inteligente para no confundir categorías de ayudantía u oficialía.
+  - **Selector de Especialidad:** Filtro dedicado para las 11 especialidades, incluyendo opciones específicas para **👷 Oficial Eléctrico**, **🔧 Medio Oficial**, **🧰 Ayudante Eléctrico**, **⚡ Ingeniero Eléctrico**, **📡 Ingeniero de RF / Optimización**, etc., con matching inteligente para no confundir categorías de ayudantía, oficialía ni ingeniería.
   - Selector de Plataforma origen (las 8 fuentes integradas).
   - Modalidad de trabajo.
   - Casilla de verificación *"Solo con Teléfono / WhatsApp"*.
@@ -249,12 +251,14 @@ Orientado a la prospección comercial de proyectos eléctricos, instalaciones y 
 - 🔧 **Medio Oficial Eléctrico (`badge-medio-oficial`):**
   - **Filtro Directo:** Opción seleccionable en el desplegable de **Especialidad** (`🔧 Medio Oficial`).
   - **Habilidades detectadas:** Canalizaciones, jalado de conductores, fijación de cajas, ranurado, ponchado de terminales y soporte técnico en campo.
+- 🧰 **Ayudante Eléctrico (`badge-ayudante`):**
+  - **Filtro Directo:** Opción seleccionable en el desplegable de **Especialidad** (`🧰 Ayudante Eléctrico`).
+  - **Habilidades detectadas:** Acarreo de material, jalado y guiado de cable con guía de acero/nylon, ranurado, fijación de soportería y apoyo general en obra.
 - ⚡ **Ingeniero Eléctrico (`badge-electric`):**
   - **Filtro Directo:** Opción `⚡ Ingeniero Eléctrico` para ingeniería de subestaciones, media/alta tensión, diseño y cumplimiento NOM-001-SEDE.
-- 🧰 **Ayudante Electricista:** Acarreo de material, guiado con guía de acero/nylon, soportería y apoyo general en obra.
 - 👤 **Identificación de Contactos:** Detección de nombres y cargos de ingenieros de obra, arquitectos y contratistas.
 - 📞 **Llamada Telefónica Inmediata:** Marcado rápido con enlaces `tel:+52...`.
-- 💬 **Generador de Enlaces Directos `wa.me`:** Abre WhatsApp con el mensaje formal estructurado para presupuestos bajo la norma NOM-001-SEDE y mensajes adaptados al rol técnico de oficial o instalador.
+- 💬 **Generador de Enlaces Directos `wa.me`:** Abre WhatsApp con el mensaje formal estructurado para presupuestos bajo la norma NOM-001-SEDE y mensajes adaptados al rol técnico de oficial, medio oficial o ayudante de instalaciones.
 
 ---
 

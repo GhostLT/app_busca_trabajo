@@ -602,6 +602,8 @@ function renderJobCard(job) {
     let catBadge = `<span class="badge badge-general">💼 ${escapeHtml(job.category)}</span>`;
     if (job.category.includes("Medio Oficial")) {
         catBadge = `<span class="badge badge-medio-oficial">🔧 ${escapeHtml(job.category)}</span>`;
+    } else if (job.category.includes("Ayudante")) {
+        catBadge = `<span class="badge badge-ayudante">🧰 ${escapeHtml(job.category)}</span>`;
     } else if (job.category.includes("Oficial")) {
         catBadge = `<span class="badge badge-oficial">👷 ${escapeHtml(job.category)}</span>`;
     } else if (job.category.includes("RF")) {

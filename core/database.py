@@ -70,6 +70,13 @@ def init_db():
             WHERE (LOWER(title) LIKE '%medio oficial%' OR LOWER(title) LIKE '%medio-oficial%')
               AND category = 'Ingeniero Eléctrico'
         """)
+        cursor.execute("""
+            UPDATE jobs 
+            SET category = 'Ayudante Eléctrico' 
+            WHERE (LOWER(title) LIKE '%ayudante electricista%' OR LOWER(title) LIKE '%ayudante de electricista%' OR LOWER(title) LIKE '%ayudante general eléctrico%' OR LOWER(title) LIKE '%ayudante general electrico%' OR LOWER(title) LIKE '%ayudante eléctrico%' OR LOWER(title) LIKE '%ayudante electrico%')
+              AND LOWER(title) NOT LIKE '%medio oficial%'
+              AND category = 'Ingeniero Eléctrico'
+        """)
         conn.commit()
 
 def add_job(job_data: Dict[str, Any]) -> Tuple[int, bool]:
@@ -166,6 +173,8 @@ def get_jobs(
             query += " AND (category IN ('Oficial Eléctrico', 'Oficial Electricista') OR ((LOWER(title) LIKE '%oficial%' OR LOWER(description) LIKE '%oficial eléctrico%' OR LOWER(description) LIKE '%oficial electrico%' OR LOWER(description) LIKE '%oficial electricista%') AND LOWER(title) NOT LIKE '%medio oficial%' AND category != 'Medio Oficial')) AND LOWER(title) NOT LIKE '%ayudante%'"
         elif cat_clean in ("medio oficial", "medio oficial eléctrico", "medio oficial electrico", "🔧 medio oficial"):
             query += " AND (category IN ('Medio Oficial', 'Medio Oficial Eléctrico') OR LOWER(title) LIKE '%medio oficial%' OR LOWER(description) LIKE '%medio oficial%')"
+        elif cat_clean in ("ayudante eléctrico", "ayudante electrico", "ayudante electricista", "🧰 ayudante eléctrico", "🧰 ayudante electrico"):
+            query += " AND (category IN ('Ayudante Eléctrico', 'Ayudante Electricista') OR ((LOWER(title) LIKE '%ayudante%' OR LOWER(description) LIKE '%ayudante electricista%' OR LOWER(description) LIKE '%ayudante eléctrico%' OR LOWER(description) LIKE '%ayudante electrico%') AND LOWER(title) NOT LIKE '%medio oficial%'))"
         else:
             query += " AND category = ?"
             params.append(category)
